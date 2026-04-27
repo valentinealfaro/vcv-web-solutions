@@ -732,54 +732,76 @@ const PerfectFor = () => {
   const [paused, setPaused] = useState(false);
 
   const handleEnter = (biz: Biz, e: React.MouseEvent<HTMLButtonElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setPopup({ biz, rect });
+    setPopup({ biz, rect: e.currentTarget.getBoundingClientRect() });
     setPaused(true);
   };
   const handleLeave = () => { setPopup(null); setPaused(false); };
 
-  // Clamp popup horizontally to stay inside viewport
+  const popupWidth = 320;
   const popupLeft = popup
     ? Math.max(12, Math.min(
-        (typeof window !== 'undefined' ? window.innerWidth : 1200) - 292,
-        popup.rect.left + popup.rect.width / 2 - 140,
+        (typeof window !== 'undefined' ? window.innerWidth : 1280) - popupWidth - 12,
+        popup.rect.left + popup.rect.width / 2 - popupWidth / 2,
       ))
     : 0;
-
-  // Pop above or below depending on available space
-  const popupAbove = popup ? popup.rect.top > 220 : true;
+  const popupAbove = popup ? popup.rect.top > 260 : true;
 
   const dupeItems = [...BUSINESSES, ...BUSINESSES];
 
   return (
-    <section className="py-14 bg-[#030712] relative overflow-hidden">
-      <div className="absolute inset-0 bg-dot opacity-20 pointer-events-none" />
+    <section className="py-16 relative overflow-hidden"
+      style={{ background: 'linear-gradient(180deg, #030712 0%, #050c1a 50%, #030712 100%)', borderTop: '1px solid rgba(37,99,235,0.12)', borderBottom: '1px solid rgba(37,99,235,0.12)' }}>
 
-      <p className="text-gray-500 font-semibold text-center mb-8 text-xs uppercase tracking-[0.2em]">
-        Perfect for every local business
-      </p>
+      {/* Heading */}
+      <div className="text-center mb-10">
+        <p className="neon-badge mx-auto w-fit mb-3">Who We Help</p>
+        <h2 className="font-display text-5xl md:text-6xl text-white mb-2">PERFECT FOR</h2>
+        <p className="text-gray-400 text-base">Hover any industry to see exactly how a website grows that business</p>
+      </div>
 
-      {/* Scrolling marquee */}
-      <div className="overflow-hidden relative">
+      {/* Marquee wrapper with left/right fade masks */}
+      <div className="relative overflow-hidden">
+        {/* Left fade */}
+        <div className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
+          style={{ background: 'linear-gradient(90deg, #050c1a 0%, transparent 100%)' }} />
+        {/* Right fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
+          style={{ background: 'linear-gradient(270deg, #050c1a 0%, transparent 100%)' }} />
+
         <div
-          className="flex gap-3 whitespace-nowrap"
           style={{
             display: 'inline-flex',
-            animation: 'marquee 38s linear infinite',
+            gap: '12px',
+            padding: '8px 0',
+            animation: 'marquee 42s linear infinite',
             animationPlayState: paused ? 'paused' : 'running',
           }}
         >
           {dupeItems.map((biz, i) => {
             const Icon = biz.Icon;
+            const isActive = popup?.biz.id === biz.id % BUSINESSES.length;
             return (
               <button
                 key={i}
                 onMouseEnter={(e) => handleEnter(biz, e)}
                 onMouseLeave={handleLeave}
-                className="neon-badge flex-shrink-0 gap-2 cursor-pointer transition-all duration-200 hover:border-blue-400/60 hover:bg-blue-600/15 hover:scale-105 hover:shadow-[0_0_16px_rgba(37,99,235,0.4)]"
-                style={{ display: 'inline-flex', alignItems: 'center' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexShrink: 0,
+                  padding: '10px 20px',
+                  borderRadius: '999px',
+                  border: `1px solid ${isActive ? 'rgba(96,165,250,0.7)' : 'rgba(37,99,235,0.35)'}`,
+                  background: isActive ? 'rgba(37,99,235,0.2)' : 'rgba(10,15,30,0.8)',
+                  color: isActive ? '#93c5fd' : '#cbd5e1',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: isActive ? '0 0 20px rgba(37,99,235,0.3)' : 'none',
+                  backdropFilter: 'blur(8px)',
+                }}
               >
-                <Icon size={11} className="opacity-80" />
+                <Icon size={14} style={{ opacity: 0.9, flexShrink: 0 }} />
                 {biz.name}
               </button>
             );
@@ -787,55 +809,101 @@ const PerfectFor = () => {
         </div>
       </div>
 
-      {/* Hover popup — fixed so it escapes overflow:hidden */}
+      {/* Popup — fixed, escapes overflow:hidden */}
       <AnimatePresence>
         {popup && (
           <motion.div
             key={popup.biz.id}
-            initial={{ opacity: 0, y: popupAbove ? 8 : -8, scale: 0.94 }}
+            initial={{ opacity: 0, y: popupAbove ? 10 : -10, scale: 0.92 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: popupAbove ? 8 : -8, scale: 0.94 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
+            exit={{ opacity: 0, y: popupAbove ? 10 : -10, scale: 0.92 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             style={{
               position: 'fixed',
               left: popupLeft,
-              top: popupAbove
-                ? popup.rect.top - 12
-                : popup.rect.bottom + 12,
+              top: popupAbove ? popup.rect.top - 16 : popup.rect.bottom + 16,
               transform: popupAbove ? 'translateY(-100%)' : 'translateY(0)',
-              width: 280,
+              width: popupWidth,
               zIndex: 9000,
               pointerEvents: 'none',
             }}
-            className="glass-card border-blue-500/30 p-5 shadow-[0_0_40px_rgba(37,99,235,0.25)]"
           >
-            {/* Icon + name */}
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 flex-shrink-0">
-                <popup.biz.Icon size={17} />
+            {/* Main card */}
+            <div style={{
+              background: 'rgba(8,12,28,0.97)',
+              border: '1px solid rgba(96,165,250,0.35)',
+              borderRadius: '16px',
+              padding: '20px',
+              boxShadow: '0 0 0 1px rgba(37,99,235,0.1), 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(37,99,235,0.15)',
+              backdropFilter: 'blur(24px)',
+            }}>
+              {/* Header row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: '12px',
+                  background: 'linear-gradient(135deg, rgba(37,99,235,0.3), rgba(124,58,237,0.2))',
+                  border: '1px solid rgba(96,165,250,0.25)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#93c5fd', flexShrink: 0,
+                }}>
+                  <popup.biz.Icon size={20} />
+                </div>
+                <div>
+                  <p style={{ color: '#f1f5f9', fontWeight: 700, fontSize: '16px', lineHeight: 1.2, marginBottom: 3 }}>
+                    {popup.biz.name}
+                  </p>
+                  <p style={{ color: '#60a5fa', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    Industry Insight
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-white font-bold text-sm">{popup.biz.name}</p>
-                <p className="text-blue-400 text-[10px] font-bold uppercase tracking-wider">{popup.biz.stat}</p>
-              </div>
-            </div>
 
-            {/* Stat highlight */}
-            <div className="bg-blue-600/10 border border-blue-600/20 rounded-lg px-3 py-2 mb-3">
-              <p className="text-blue-300 text-[11px] font-bold flex items-center gap-1.5">
-                <TrendingUp size={10} /> {popup.biz.stat}
+              {/* Stat bar */}
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(37,99,235,0.2), rgba(124,58,237,0.15))',
+                border: '1px solid rgba(96,165,250,0.25)',
+                borderRadius: '10px',
+                padding: '10px 14px',
+                marginBottom: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+              }}>
+                <TrendingUp size={14} style={{ color: '#4ade80', flexShrink: 0 }} />
+                <span style={{ color: '#e2e8f0', fontWeight: 700, fontSize: '13px' }}>
+                  {popup.biz.stat}
+                </span>
+              </div>
+
+              {/* Detail */}
+              <p style={{ color: '#94a3b8', fontSize: '13px', lineHeight: '1.65', margin: 0 }}>
+                {popup.biz.detail}
               </p>
             </div>
 
-            {/* Detail copy */}
-            <p className="text-gray-400 text-[11px] leading-relaxed">{popup.biz.detail}</p>
-
-            {/* Bottom caret indicator */}
-            {popupAbove && (
-              <div className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-[#0a0f1e] border-r border-b border-blue-500/30" />
-            )}
-            {!popupAbove && (
-              <div className="absolute -top-[6px] left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-[#0a0f1e] border-l border-t border-blue-500/30" />
+            {/* Arrow caret */}
+            {popupAbove ? (
+              <div style={{
+                position: 'absolute', bottom: -7,
+                left: Math.max(20, Math.min(popupWidth - 28,
+                  popup.rect.left + popup.rect.width / 2 - popupLeft)),
+                width: 14, height: 14,
+                background: 'rgba(8,12,28,0.97)',
+                border: '1px solid rgba(96,165,250,0.35)',
+                borderTop: 'none', borderLeft: 'none',
+                transform: 'rotate(45deg)',
+              }} />
+            ) : (
+              <div style={{
+                position: 'absolute', top: -7,
+                left: Math.max(20, Math.min(popupWidth - 28,
+                  popup.rect.left + popup.rect.width / 2 - popupLeft)),
+                width: 14, height: 14,
+                background: 'rgba(8,12,28,0.97)',
+                border: '1px solid rgba(96,165,250,0.35)',
+                borderBottom: 'none', borderRight: 'none',
+                transform: 'rotate(45deg)',
+              }} />
             )}
           </motion.div>
         )}
