@@ -1,0 +1,87 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: leads
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required)
+    //   - businessName: string (optional)
+    //   - email: string (required, email format)
+    //   - phone: string (optional)
+    //   - businessType: string (optional)
+    //   - message: string (optional)
+    //   - createdAt: timestamp (required)
+    //   - status: string (required, enum: ["new", "contacted", "qualified", "closed"])
+    //
+    // Collection: blogPosts
+    // Document ID: auto-generated
+    // Fields:
+    //   - title: string (required)
+    //   - slug: string (required)
+    //   - content: string (required)
+    //   - excerpt: string (optional)
+    //   - author: string (optional)
+    //   - publishedAt: timestamp (required)
+    //   - tags: list (optional)
+    //   - featuredImage: string (optional)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          ((request.auth.token.email == "info@vcvservices.com" || request.auth.token.email == "lawtonroofer@gmail.com") && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidLead(data) {
+      return data.keys().hasAll(['name', 'email', 'createdAt', 'status']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             isValidEmail(data.email) &&
+             data.createdAt is timestamp &&
+             data.status in ["new", "contacted", "qualified", "closed"];
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /leads/{leadId} {
+      // Anyone can create a lead (from the contact form)
+      allow create: if isValidLead(request.resource.data);
+      // Only admins can read or update leads
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /blogPosts/{postId} {
+      // Anyone can read blog posts
+      allow read: if true;
+      // Only admins can create, update, or delete blog posts
+      allow write: if isAdmin();
+    }
+
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      // Only admins can manage roles
+      allow write: if isAdmin();
+    }
+  }
+}

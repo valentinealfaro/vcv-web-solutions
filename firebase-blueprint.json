@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "Lead": {
+      "title": "Lead",
+      "description": "A potential customer lead from the website forms.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the lead" },
+        "businessName": { "type": "string", "description": "Name of the business" },
+        "email": { "type": "string", "format": "email", "description": "Email address" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "businessType": { "type": "string", "description": "Type of business" },
+        "message": { "type": "string", "description": "Optional message from the lead" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp when the lead was created" },
+        "status": { "type": "string", "enum": ["new", "contacted", "qualified", "closed"], "description": "Current status of the lead" }
+      },
+      "required": ["name", "email", "createdAt"]
+    },
+    "BlogPost": {
+      "title": "BlogPost",
+      "description": "A blog article for SEO and content marketing.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the blog post" },
+        "slug": { "type": "string", "description": "URL-friendly slug" },
+        "content": { "type": "string", "description": "Markdown content of the post" },
+        "excerpt": { "type": "string", "description": "Short summary for previews" },
+        "author": { "type": "string", "description": "Author name" },
+        "publishedAt": { "type": "string", "format": "date-time", "description": "Publication timestamp" },
+        "tags": { "type": "array", "items": { "type": "string" }, "description": "SEO tags" },
+        "featuredImage": { "type": "string", "description": "URL to the featured image" }
+      },
+      "required": ["title", "slug", "content", "publishedAt"]
+    },
+    "OnboardingSubmission": {
+      "title": "OnboardingSubmission",
+      "description": "The onboarding form data submitted by a customer.",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string", "description": "Full name" },
+        "businessName": { "type": "string", "description": "Business name" },
+        "email": { "type": "string", "format": "email", "description": "Email address" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "submissionData": { "type": "object", "description": "All form answers" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Submission timestamp" }
+      },
+      "required": ["fullName", "email", "submissionData", "createdAt"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "A website build project.",
+      "type": "object",
+      "properties": {
+        "customerName": { "type": "string", "description": "Customer name" },
+        "businessName": { "type": "string", "description": "Business name" },
+        "status": { "type": "string", "enum": ["paid", "onboarding_submitted", "ready_for_build", "in_progress", "completed"], "description": "Project status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["customerName", "businessName", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/leads/{leadId}": {
+      "schema": "Lead",
+      "description": "Collection of customer leads"
+    },
+    "/blogPosts/{postId}": {
+      "schema": "BlogPost",
+      "description": "Collection of blog articles"
+    },
+    "/onboardingSubmissions/{submissionId}": {
+      "schema": "OnboardingSubmission",
+      "description": "Collection of onboarding form submissions"
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Collection of website projects"
+    }
+  }
+}
