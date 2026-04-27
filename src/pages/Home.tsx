@@ -167,41 +167,51 @@ const TiltCard = ({ children, className = '' }: { children: React.ReactNode; cla
 /* ─── 3-D Pop-Out Word ────────────────────────────────────── */
 const PopOut3DWord = ({ word, delay = 0.8 }: { word: string; delay?: number }) => {
   const ref = useRef<HTMLSpanElement>(null);
-  // Fires once the hero is mounted — word is always above the fold
   const inView = useInView(ref, { once: true, amount: 0.3 });
 
   return (
     /*
-      perspective on the parent is what makes translateZ visible.
-      Without it, z movement has no effect on screen.
+      perspective: 350px — close enough that z movement creates
+      extreme foreshortening. The word explodes through the screen.
     */
     <span
       ref={ref}
-      style={{ display: 'inline-block', perspective: '550px', perspectiveOrigin: '50% 60%' }}
+      style={{ display: 'inline-block', perspective: '350px', perspectiveOrigin: '50% 50%' }}
     >
       <motion.span
         className="gradient-text"
-        style={{ display: 'inline-block', transformStyle: 'preserve-3d', willChange: 'transform, filter' }}
-        initial={{ scale: 0.75, rotateY: -20, rotateX: 12, z: -40, opacity: 0 }}
+        style={{
+          display: 'inline-block',
+          transformStyle: 'preserve-3d',
+          willChange: 'transform, filter',
+        }}
+        initial={{ scale: 0.3, rotateY: -28, rotateX: 18, z: -80, opacity: 0 }}
         animate={inView ? {
-          // 5 keyframes: start tilted/far → twist one way → swing other → settle forward
-          scale:   [0.75, 1.05, 1.45, 1.65, 1.45],
-          rotateY: [-20,   14,   -9,    3,    0],
-          rotateX: [ 12,   -8,    5,   -1,    0],
-          z:       [-40,   10,   55,   88,   95],
-          opacity: [  0,    1,    1,    1,    1],
+          // ── 5-stop journey ──────────────────────────────
+          // 0 %   far away, tilted, invisible
+          // 20%   twisting as it rushes forward
+          // 48%   BLOWS THROUGH the screen (scale ×6 + perspective amplification)
+          // 72%   snaps back toward readable size
+          // 100%  settles — still notably large & glowing
+          scale:   [0.3,  0.8,   6,     2.4,  1.8],
+          rotateY: [-28,  16,   -6,     2,    0],
+          rotateX: [ 18,  -9,    3,    -1,    0],
+          z:       [-80,  20,   310,   120,   60],
+          opacity: [  0,   1,    1,     1,    1],
           filter: [
-            'drop-shadow(0 0px  0px rgba(37,99,235,0))',
-            'drop-shadow(0 6px 18px rgba(37,99,235,0.45))',
-            'drop-shadow(0 12px 36px rgba(99,102,241,0.65))',
-            'drop-shadow(0 20px 60px rgba(99,102,241,0.85))',
-            'drop-shadow(0 14px 45px rgba(99,102,241,0.55))',
+            'drop-shadow(0   0px   0px rgba(37,99,235,0))',
+            'drop-shadow(0   8px  24px rgba(37,99,235,0.55))',
+            // peak: double-layered blinding neon halo
+            'drop-shadow(0   0px  80px rgba(99,102,241,1)) drop-shadow(0 0px 160px rgba(139,92,246,0.9))',
+            'drop-shadow(0  20px  70px rgba(99,102,241,0.75))',
+            'drop-shadow(0  12px  50px rgba(99,102,241,0.5))',
           ],
         } : {}}
         transition={{
-          duration: 3.4,              // slow — as requested
-          times:   [0, 0.22, 0.52, 0.78, 1],
-          ease: 'easeOut',
+          duration: 2.8,
+          times:   [0, 0.20, 0.46, 0.70, 1],
+          // fast attack to peak, slow controlled settle
+          ease: ['easeIn', 'easeOut', 'easeInOut', 'easeOut'],
           delay,
         }}
       >
