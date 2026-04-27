@@ -193,18 +193,17 @@ const PopOut3DWord = ({ word, delay = 0.8 }: { word: string; delay?: number }) =
           // 48%   BLOWS THROUGH the screen (scale ×6 + perspective amplification)
           // 72%   snaps back toward readable size
           // 100%  settles — still notably large & glowing
-          scale:   [0.3,  0.8,   6,     2.4,  1.8],
+          scale:   [0.3,  0.8,   6,     2.2,  1],
           rotateY: [-28,  16,   -6,     2,    0],
           rotateX: [ 18,  -9,    3,    -1,    0],
-          z:       [-80,  20,   310,   120,   60],
+          z:       [-80,  20,   310,   100,   0],
           opacity: [  0,   1,    1,     1,    1],
           filter: [
             'drop-shadow(0   0px   0px rgba(37,99,235,0))',
             'drop-shadow(0   8px  24px rgba(37,99,235,0.55))',
-            // peak: double-layered blinding neon halo
             'drop-shadow(0   0px  80px rgba(99,102,241,1)) drop-shadow(0 0px 160px rgba(139,92,246,0.9))',
             'drop-shadow(0  20px  70px rgba(99,102,241,0.75))',
-            'drop-shadow(0  12px  50px rgba(99,102,241,0.5))',
+            'drop-shadow(0   0px   0px rgba(99,102,241,0))',
           ],
         } : {}}
         transition={{
