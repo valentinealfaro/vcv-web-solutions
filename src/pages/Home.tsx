@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView, AnimatePresence, LayoutGroup } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award, Hammer, Wrench, Thermometer, Leaf, Sparkles, UtensilsCrossed, Store, Paintbrush, Car, Building2, Scissors, Dumbbell, GraduationCap, Truck, Bug, Sun, Stethoscope, Scale, PawPrint, HardHat, TreePine } from 'lucide-react';
 import { Boxes } from '@/components/ui/background-boxes';
 import { MarkerHighlight } from '@/components/ui/marker-highlight';
 import { DemoSection } from '../components/DemoSection';
@@ -694,18 +694,155 @@ const StatsSection = () => {
 };
 
 /* ─── Perfect For ─────────────────────────────────────────── */
-const PerfectFor = () => (
-  <section className="py-12 bg-[#030712]">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <p className="text-gray-500 font-semibold text-center mb-6 text-sm uppercase tracking-widest">Perfect for</p>
-      <div className="flex flex-wrap justify-center gap-3">
-        {['Contractors', 'Roofers', 'Plumbers', 'HVAC Companies', 'Landscapers', 'Home Services', 'Restaurants', 'Local Businesses'].map((item, idx) => (
-          <span key={idx} className="neon-badge">{item}</span>
-        ))}
+interface Biz {
+  id: number;
+  name: string;
+  Icon: React.ElementType;
+  stat: string;
+  detail: string;
+}
+
+const BUSINESSES: Biz[] = [
+  { id: 0,  name: 'Contractors',      Icon: Hammer,          stat: '3× more project bids',           detail: '82% of homeowners research contractors online before calling. A portfolio site with photos and reviews closes more bids than any cold call ever could.' },
+  { id: 1,  name: 'Roofers',          Icon: HardHat,         stat: '400% lead spike after storms',    detail: 'After hail hits, homeowners Google "roof repair near me" within hours. Ranking #1 in those moments is worth thousands of dollars per storm season.' },
+  { id: 2,  name: 'Plumbers',         Icon: Wrench,          stat: '6 in 10 searches = same-day call', detail: 'Plumbing emergencies don\'t wait. When a pipe bursts at midnight, customers hire whoever shows up first in search results. That should be you.' },
+  { id: 3,  name: 'HVAC Companies',   Icon: Thermometer,     stat: 'Capture seasonal demand peaks',   detail: 'AC failures in July and furnace outages in January create massive call surges. Online booking captures customers while your competitors\' phones are busy.' },
+  { id: 4,  name: 'Landscapers',      Icon: Leaf,            stat: 'Spring = your biggest window',    detail: 'Homeowners plan their yards in late winter. A site with before/after photos and seasonal packages locks in customers 2 months before the phone rings.' },
+  { id: 5,  name: 'Cleaning Services',Icon: Sparkles,        stat: '74% book recurring via web form', detail: 'Recurring clients are the lifeblood of cleaning businesses. An online booking form converts one-time visitors into monthly contracts automatically.' },
+  { id: 6,  name: 'Restaurants',      Icon: UtensilsCrossed, stat: '90% look up menu before visiting', detail: 'If your menu, hours, and location aren\'t easy to find on Google, customers choose someone else. A fast mobile site with online ordering keeps tables full.' },
+  { id: 7,  name: 'Auto Repair',      Icon: Car,             stat: '+55% more first-time appointments',detail: 'Trust is everything in auto repair. A professional site with reviews, services, and transparent pricing turns strangers into loyal customers.' },
+  { id: 8,  name: 'Electricians',     Icon: Zap,             stat: 'Urgent calls = highest margins',  detail: 'Electrical emergencies command premium pricing. Ranking for "emergency electrician near me" fills your calendar with the highest-value jobs in your area.' },
+  { id: 9,  name: 'Painters',         Icon: Paintbrush,      stat: 'Portfolio = your #1 closer',      detail: 'A gallery of finished projects sells your work before you ever show up. Homeowners comparing painters hire the one with the most impressive visual proof.' },
+  { id: 10, name: 'Real Estate',      Icon: Building2,       stat: 'Listings viewed 4× more online',  detail: 'Property buyers search online first, always. An IDX-integrated site with neighborhood guides positions you as the local expert before first contact.' },
+  { id: 11, name: 'Hair Salons',      Icon: Scissors,        stat: '68% book appointments online',    detail: 'Clients hate calling to book. An online booking system with stylist profiles fills your chair while you sleep — no receptionist required.' },
+  { id: 12, name: 'Gyms & Fitness',   Icon: Dumbbell,        stat: 'January surge = $50k opportunity',detail: 'New Year\'s resolution season brings thousands of local searches. A site with class schedules, trainer bios, and trial offers converts that traffic into memberships.' },
+  { id: 13, name: 'Tutors & Coaches', Icon: GraduationCap,   stat: 'Parents pay premium for credibility',detail: 'Parents hiring tutors want proof of results. A clean site with credentials, testimonials, and a contact form converts skeptical parents into paying clients.' },
+  { id: 14, name: 'Moving Companies', Icon: Truck,           stat: 'Quotes 24/7 = 40% more leads',    detail: 'People plan moves at all hours. An online quote form that works at 2am captures leads your competitors miss because their office is closed.' },
+  { id: 15, name: 'Pest Control',     Icon: Bug,             stat: 'Emergency searches = instant jobs',detail: 'Nobody waits when they find pests. Showing up in "pest control near me" searches with clear pricing and same-day availability books jobs on the spot.' },
+  { id: 16, name: 'Solar Installers', Icon: Sun,             stat: '$8k avg job from one web lead',    detail: 'Solar is a considered purchase — customers research for weeks. A site with savings calculators and project galleries shortens the sales cycle dramatically.' },
+  { id: 17, name: 'Dental Offices',   Icon: Stethoscope,     stat: 'New patient forms = faster intake', detail: 'Most patients pick a dentist the way they pick a restaurant — online reviews and a professional site. New patient web forms reduce front-desk workload by 60%.' },
+  { id: 18, name: 'Law Firms',        Icon: Scale,           stat: 'Trust = $5k+ case value online',  detail: 'Clients hiring attorneys research extensively. A site with practice areas, attorney bios, and client testimonials converts high-value cases that would otherwise go to competitors.' },
+  { id: 19, name: 'Vet Clinics',      Icon: PawPrint,        stat: 'Pet owners research before first visit',detail: 'Pet owners are fiercely loyal once they trust a vet. A warm, professional site with staff bios, services, and online scheduling builds that trust before they walk in.' },
+  { id: 20, name: 'Tree Services',    Icon: TreePine,         stat: 'Storm season = surge demand',     detail: 'After major storms, tree removal demand spikes overnight. A site optimized for local search captures emergency calls worth $500–$5,000 per job.' },
+  { id: 21, name: 'Home Services',    Icon: Store,           stat: 'Repeat customers = 5× value',     detail: 'Any home service business with a professional website earns 47% more per customer because trust is already established before the first conversation.' },
+];
+
+const PerfectFor = () => {
+  const [popup, setPopup] = useState<{ biz: Biz; rect: DOMRect } | null>(null);
+  const [paused, setPaused] = useState(false);
+
+  const handleEnter = (biz: Biz, e: React.MouseEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPopup({ biz, rect });
+    setPaused(true);
+  };
+  const handleLeave = () => { setPopup(null); setPaused(false); };
+
+  // Clamp popup horizontally to stay inside viewport
+  const popupLeft = popup
+    ? Math.max(12, Math.min(
+        (typeof window !== 'undefined' ? window.innerWidth : 1200) - 292,
+        popup.rect.left + popup.rect.width / 2 - 140,
+      ))
+    : 0;
+
+  // Pop above or below depending on available space
+  const popupAbove = popup ? popup.rect.top > 220 : true;
+
+  const dupeItems = [...BUSINESSES, ...BUSINESSES];
+
+  return (
+    <section className="py-14 bg-[#030712] relative overflow-hidden">
+      <div className="absolute inset-0 bg-dot opacity-20 pointer-events-none" />
+
+      <p className="text-gray-500 font-semibold text-center mb-8 text-xs uppercase tracking-[0.2em]">
+        Perfect for every local business
+      </p>
+
+      {/* Scrolling marquee */}
+      <div className="overflow-hidden relative">
+        <div
+          className="flex gap-3 whitespace-nowrap"
+          style={{
+            display: 'inline-flex',
+            animation: 'marquee 38s linear infinite',
+            animationPlayState: paused ? 'paused' : 'running',
+          }}
+        >
+          {dupeItems.map((biz, i) => {
+            const Icon = biz.Icon;
+            return (
+              <button
+                key={i}
+                onMouseEnter={(e) => handleEnter(biz, e)}
+                onMouseLeave={handleLeave}
+                className="neon-badge flex-shrink-0 gap-2 cursor-pointer transition-all duration-200 hover:border-blue-400/60 hover:bg-blue-600/15 hover:scale-105 hover:shadow-[0_0_16px_rgba(37,99,235,0.4)]"
+                style={{ display: 'inline-flex', alignItems: 'center' }}
+              >
+                <Icon size={11} className="opacity-80" />
+                {biz.name}
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  </section>
-);
+
+      {/* Hover popup — fixed so it escapes overflow:hidden */}
+      <AnimatePresence>
+        {popup && (
+          <motion.div
+            key={popup.biz.id}
+            initial={{ opacity: 0, y: popupAbove ? 8 : -8, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: popupAbove ? 8 : -8, scale: 0.94 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            style={{
+              position: 'fixed',
+              left: popupLeft,
+              top: popupAbove
+                ? popup.rect.top - 12
+                : popup.rect.bottom + 12,
+              transform: popupAbove ? 'translateY(-100%)' : 'translateY(0)',
+              width: 280,
+              zIndex: 9000,
+              pointerEvents: 'none',
+            }}
+            className="glass-card border-blue-500/30 p-5 shadow-[0_0_40px_rgba(37,99,235,0.25)]"
+          >
+            {/* Icon + name */}
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 flex-shrink-0">
+                <popup.biz.Icon size={17} />
+              </div>
+              <div>
+                <p className="text-white font-bold text-sm">{popup.biz.name}</p>
+                <p className="text-blue-400 text-[10px] font-bold uppercase tracking-wider">{popup.biz.stat}</p>
+              </div>
+            </div>
+
+            {/* Stat highlight */}
+            <div className="bg-blue-600/10 border border-blue-600/20 rounded-lg px-3 py-2 mb-3">
+              <p className="text-blue-300 text-[11px] font-bold flex items-center gap-1.5">
+                <TrendingUp size={10} /> {popup.biz.stat}
+              </p>
+            </div>
+
+            {/* Detail copy */}
+            <p className="text-gray-400 text-[11px] leading-relaxed">{popup.biz.detail}</p>
+
+            {/* Bottom caret indicator */}
+            {popupAbove && (
+              <div className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-[#0a0f1e] border-r border-b border-blue-500/30" />
+            )}
+            {!popupAbove && (
+              <div className="absolute -top-[6px] left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-[#0a0f1e] border-l border-t border-blue-500/30" />
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  );
+};
 
 /* ─── Services ────────────────────────────────────────────── */
 const ServicesOverview = () => {
