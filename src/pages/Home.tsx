@@ -698,34 +698,95 @@ interface Biz {
   id: number;
   name: string;
   Icon: React.ElementType;
+  color: string;
   stat: string;
   detail: string;
 }
 
 const BUSINESSES: Biz[] = [
-  { id: 0,  name: 'Contractors',      Icon: Hammer,          stat: '3× more project bids',           detail: '82% of homeowners research contractors online before calling. A portfolio site with photos and reviews closes more bids than any cold call ever could.' },
-  { id: 1,  name: 'Roofers',          Icon: HardHat,         stat: '400% lead spike after storms',    detail: 'After hail hits, homeowners Google "roof repair near me" within hours. Ranking #1 in those moments is worth thousands of dollars per storm season.' },
-  { id: 2,  name: 'Plumbers',         Icon: Wrench,          stat: '6 in 10 searches = same-day call', detail: 'Plumbing emergencies don\'t wait. When a pipe bursts at midnight, customers hire whoever shows up first in search results. That should be you.' },
-  { id: 3,  name: 'HVAC Companies',   Icon: Thermometer,     stat: 'Capture seasonal demand peaks',   detail: 'AC failures in July and furnace outages in January create massive call surges. Online booking captures customers while your competitors\' phones are busy.' },
-  { id: 4,  name: 'Landscapers',      Icon: Leaf,            stat: 'Spring = your biggest window',    detail: 'Homeowners plan their yards in late winter. A site with before/after photos and seasonal packages locks in customers 2 months before the phone rings.' },
-  { id: 5,  name: 'Cleaning Services',Icon: Sparkles,        stat: '74% book recurring via web form', detail: 'Recurring clients are the lifeblood of cleaning businesses. An online booking form converts one-time visitors into monthly contracts automatically.' },
-  { id: 6,  name: 'Restaurants',      Icon: UtensilsCrossed, stat: '90% look up menu before visiting', detail: 'If your menu, hours, and location aren\'t easy to find on Google, customers choose someone else. A fast mobile site with online ordering keeps tables full.' },
-  { id: 7,  name: 'Auto Repair',      Icon: Car,             stat: '+55% more first-time appointments',detail: 'Trust is everything in auto repair. A professional site with reviews, services, and transparent pricing turns strangers into loyal customers.' },
-  { id: 8,  name: 'Electricians',     Icon: Zap,             stat: 'Urgent calls = highest margins',  detail: 'Electrical emergencies command premium pricing. Ranking for "emergency electrician near me" fills your calendar with the highest-value jobs in your area.' },
-  { id: 9,  name: 'Painters',         Icon: Paintbrush,      stat: 'Portfolio = your #1 closer',      detail: 'A gallery of finished projects sells your work before you ever show up. Homeowners comparing painters hire the one with the most impressive visual proof.' },
-  { id: 10, name: 'Real Estate',      Icon: Building2,       stat: 'Listings viewed 4× more online',  detail: 'Property buyers search online first, always. An IDX-integrated site with neighborhood guides positions you as the local expert before first contact.' },
-  { id: 11, name: 'Hair Salons',      Icon: Scissors,        stat: '68% book appointments online',    detail: 'Clients hate calling to book. An online booking system with stylist profiles fills your chair while you sleep — no receptionist required.' },
-  { id: 12, name: 'Gyms & Fitness',   Icon: Dumbbell,        stat: 'January surge = $50k opportunity',detail: 'New Year\'s resolution season brings thousands of local searches. A site with class schedules, trainer bios, and trial offers converts that traffic into memberships.' },
-  { id: 13, name: 'Tutors & Coaches', Icon: GraduationCap,   stat: 'Parents pay premium for credibility',detail: 'Parents hiring tutors want proof of results. A clean site with credentials, testimonials, and a contact form converts skeptical parents into paying clients.' },
-  { id: 14, name: 'Moving Companies', Icon: Truck,           stat: 'Quotes 24/7 = 40% more leads',    detail: 'People plan moves at all hours. An online quote form that works at 2am captures leads your competitors miss because their office is closed.' },
-  { id: 15, name: 'Pest Control',     Icon: Bug,             stat: 'Emergency searches = instant jobs',detail: 'Nobody waits when they find pests. Showing up in "pest control near me" searches with clear pricing and same-day availability books jobs on the spot.' },
-  { id: 16, name: 'Solar Installers', Icon: Sun,             stat: '$8k avg job from one web lead',    detail: 'Solar is a considered purchase — customers research for weeks. A site with savings calculators and project galleries shortens the sales cycle dramatically.' },
-  { id: 17, name: 'Dental Offices',   Icon: Stethoscope,     stat: 'New patient forms = faster intake', detail: 'Most patients pick a dentist the way they pick a restaurant — online reviews and a professional site. New patient web forms reduce front-desk workload by 60%.' },
-  { id: 18, name: 'Law Firms',        Icon: Scale,           stat: 'Trust = $5k+ case value online',  detail: 'Clients hiring attorneys research extensively. A site with practice areas, attorney bios, and client testimonials converts high-value cases that would otherwise go to competitors.' },
-  { id: 19, name: 'Vet Clinics',      Icon: PawPrint,        stat: 'Pet owners research before first visit',detail: 'Pet owners are fiercely loyal once they trust a vet. A warm, professional site with staff bios, services, and online scheduling builds that trust before they walk in.' },
-  { id: 20, name: 'Tree Services',    Icon: TreePine,         stat: 'Storm season = surge demand',     detail: 'After major storms, tree removal demand spikes overnight. A site optimized for local search captures emergency calls worth $500–$5,000 per job.' },
-  { id: 21, name: 'Home Services',    Icon: Store,           stat: 'Repeat customers = 5× value',     detail: 'Any home service business with a professional website earns 47% more per customer because trust is already established before the first conversation.' },
+  { id: 0,  name: 'Contractors',      Icon: Hammer,          color: '#ff3d71', stat: '3× more project bids',            detail: '82% of homeowners research contractors online before calling. A portfolio site with photos and reviews closes more bids than any cold call ever could.' },
+  { id: 1,  name: 'Roofers',          Icon: HardHat,         color: '#ff6b35', stat: '400% lead spike after storms',     detail: 'After hail hits, homeowners Google "roof repair near me" within hours. Ranking #1 in those moments is worth thousands of dollars per storm season.' },
+  { id: 2,  name: 'Plumbers',         Icon: Wrench,          color: '#00e5ff', stat: '6 in 10 searches = same-day call',  detail: 'Plumbing emergencies don\'t wait. When a pipe bursts at midnight, customers hire whoever shows up first in search results. That should be you.' },
+  { id: 3,  name: 'HVAC Companies',   Icon: Thermometer,     color: '#39ff14', stat: 'Capture seasonal demand peaks',    detail: 'AC failures in July and furnace outages in January create massive call surges. Online booking captures customers while your competitors\' phones are busy.' },
+  { id: 4,  name: 'Landscapers',      Icon: Leaf,            color: '#76ff03', stat: 'Spring = your biggest window',     detail: 'Homeowners plan their yards in late winter. A site with before/after photos and seasonal packages locks in customers 2 months before the phone rings.' },
+  { id: 5,  name: 'Cleaning Services',Icon: Sparkles,        color: '#00ffcc', stat: '74% book recurring via web form',  detail: 'Recurring clients are the lifeblood of cleaning businesses. An online booking form converts one-time visitors into monthly contracts automatically.' },
+  { id: 6,  name: 'Restaurants',      Icon: UtensilsCrossed, color: '#ff00ff', stat: '90% look up menu before visiting', detail: 'If your menu, hours, and location aren\'t easy to find on Google, customers choose someone else. A fast mobile site with online ordering keeps tables full.' },
+  { id: 7,  name: 'Auto Repair',      Icon: Car,             color: '#ffcc00', stat: '+55% more first-time appointments', detail: 'Trust is everything in auto repair. A professional site with reviews, services, and transparent pricing turns strangers into loyal customers.' },
+  { id: 8,  name: 'Electricians',     Icon: Zap,             color: '#ffe600', stat: 'Urgent calls = highest margins',   detail: 'Electrical emergencies command premium pricing. Ranking for "emergency electrician near me" fills your calendar with the highest-value jobs in your area.' },
+  { id: 9,  name: 'Painters',         Icon: Paintbrush,      color: '#ff69b4', stat: 'Portfolio = your #1 closer',       detail: 'A gallery of finished projects sells your work before you ever show up. Homeowners comparing painters hire the one with the most impressive visual proof.' },
+  { id: 10, name: 'Real Estate',      Icon: Building2,       color: '#00bfff', stat: 'Listings viewed 4× more online',   detail: 'Property buyers search online first, always. A site with neighborhood guides positions you as the local expert before first contact.' },
+  { id: 11, name: 'Hair Salons',      Icon: Scissors,        color: '#ff0099', stat: '68% book appointments online',     detail: 'Clients hate calling to book. An online booking system with stylist profiles fills your chair while you sleep — no receptionist required.' },
+  { id: 12, name: 'Gyms & Fitness',   Icon: Dumbbell,        color: '#40e0d0', stat: 'January surge = $50k opportunity', detail: 'New Year\'s resolution season brings thousands of local searches. A site with class schedules, trainer bios, and trial offers converts that traffic into memberships.' },
+  { id: 13, name: 'Tutors & Coaches', Icon: GraduationCap,   color: '#bf00ff', stat: 'Parents pay premium for credibility', detail: 'Parents hiring tutors want proof of results. A clean site with credentials, testimonials, and a contact form converts skeptical parents into paying clients.' },
+  { id: 14, name: 'Moving Companies', Icon: Truck,           color: '#ff8800', stat: 'Quotes 24/7 = 40% more leads',     detail: 'People plan moves at all hours. An online quote form that works at 2am captures leads your competitors miss because their office is closed.' },
+  { id: 15, name: 'Pest Control',     Icon: Bug,             color: '#7dff4f', stat: 'Emergency searches = instant jobs', detail: 'Nobody waits when they find pests. Showing up in "pest control near me" searches with clear pricing and same-day availability books jobs on the spot.' },
+  { id: 16, name: 'Solar Installers', Icon: Sun,             color: '#ffee00', stat: '$8k avg job from one web lead',     detail: 'Solar is a considered purchase — customers research for weeks. A site with savings calculators and project galleries shortens the sales cycle dramatically.' },
+  { id: 17, name: 'Dental Offices',   Icon: Stethoscope,     color: '#00ffaa', stat: 'New patient forms = faster intake',  detail: 'Most patients pick a dentist the way they pick a restaurant — online reviews and a professional site. New patient web forms reduce front-desk workload by 60%.' },
+  { id: 18, name: 'Law Firms',        Icon: Scale,           color: '#aa00ff', stat: 'Trust = $5k+ case value online',   detail: 'Clients hiring attorneys research extensively. A site with practice areas, attorney bios, and client testimonials converts high-value cases that would otherwise go to competitors.' },
+  { id: 19, name: 'Vet Clinics',      Icon: PawPrint,        color: '#ff6699', stat: 'Pet owners research before first visit', detail: 'Pet owners are fiercely loyal once they trust a vet. A warm, professional site with staff bios, services, and online scheduling builds that trust before they walk in.' },
+  { id: 20, name: 'Tree Services',    Icon: TreePine,        color: '#00ff88', stat: 'Storm season = surge demand',      detail: 'After major storms, tree removal demand spikes overnight. A site optimized for local search captures emergency calls worth $500–$5,000 per job.' },
+  { id: 21, name: 'Home Services',    Icon: Store,           color: '#1e90ff', stat: 'Repeat customers = 5× value',      detail: 'Any home service business with a professional website earns 47% more per customer because trust is already established before the first conversation.' },
 ];
+
+/* Sub-components defined outside to prevent recreation on render */
+const BizCard = ({ biz, onEnter, onLeave }: {
+  biz: Biz;
+  onEnter: (biz: Biz, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onLeave: () => void;
+}) => (
+  <button
+    onMouseEnter={(e) => onEnter(biz, e)}
+    onMouseLeave={onLeave}
+    style={{
+      display: 'flex', alignItems: 'center', gap: 10,
+      padding: '11px 16px', marginBottom: 8, width: '100%',
+      background: 'rgba(8,12,28,0.72)',
+      border: `1px solid ${biz.color}30`,
+      borderRadius: 12,
+      cursor: 'pointer',
+      backdropFilter: 'blur(8px)',
+      transition: 'border-color 0.2s, background 0.2s, box-shadow 0.2s',
+      textAlign: 'left',
+    }}
+    onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = `${biz.color}70`; }}
+    onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = `${biz.color}30`; }}
+  >
+    <biz.Icon size={15} style={{ color: biz.color, flexShrink: 0 }} />
+    <span style={{
+      color: biz.color,
+      fontWeight: 700, fontSize: '12px',
+      textTransform: 'uppercase', letterSpacing: '0.07em',
+      textShadow: `0 0 14px ${biz.color}70`,
+      whiteSpace: 'nowrap',
+    }}>
+      {biz.name}
+    </span>
+  </button>
+);
+
+interface ColumnProps {
+  items: Biz[];
+  direction: 'up' | 'down';
+  duration: number;
+  paused: boolean;
+  onEnter: (biz: Biz, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onLeave: () => void;
+}
+const BizColumn = ({ items, direction, duration, paused, onEnter, onLeave }: ColumnProps) => {
+  const doubled = [...items, ...items];
+  return (
+    <div style={{ overflow: 'hidden', height: '100%' }}>
+      <div style={{
+        animation: `${direction === 'up' ? 'scrollUp' : 'scrollDown'} ${duration}s linear infinite`,
+        animationPlayState: paused ? 'paused' : 'running',
+      }}>
+        {doubled.map((biz, i) => (
+          <BizCard key={`${biz.id}-${i}`} biz={biz} onEnter={onEnter} onLeave={onLeave} />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const PerfectFor = () => {
   const [popup, setPopup] = useState<{ biz: Biz; rect: DOMRect } | null>(null);
@@ -737,6 +798,10 @@ const PerfectFor = () => {
   };
   const handleLeave = () => { setPopup(null); setPaused(false); };
 
+  const col1 = BUSINESSES.slice(0, 8);
+  const col2 = BUSINESSES.slice(8, 15);
+  const col3 = BUSINESSES.slice(15, 22);
+
   const popupWidth = 320;
   const popupLeft = popup
     ? Math.max(12, Math.min(
@@ -746,77 +811,40 @@ const PerfectFor = () => {
     : 0;
   const popupAbove = popup ? popup.rect.top > 260 : true;
 
-  const dupeItems = [...BUSINESSES, ...BUSINESSES];
-
   return (
     <section className="py-16 relative overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #030712 0%, #050c1a 50%, #030712 100%)', borderTop: '1px solid rgba(37,99,235,0.12)', borderBottom: '1px solid rgba(37,99,235,0.12)' }}>
+      style={{ background: 'linear-gradient(180deg, #030712 0%, #050c1a 60%, #030712 100%)', borderTop: '1px solid rgba(37,99,235,0.12)', borderBottom: '1px solid rgba(37,99,235,0.12)' }}>
 
       {/* Heading */}
       <div className="text-center mb-10">
         <p className="neon-badge mx-auto w-fit mb-3">Who We Help</p>
         <h2 className="font-display text-5xl md:text-6xl text-white mb-2">PERFECT FOR</h2>
-        <p className="text-gray-400 text-base">Hover any industry to see exactly how a website grows that business</p>
+        <p className="text-gray-400 text-base">Hover any industry to see how a website grows that business</p>
       </div>
 
-      {/* Marquee wrapper with left/right fade masks */}
-      <div className="relative overflow-hidden">
-        {/* Left fade */}
-        <div className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(90deg, #050c1a 0%, transparent 100%)' }} />
-        {/* Right fade */}
-        <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(270deg, #050c1a 0%, transparent 100%)' }} />
+      {/* 3-column vertical scroll */}
+      <div className="relative max-w-3xl mx-auto px-4 sm:px-6" style={{ height: 440 }}>
+        {/* Top + bottom fade masks */}
+        <div className="absolute top-0 left-0 right-0 h-20 z-10 pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, #050c1a 0%, transparent 100%)' }} />
+        <div className="absolute bottom-0 left-0 right-0 h-20 z-10 pointer-events-none"
+          style={{ background: 'linear-gradient(to top, #050c1a 0%, transparent 100%)' }} />
 
-        <div
-          style={{
-            display: 'inline-flex',
-            gap: '12px',
-            padding: '8px 0',
-            animation: 'marquee 42s linear infinite',
-            animationPlayState: paused ? 'paused' : 'running',
-          }}
-        >
-          {dupeItems.map((biz, i) => {
-            const Icon = biz.Icon;
-            const isActive = popup?.biz.id === biz.id % BUSINESSES.length;
-            return (
-              <button
-                key={i}
-                onMouseEnter={(e) => handleEnter(biz, e)}
-                onMouseLeave={handleLeave}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexShrink: 0,
-                  padding: '10px 20px',
-                  borderRadius: '999px',
-                  border: `1px solid ${isActive ? 'rgba(96,165,250,0.7)' : 'rgba(37,99,235,0.35)'}`,
-                  background: isActive ? 'rgba(37,99,235,0.2)' : 'rgba(10,15,30,0.8)',
-                  color: isActive ? '#93c5fd' : '#cbd5e1',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: isActive ? '0 0 20px rgba(37,99,235,0.3)' : 'none',
-                  backdropFilter: 'blur(8px)',
-                }}
-              >
-                <Icon size={14} style={{ opacity: 0.9, flexShrink: 0 }} />
-                {biz.name}
-              </button>
-            );
-          })}
+        <div className="grid grid-cols-3 gap-4 h-full">
+          <BizColumn items={col1} direction="up"   duration={20} paused={paused} onEnter={handleEnter} onLeave={handleLeave} />
+          <BizColumn items={col2} direction="down" duration={26} paused={paused} onEnter={handleEnter} onLeave={handleLeave} />
+          <BizColumn items={col3} direction="up"   duration={17} paused={paused} onEnter={handleEnter} onLeave={handleLeave} />
         </div>
       </div>
 
-      {/* Popup — fixed, escapes overflow:hidden */}
+      {/* Popup — position:fixed escapes overflow:hidden */}
       <AnimatePresence>
         {popup && (
           <motion.div
             key={popup.biz.id}
-            initial={{ opacity: 0, y: popupAbove ? 10 : -10, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: popupAbove ? 10 : -10, scale: 0.92 }}
+            initial={{ opacity: 0, scale: 0.92, y: popupAbove ? 10 : -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             style={{
               position: 'fixed',
@@ -828,80 +856,54 @@ const PerfectFor = () => {
               pointerEvents: 'none',
             }}
           >
-            {/* Main card */}
             <div style={{
-              background: 'rgba(8,12,28,0.97)',
-              border: '1px solid rgba(96,165,250,0.35)',
-              borderRadius: '16px',
-              padding: '20px',
-              boxShadow: '0 0 0 1px rgba(37,99,235,0.1), 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(37,99,235,0.15)',
-              backdropFilter: 'blur(24px)',
+              background: 'rgba(6,10,22,0.98)',
+              border: `1px solid ${popup.biz.color}45`,
+              borderRadius: 16, padding: 20,
+              boxShadow: `0 0 0 1px ${popup.biz.color}12, 0 24px 64px rgba(0,0,0,0.8), 0 0 50px ${popup.biz.color}18`,
+              backdropFilter: 'blur(28px)',
             }}>
-              {/* Header row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
                 <div style={{
-                  width: 44, height: 44, borderRadius: '12px',
-                  background: 'linear-gradient(135deg, rgba(37,99,235,0.3), rgba(124,58,237,0.2))',
-                  border: '1px solid rgba(96,165,250,0.25)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#93c5fd', flexShrink: 0,
+                  width: 46, height: 46, borderRadius: 13, flexShrink: 0,
+                  background: `${popup.biz.color}1a`, border: `1px solid ${popup.biz.color}40`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', color: popup.biz.color,
                 }}>
-                  <popup.biz.Icon size={20} />
+                  <popup.biz.Icon size={21} />
                 </div>
                 <div>
-                  <p style={{ color: '#f1f5f9', fontWeight: 700, fontSize: '16px', lineHeight: 1.2, marginBottom: 3 }}>
+                  <p style={{ color: '#f1f5f9', fontWeight: 800, fontSize: 17, lineHeight: 1.2, margin: '0 0 4px' }}>
                     {popup.biz.name}
                   </p>
-                  <p style={{ color: '#60a5fa', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    Industry Insight
+                  <p style={{ color: popup.biz.color, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>
+                    Why you need a website
                   </p>
                 </div>
               </div>
-
-              {/* Stat bar */}
               <div style={{
-                background: 'linear-gradient(135deg, rgba(37,99,235,0.2), rgba(124,58,237,0.15))',
-                border: '1px solid rgba(96,165,250,0.25)',
-                borderRadius: '10px',
-                padding: '10px 14px',
-                marginBottom: '14px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
+                background: `${popup.biz.color}18`, border: `1px solid ${popup.biz.color}35`,
+                borderRadius: 10, padding: '9px 14px', marginBottom: 13,
+                display: 'flex', alignItems: 'center', gap: 8,
               }}>
-                <TrendingUp size={14} style={{ color: '#4ade80', flexShrink: 0 }} />
-                <span style={{ color: '#e2e8f0', fontWeight: 700, fontSize: '13px' }}>
-                  {popup.biz.stat}
-                </span>
+                <TrendingUp size={13} style={{ color: popup.biz.color, flexShrink: 0 }} />
+                <span style={{ color: '#e2e8f0', fontWeight: 700, fontSize: 13 }}>{popup.biz.stat}</span>
               </div>
-
-              {/* Detail */}
-              <p style={{ color: '#94a3b8', fontSize: '13px', lineHeight: '1.65', margin: 0 }}>
-                {popup.biz.detail}
-              </p>
+              <p style={{ color: '#94a3b8', fontSize: 13, lineHeight: 1.7, margin: 0 }}>{popup.biz.detail}</p>
             </div>
-
-            {/* Arrow caret */}
             {popupAbove ? (
               <div style={{
                 position: 'absolute', bottom: -7,
-                left: Math.max(20, Math.min(popupWidth - 28,
-                  popup.rect.left + popup.rect.width / 2 - popupLeft)),
-                width: 14, height: 14,
-                background: 'rgba(8,12,28,0.97)',
-                border: '1px solid rgba(96,165,250,0.35)',
-                borderTop: 'none', borderLeft: 'none',
+                left: Math.max(18, Math.min(popupWidth - 26, popup.rect.left + popup.rect.width / 2 - popupLeft)),
+                width: 14, height: 14, background: 'rgba(6,10,22,0.98)',
+                border: `1px solid ${popup.biz.color}45`, borderTop: 'none', borderLeft: 'none',
                 transform: 'rotate(45deg)',
               }} />
             ) : (
               <div style={{
                 position: 'absolute', top: -7,
-                left: Math.max(20, Math.min(popupWidth - 28,
-                  popup.rect.left + popup.rect.width / 2 - popupLeft)),
-                width: 14, height: 14,
-                background: 'rgba(8,12,28,0.97)',
-                border: '1px solid rgba(96,165,250,0.35)',
-                borderBottom: 'none', borderRight: 'none',
+                left: Math.max(18, Math.min(popupWidth - 26, popup.rect.left + popup.rect.width / 2 - popupLeft)),
+                width: 14, height: 14, background: 'rgba(6,10,22,0.98)',
+                border: `1px solid ${popup.biz.color}45`, borderBottom: 'none', borderRight: 'none',
                 transform: 'rotate(45deg)',
               }} />
             )}
