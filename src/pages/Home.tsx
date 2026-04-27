@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, useInView } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award } from 'lucide-react';
 import { Boxes } from '@/components/ui/background-boxes';
@@ -164,9 +164,56 @@ const TiltCard = ({ children, className = '' }: { children: React.ReactNode; cla
   );
 };
 
+/* ─── 3-D Pop-Out Word ────────────────────────────────────── */
+const PopOut3DWord = ({ word, delay = 0.8 }: { word: string; delay?: number }) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  // Fires once the hero is mounted — word is always above the fold
+  const inView = useInView(ref, { once: true, amount: 0.3 });
+
+  return (
+    /*
+      perspective on the parent is what makes translateZ visible.
+      Without it, z movement has no effect on screen.
+    */
+    <span
+      ref={ref}
+      style={{ display: 'inline-block', perspective: '550px', perspectiveOrigin: '50% 60%' }}
+    >
+      <motion.span
+        className="gradient-text"
+        style={{ display: 'inline-block', transformStyle: 'preserve-3d', willChange: 'transform, filter' }}
+        initial={{ scale: 0.75, rotateY: -20, rotateX: 12, z: -40, opacity: 0 }}
+        animate={inView ? {
+          // 5 keyframes: start tilted/far → twist one way → swing other → settle forward
+          scale:   [0.75, 1.05, 1.45, 1.65, 1.45],
+          rotateY: [-20,   14,   -9,    3,    0],
+          rotateX: [ 12,   -8,    5,   -1,    0],
+          z:       [-40,   10,   55,   88,   95],
+          opacity: [  0,    1,    1,    1,    1],
+          filter: [
+            'drop-shadow(0 0px  0px rgba(37,99,235,0))',
+            'drop-shadow(0 6px 18px rgba(37,99,235,0.45))',
+            'drop-shadow(0 12px 36px rgba(99,102,241,0.65))',
+            'drop-shadow(0 20px 60px rgba(99,102,241,0.85))',
+            'drop-shadow(0 14px 45px rgba(99,102,241,0.55))',
+          ],
+        } : {}}
+        transition={{
+          duration: 3.4,              // slow — as requested
+          times:   [0, 0.22, 0.52, 0.78, 1],
+          ease: 'easeOut',
+          delay,
+        }}
+      >
+        {word}
+      </motion.span>
+    </span>
+  );
+};
+
 /* ─── Hero ────────────────────────────────────────────────── */
 const Hero = () => (
-  <section className="relative min-h-screen flex items-center pt-28 pb-16 overflow-hidden bg-hero-radial">
+  <section className="relative min-h-screen flex items-center pt-28 pb-16 bg-hero-radial" style={{ overflowX: 'hidden', overflowY: 'visible' }}>
     <ParticleCanvas />
 
     {/* Glowing orbs */}
@@ -189,13 +236,9 @@ const Hero = () => (
           <h1 className="font-display text-[5.5rem] md:text-[7.5rem] leading-none mb-2 select-none">
             <span className="glitch gradient-text" data-text="WEBSITES">WEBSITES</span>
           </h1>
-          <h1 className="font-display text-[4rem] md:text-[5.5rem] leading-none text-white mb-8 select-none">
+          <h1 className="font-display text-[4rem] md:text-[5.5rem] leading-none text-white mb-8 select-none overflow-visible">
             THAT GENERATE{' '}
-            <MarkerHighlight
-              highlight="LEADS"
-              markerColor="rgba(37, 99, 235, 0.9)"
-              delay={0.55}
-            />
+            <PopOut3DWord word="LEADS" delay={0.85} />
           </h1>
 
           <p className="text-gray-400 text-lg md:text-xl leading-relaxed mb-8 max-w-[520px]">
