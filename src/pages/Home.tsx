@@ -530,8 +530,19 @@ const CTASection = () => (
 
 /* ─── SEO Text ────────────────────────────────────────────── */
 const SEOContent = () => (
-  <section className="py-20 bg-[#030712]">
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-gray-500">
+  <section className="relative overflow-hidden bg-[#030712] py-20">
+    {/* Interactive boxes background */}
+    <div className="absolute inset-0 w-full h-full overflow-hidden">
+      <Boxes />
+    </div>
+
+    {/* Radial mask fades boxes into site background */}
+    <div
+      className="absolute inset-0 z-10 pointer-events-none"
+      style={{ background: 'radial-gradient(ellipse at center, transparent 10%, #030712 70%)' }}
+    />
+
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-gray-500">
       <h2 className="text-2xl font-bold text-gray-300 mb-4">Website Design & Lead Generation for Local Businesses</h2>
       <p className="mb-3 text-sm leading-relaxed">VCV Web Solutions helps local businesses generate more leads, calls, and customers through high-converting websites, SEO optimization, and paid advertising systems. Whether you're a contractor, restaurant, or service-based business, our websites are built to rank on Google and turn visitors into paying customers.</p>
       <p className="text-sm leading-relaxed">Our team of experts is dedicated to your success. We take the time to understand your business goals and create a custom strategy that works for you. Let us help you take your business to the next level with a website that works as hard as you do.</p>
