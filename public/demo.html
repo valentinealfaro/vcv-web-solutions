@@ -817,7 +817,7 @@ body {
     <button class="s7-btn-outline">📞 (580) 919-1386</button>
   </div>
   <div class="s7-contact">
-    <strong>VCV Web Solutions</strong> &nbsp;·&nbsp; vcvservices.com &nbsp;·&nbsp; info@vcvservices.com
+    <strong>VCV Web Solutions</strong> &nbsp;·&nbsp; vcvwebsolutions.com &nbsp;·&nbsp; info@vcvwebsolutions.com
   </div>
 </div>
  
@@ -826,7 +826,7 @@ let current = 0;
 const scenes = document.querySelectorAll('.scene');
 const total = scenes.length;
 let autoTimer;
-const durations = [4500, 5000, 5500, 5000, 5000, 5000, 99999];
+const durations = [4500, 5000, 5500, 5000, 5000, 5000, 5000];
  
 function showScene(n) {
   scenes[current].classList.remove('active');
@@ -848,9 +848,7 @@ function showScene(n) {
   }
  
   clearTimeout(autoTimer);
-  if (current < total - 1) {
-    autoTimer = setTimeout(() => showScene(current + 1), durations[current]);
-  }
+  autoTimer = setTimeout(() => showScene((current + 1) % total), durations[current]);
 }
  
 function nextScene() { showScene(current + 1); }
