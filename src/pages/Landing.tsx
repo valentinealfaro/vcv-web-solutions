@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { MarkerHighlight } from '@/components/ui/marker-highlight';
 import { motion } from 'motion/react';
 import { useForm } from 'react-hook-form';
 import { db } from '../firebase';
@@ -62,7 +63,14 @@ export default function Landing() {
             </h1>
 
             <p className="text-gray-400 text-lg leading-relaxed mb-10 max-w-lg">
-              Stop guessing what your website could look like. We'll build a real custom preview for your business at <span className="text-white font-bold">zero cost</span> — so you see the results before you invest a single dollar.
+              Stop guessing what your website could look like. We'll build a real custom preview for your business at{' '}
+              <MarkerHighlight
+                highlight="zero cost"
+                markerColor="rgba(37, 99, 235, 0.9)"
+                delay={0.6}
+                className="text-white font-bold"
+              />{' '}
+              — so you see the results before you invest a single dollar.
             </p>
 
             <div className="space-y-4 mb-10">
