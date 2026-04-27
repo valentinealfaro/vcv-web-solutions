@@ -85,7 +85,7 @@ export const WhatHappensNextSection = () => {
   const [fading,     setFading]     = useState(false);
   const [sparkOn,    setSparkOn]    = useState(false);
 
-  const layout    = LAYOUTS[cycle % LAYOUTS.length];
+  const layout     = LAYOUTS[cycle % LAYOUTS.length];
   const nextLayout = LAYOUTS[(cycle + 1) % LAYOUTS.length];
 
   useEffect(() => { if (inView) setStarted(true); }, [inView]);
@@ -126,7 +126,6 @@ export const WhatHappensNextSection = () => {
   // ─── render ─────────────────────────────────────────────────
   const gradId = `sg-${cycle}`;
   // Gradient always follows the path direction (left→right, based on start x)
-  const gradFwdX = layout.positions[0].svgX < layout.positions[4].svgX;
 
   return (
     <section ref={sectionRef} className="py-16 relative overflow-hidden bg-[#040a16]">
@@ -182,9 +181,14 @@ export const WhatHappensNextSection = () => {
             style={{ overflow: 'visible' }}
           >
             <defs>
-              <linearGradient id={gradId}
-                x1={gradFwdX ? '0%' : '100%'} y1={gradFwdX ? '0%' : '100%'}
-                x2={gradFwdX ? '100%' : '0%'} y2={gradFwdX ? '100%' : '0%'}>
+              {/*
+                gradientUnits="userSpaceOnUse" with absolute coords avoids the
+                degenerate-gradient bug on the straight horizontal path, where
+                the default objectBoundingBox unit makes y1%==y2% (zero height)
+                and Chrome renders the stroke invisible.
+              */}
+              <linearGradient id={gradId} gradientUnits="userSpaceOnUse"
+                x1="70" y1="0" x2="630" y2="460">
                 <stop offset="0%"   stopColor="#3b82f6" />
                 <stop offset="35%"  stopColor="#818cf8" />
                 <stop offset="65%"  stopColor="#a855f7" />
