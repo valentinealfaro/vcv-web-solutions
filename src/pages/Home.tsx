@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useInView } from 'motion/react';
+import { motion, useInView, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award } from 'lucide-react';
 import { Boxes } from '@/components/ui/background-boxes';
@@ -164,6 +164,155 @@ const TiltCard = ({ children, className = '' }: { children: React.ReactNode; cla
   );
 };
 
+/* ─── Mockup Content Phases ──────────────────────────────── */
+const UglyContent = () => (
+  <div className="h-full overflow-hidden" style={{
+    background: '#fffde7',
+    fontFamily: 'Georgia, "Times New Roman", serif',
+    padding: '8px',
+  }}>
+    <div style={{ background: '#000080', padding: '2px 6px', display: 'flex', gap: '6px', marginBottom: '6px' }}>
+      {['HOME', 'ABOUT US', 'SERVICES', 'CONTACT'].map(n => (
+        <span key={n} style={{ color: '#ffff00', fontSize: '7px', fontWeight: 'bold', textDecoration: 'underline' }}>{n}</span>
+      ))}
+    </div>
+    <div style={{ textAlign: 'center', color: '#ff0000', fontSize: '11px', fontWeight: 'bold', marginBottom: '3px' }}>
+      ★ WELCOME TO MY WEBSITE!! ★
+    </div>
+    <hr style={{ border: '2px solid #ff0000', marginBottom: '4px' }} />
+    <div style={{ background: '#ffcc00', border: '2px dashed #ff0000', padding: '3px', textAlign: 'center', marginBottom: '5px' }}>
+      <span style={{ fontSize: '7px', color: '#990000', fontWeight: 'bold' }}>🚧 UNDER CONSTRUCTION 🚧</span>
+    </div>
+    <p style={{ fontSize: '7px', color: '#0000cc', lineHeight: 1.4, marginBottom: '6px' }}>
+      WE ARE THE #1 BEST COMPANY!! CALL US NOW FOR ALL YOUR NEEDS. BEST PRICES GUARANTEED!!!
+    </p>
+    <div style={{ textAlign: 'center', marginBottom: '5px' }}>
+      <button style={{
+        background: '#00ff00', color: '#ff00ff',
+        border: '3px solid #ff0000', padding: '3px 10px',
+        fontSize: '8px', fontWeight: 'bold',
+        fontFamily: '"Comic Sans MS", cursive', cursor: 'pointer',
+      }}>CLICK HERE NOW!!! →</button>
+    </div>
+    <p style={{ textAlign: 'center', fontSize: '6px', color: '#999' }}>
+      Best viewed in Internet Explorer · © 2003 All Rites Reservd
+    </p>
+  </div>
+);
+
+const LoadingContent = () => (
+  <div className="h-full flex flex-col items-center justify-center bg-[#080e1c] gap-3">
+    <div className="relative w-10 h-10">
+      <div className="absolute inset-0 rounded-full border-2 border-blue-900/50" />
+      <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-blue-500 border-r-purple-500 animate-spin" />
+      <div className="absolute inset-[6px] rounded-full border border-transparent border-t-cyan-400 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.5s' }} />
+    </div>
+    <p className="text-blue-400 text-[9px] font-bold tracking-[0.18em] uppercase">Building your site...</p>
+    <div className="flex gap-1.5">
+      {[0, 1, 2].map(i => (
+        <div key={i} className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce"
+          style={{ animationDelay: `${i * 0.15}s` }} />
+      ))}
+    </div>
+  </div>
+);
+
+const BeautifulContent = () => (
+  <div className="h-full bg-[#080e1c] p-4 flex flex-col gap-2.5">
+    <div className="h-6 bg-gradient-to-r from-blue-600/50 to-purple-600/50 rounded-lg w-3/4" />
+    <div className="h-2 bg-white/5 rounded w-full" />
+    <div className="h-2 bg-white/5 rounded w-5/6" />
+    <div className="h-2 bg-white/5 rounded w-4/6" />
+    <div className="mt-1 h-9 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg w-1/2 animate-pulse-glow" />
+    <div className="mt-auto grid grid-cols-3 gap-1.5">
+      {[...Array(3)].map((_, i) => (
+        <div key={i} className="h-14 bg-white/[0.03] rounded-xl border border-white/5 flex items-end p-1.5">
+          <div className="h-1.5 bg-blue-500/40 rounded w-full" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+type MockupPhase = 'ugly' | 'loading' | 'beautiful';
+type FlipState  = 'idle' | 'flipOut' | 'flipIn';
+
+const AnimatedMockup = () => {
+  const [phase, setPhase]           = useState<MockupPhase>('ugly');
+  const [flip, setFlip]             = useState<FlipState>('idle');
+  const [showBadges, setShowBadges] = useState(false);
+  const [cycle, setCycle]           = useState(0);
+
+  useEffect(() => {
+    const ids: ReturnType<typeof setTimeout>[] = [];
+    const t = (fn: () => void, ms: number) => { ids.push(setTimeout(fn, ms)); };
+
+    setPhase('ugly'); setFlip('idle'); setShowBadges(false);
+
+    t(() => setFlip('flipOut'),                         2200);  // squish out
+    t(() => { setPhase('loading'); setFlip('flipIn'); }, 2520); // swap + squish in
+    t(() => setFlip('idle'),                            2820);  // settle
+    t(() => setPhase('beautiful'),                      3750);  // loading → beautiful
+    t(() => setShowBadges(true),                        3950);  // badges pop in
+    t(() => setCycle(c => c + 1),                       8800);  // loop
+
+    return () => ids.forEach(clearTimeout);
+  }, [cycle]);
+
+  const flipVariants = {
+    idle:    { scaleX: 1, rotateY: 0 },
+    flipOut: { scaleX: 0, rotateY: 90,  transition: { duration: 0.28, ease: 'easeIn'  as const } },
+    flipIn:  { scaleX: 1, rotateY: 0,   transition: { duration: 0.28, ease: 'easeOut' as const } },
+  };
+
+  return (
+    <div className="relative" style={{ perspective: '1000px' }}>
+      <motion.div variants={flipVariants} animate={flip}
+        className="browser-mockup flex flex-col overflow-hidden"
+        style={{ aspectRatio: '4/3' }}>
+        {/* Chrome bar */}
+        <div className="browser-top flex-shrink-0">
+          <span /><span /><span />
+          <div className="ml-3 flex-1 h-5 bg-white/5 rounded-full text-[10px] text-gray-500 flex items-center px-3">
+            {phase === 'ugly' ? 'oldsite.net' : 'yoursite.com'}
+          </div>
+          {phase === 'beautiful' && (
+            <div className="mr-2 flex items-center gap-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-[9px] text-green-400 font-bold">LIVE</span>
+            </div>
+          )}
+        </div>
+        {/* Content area */}
+        <div className="flex-1 relative" style={{ minHeight: 0 }}>
+          {phase === 'ugly'      && <UglyContent />}
+          {phase === 'loading'   && <LoadingContent />}
+          {phase === 'beautiful' && <BeautifulContent />}
+        </div>
+      </motion.div>
+
+      {/* Floating badges — appear only after beautiful loads */}
+      <AnimatePresence>
+        {showBadges && (
+          <>
+            <motion.div key="badge1"
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
+              className="absolute -right-4 top-12 glass-card px-4 py-2.5 text-sm font-bold text-green-400 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" /> +312% More Leads
+            </motion.div>
+            <motion.div key="badge2"
+              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              transition={{ delay: 0.15 }}
+              className="absolute -left-4 bottom-16 glass-card px-4 py-2.5 text-sm font-bold text-blue-400 flex items-center gap-2">
+              <Zap className="w-4 h-4" /> Launched in 5 Days
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 /* ─── 3-D Pop-Out Word ────────────────────────────────────── */
 const PopOut3DWord = ({ word, delay = 0.8 }: { word: string; delay?: number }) => {
   const ref = useRef<HTMLSpanElement>(null);
@@ -277,43 +426,8 @@ const Hero = () => (
         </motion.div>
 
         <motion.div initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.15 }} className="relative mockup-box">
-          <div className="browser-mockup aspect-[4/3] flex flex-col">
-            <div className="browser-top">
-              <span /><span /><span />
-              <div className="ml-3 flex-1 h-5 bg-white/5 rounded-full text-[10px] text-gray-500 flex items-center px-3">
-                yoursite.com
-              </div>
-            </div>
-            <div className="flex-1 bg-[#080e1c] p-5 flex flex-col gap-3">
-              <div className="h-7 bg-gradient-to-r from-blue-600/40 to-purple-600/40 rounded-lg w-3/4" />
-              <div className="h-3 bg-white/5 rounded w-full" />
-              <div className="h-3 bg-white/5 rounded w-5/6" />
-              <div className="h-3 bg-white/5 rounded w-4/6" />
-              <div className="mt-2 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg w-1/2 animate-pulse-glow" />
-              <div className="mt-auto grid grid-cols-3 gap-2">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-20 bg-white/[0.03] rounded-xl border border-white/5 flex items-end p-2">
-                    <div className="h-2 bg-blue-500/30 rounded w-full" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Floating badges */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 }}
-            className="absolute -right-4 top-12 glass-card px-4 py-2.5 text-sm font-bold text-green-400 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" /> +312% More Leads
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.75 }}
-            className="absolute -left-4 bottom-16 glass-card px-4 py-2.5 text-sm font-bold text-blue-400 flex items-center gap-2">
-            <Zap className="w-4 h-4" /> Launched in 5 Days
-          </motion.div>
+          transition={{ duration: 0.8, delay: 0.15 }}>
+          <AnimatedMockup />
         </motion.div>
       </div>
     </div>
