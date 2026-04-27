@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award } from 'lucide-react';
+import { Boxes } from '@/components/ui/background-boxes';
 import { DemoSection } from '../components/DemoSection';
 import { LeadMagnetSection } from '../components/LeadMagnetSection';
 import { TestimonialsSection } from '../components/TestimonialsSection';
@@ -488,12 +489,24 @@ const ProcessSection = () => {
 
 /* ─── CTA Section ─────────────────────────────────────────── */
 const CTASection = () => (
-  <section className="py-28 relative overflow-hidden">
-    <div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 via-purple-900/30 to-[#030712]" />
-    <div className="absolute inset-0 bg-grid opacity-30" />
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-600/15 blur-[80px] rounded-full" />
+  <section className="relative overflow-hidden bg-[#030712] flex flex-col items-center justify-center min-h-[600px] py-28">
+    {/* Interactive boxes background */}
+    <div className="absolute inset-0 w-full h-full overflow-hidden">
+      <Boxes />
+    </div>
 
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+    {/* Radial mask: transparent center fades to site bg color at edges */}
+    <div
+      className="absolute inset-0 z-10 pointer-events-none"
+      style={{
+        background: 'radial-gradient(ellipse at center, transparent 20%, #030712 75%)',
+      }}
+    />
+
+    {/* Subtle blue/purple tint layer to keep the color scheme */}
+    <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-blue-950/20 via-transparent to-purple-950/20" />
+
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-20">
       <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
         <p className="neon-badge mb-6 mx-auto w-fit">Limited Time — Act Now</p>
         <h2 className="font-display text-6xl md:text-8xl text-white mb-6 leading-none">
