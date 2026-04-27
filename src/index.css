@@ -399,6 +399,26 @@
 }
 
 /* ============================================================
+   NOISE / GRAIN TEXTURE
+   Applied as ::before so it sits below all card content.
+============================================================ */
+.noise-texture {
+  position: relative;
+  isolation: isolate;
+}
+.noise-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  background-size: 140px 140px;
+}
+
+/* ============================================================
    SCROLLBAR
 ============================================================ */
 ::-webkit-scrollbar { width: 5px; }

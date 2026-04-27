@@ -451,31 +451,108 @@ const MarqueeBand = () => (
   </div>
 );
 
-/* ─── Stats Section ───────────────────────────────────────── */
+/* ─── Stats Section — animated stat card ──────────────────── */
+interface StatCardProps {
+  icon: React.ReactNode;
+  val: number;
+  suf?: string;
+  pre?: string;
+  label: string;
+  inDelay: number;
+  rotDelay: number;
+}
+
+const StatCard = ({ icon, val, suf = '', pre = '', label, inDelay, rotDelay }: StatCardProps) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [dims, setDims] = useState({ w: 220, h: 148 });
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const measure = () => setDims({ w: el.offsetWidth, h: el.offsetHeight });
+    measure();
+    const obs = new ResizeObserver(measure);
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const { w, h } = dims;
+  const r = 20;
+  // Rounded-rect border path the dot travels along
+  const borderPath = `M ${r} 0 L ${w - r} 0 Q ${w} 0 ${w} ${r} L ${w} ${h - r} Q ${w} ${h} ${w - r} ${h} L ${r} ${h} Q 0 ${h} 0 ${h - r} L 0 ${r} Q 0 0 ${r} 0 Z`;
+  const dotDur = 2.8 + rotDelay * 0.45;
+  const uid = `sg-${inDelay}-${rotDelay}`;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+      transition={{ delay: inDelay }} viewport={{ once: true }}
+      style={{ perspective: '700px' }}>
+
+      <motion.div
+        ref={cardRef}
+        className="glass-card noise-texture p-7 text-center relative"
+        animate={{ rotateY: [-4, 4, -4], rotateX: [1.5, -1.5, 1.5] }}
+        transition={{
+          duration: 5 + rotDelay,
+          ease: 'easeInOut',
+          repeat: Infinity,
+          repeatType: 'mirror',
+          delay: rotDelay * 0.9,
+        }}>
+
+        {/* ── Traveling glow dot ──────────────────────────── */}
+        <svg
+          className="absolute inset-0 pointer-events-none"
+          width="100%" height="100%"
+          viewBox={`0 0 ${w} ${h}`}
+          style={{ overflow: 'visible', zIndex: 5 }}>
+          <defs>
+            <filter id={`glow-${uid}`} x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="4.5" result="blur" />
+              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
+          </defs>
+
+          {/* Outer halo */}
+          <circle r="12" fill="rgba(37,99,235,0.18)" filter={`url(#glow-${uid})`}>
+            <animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath} />
+          </circle>
+          {/* Mid glow */}
+          <circle r="5.5" fill="rgba(139,92,246,0.75)" filter={`url(#glow-${uid})`}>
+            <animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath} />
+          </circle>
+          {/* Bright core */}
+          <circle r="2.5" fill="white" filter={`url(#glow-${uid})`}>
+            <animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath} />
+          </circle>
+        </svg>
+
+        {/* ── Content ─────────────────────────────────────── */}
+        <div className="relative z-10 text-blue-400 mb-3 flex justify-center">{icon}</div>
+        <div className="relative z-10 font-display text-5xl gradient-text mb-1">
+          <Counter target={val} prefix={pre} suffix={suf} />
+        </div>
+        <p className="relative z-10 text-gray-500 text-xs uppercase tracking-widest font-semibold">{label}</p>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 const StatsSection = () => (
   <section className="py-20 relative overflow-hidden bg-[#030712]">
     <div className="absolute inset-0 bg-dot opacity-40" />
+    {/* Section-level grain overlay */}
+    <div className="absolute inset-0 pointer-events-none noise-texture opacity-40" />
+
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { icon: <Award className="w-6 h-6" />, val: 50, suf: '+', label: 'Websites Launched' },
-          { icon: <Users className="w-6 h-6" />, val: 98, suf: '%', label: 'Client Satisfaction' },
-          { icon: <Clock className="w-6 h-6" />, val: 5, suf: ' Days Avg', label: 'Launch Time' },
-          { icon: <ShieldCheck className="w-6 h-6" />, val: 0, pre: '$', suf: ' Upfront', label: 'Risk-Free Start' },
-        ].map((s, i) => (
-          <motion.div key={i}
-            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }} viewport={{ once: true }}
-            className="glass-card p-7 text-center group hover:border-blue-500/30 transition-all duration-300">
-            <div className="text-blue-400 mb-3 flex justify-center group-hover:scale-110 transition-transform">
-              {s.icon}
-            </div>
-            <div className="font-display text-5xl gradient-text mb-1">
-              <Counter target={s.val} prefix={s.pre} suffix={s.suf} />
-            </div>
-            <p className="text-gray-500 text-xs uppercase tracking-widest font-semibold">{s.label}</p>
-          </motion.div>
-        ))}
+          { icon: <Award     className="w-6 h-6" />, val: 50, suf: '+',        label: 'Websites Launched',  inDelay: 0,   rotDelay: 0 },
+          { icon: <Users     className="w-6 h-6" />, val: 98, suf: '%',        label: 'Client Satisfaction', inDelay: 0.1, rotDelay: 1.2 },
+          { icon: <Clock     className="w-6 h-6" />, val: 5,  suf: ' Days Avg',label: 'Launch Time',         inDelay: 0.2, rotDelay: 2.4 },
+          { icon: <ShieldCheck className="w-6 h-6" />, val: 0, pre: '$', suf: ' Upfront', label: 'Risk-Free Start', inDelay: 0.3, rotDelay: 3.6 },
+        ].map((s, i) => <StatCard key={i} {...s} />)}
       </div>
     </div>
   </section>
