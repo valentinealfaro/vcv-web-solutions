@@ -349,14 +349,7 @@ const ServicesOverview = () => {
         <motion.div className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="neon-badge mb-4 mx-auto w-fit">What We Do</p>
-          <h2 className="font-display text-6xl md:text-7xl text-white mb-4">
-            CORE{' '}
-            <MarkerHighlight
-              highlight="SERVICES"
-              markerColor="rgba(124, 58, 237, 0.85)"
-              delay={0.2}
-            />
-          </h2>
+          <h2 className="font-display text-6xl md:text-7xl text-white mb-4">CORE SERVICES</h2>
           <p className="text-gray-400 max-w-xl mx-auto text-lg">Everything you need to dominate your market online — built and managed for you.</p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -406,7 +399,13 @@ const WhyChooseUs = () => {
               <span className="gradient-text">CHOOSE US</span>
             </h2>
             <p className="text-gray-400 text-lg mb-10 leading-relaxed">
-              We don't just build websites — we build growth engines tuned to your market. Our focus is always on one metric: your return on investment.
+              We don't just build websites — we build{' '}
+              <MarkerHighlight
+                highlight="growth engines"
+                markerColor="rgba(124, 58, 237, 0.82)"
+                delay={0.15}
+              />{' '}
+              tuned to your market. Our focus is always on one metric: your return on investment.
             </p>
             <div className="space-y-5">
               {features.map((f, i) => (
@@ -473,14 +472,7 @@ const ProcessSection = () => {
         <motion.div className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="neon-badge mb-4 mx-auto w-fit">How It Works</p>
-          <h2 className="font-display text-6xl md:text-7xl text-white mb-4">
-            THE{' '}
-            <MarkerHighlight
-              highlight="PROCESS"
-              markerColor="rgba(6, 182, 212, 0.8)"
-              delay={0.2}
-            />
-          </h2>
+          <h2 className="font-display text-6xl md:text-7xl text-white mb-4">THE PROCESS</h2>
           <p className="text-gray-400 text-lg">Simple, fast, and built for results.</p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">

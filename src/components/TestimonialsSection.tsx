@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { Star, Quote } from 'lucide-react';
+import { MarkerHighlight } from '@/components/ui/marker-highlight';
 
 const testimonials = [
   {
@@ -47,7 +48,14 @@ export const TestimonialsSection = () => (
       <motion.div className="text-center mb-16"
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
         <p className="neon-badge mb-4 mx-auto w-fit">Social Proof</p>
-        <h2 className="font-display text-6xl md:text-7xl text-white mb-4">CLIENT WINS</h2>
+        <h2 className="font-display text-6xl md:text-7xl text-white mb-4">
+          CLIENT{' '}
+          <MarkerHighlight
+            highlight="WINS"
+            markerColor="rgba(6, 182, 212, 0.82)"
+            delay={0.2}
+          />
+        </h2>
         <p className="text-gray-400 text-lg max-w-xl mx-auto">Real results from real businesses — not agencies, not big corporations. Local businesses just like yours.</p>
       </motion.div>
 
