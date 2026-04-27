@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useInView, AnimatePresence } from 'motion/react';
+import { motion, useInView, AnimatePresence, LayoutGroup } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award } from 'lucide-react';
 import { Boxes } from '@/components/ui/background-boxes';
@@ -451,18 +451,132 @@ const MarqueeBand = () => (
   </div>
 );
 
-/* ─── Stats Section — animated stat card ──────────────────── */
-interface StatCardProps {
+/* ─── Static Electricity Canvas ───────────────────────────── */
+const StaticElectricity = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    const COLORS = ['#2563eb','#7c3aed','#06b6d4','#a855f7','#93c5fd','#c4b5fd','#e0e7ff'];
+
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+
+    // Zigzag arc: random midpoints between two endpoints
+    const drawArc = (
+      x1: number, y1: number, x2: number, y2: number,
+      segs: number, alpha: number, color: string, lw: number,
+    ) => {
+      const dx = x2 - x1, dy = y2 - y1;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      for (let i = 1; i < segs; i++) {
+        const t = i / segs;
+        const spread = 30 + Math.hypot(dx, dy) * 0.25;
+        ctx.lineTo(
+          x1 + dx * t + (Math.random() - 0.5) * spread,
+          y1 + dy * t + (Math.random() - 0.5) * spread,
+        );
+      }
+      ctx.lineTo(x2, y2);
+      ctx.globalAlpha  = alpha;
+      ctx.strokeStyle  = color;
+      ctx.lineWidth    = lw;
+      ctx.shadowBlur   = 18;
+      ctx.shadowColor  = color;
+      ctx.stroke();
+      ctx.shadowBlur   = 0;
+    };
+
+    const animate = () => {
+      // Soft trail — don't fully clear, leave ghost of previous bolts
+      ctx.globalAlpha = 0.22;
+      ctx.fillStyle   = '#030712';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = 1;
+
+      const W = canvas.width, H = canvas.height;
+
+      // 4-9 attempts per frame; each has a ~55% chance to actually fire
+      const attempts = 4 + Math.floor(Math.random() * 6);
+      for (let i = 0; i < attempts; i++) {
+        if (Math.random() > 0.55) continue;
+
+        const color   = COLORS[Math.floor(Math.random() * COLORS.length)];
+        const alpha   = 0.25 + Math.random() * 0.75;
+        const x1      = Math.random() * W;
+        const y1      = Math.random() * H;
+        const isBolt  = Math.random() < 0.25;        // longer bolt vs short arc
+        const reach   = isBolt ? 120 + Math.random() * 220 : 18 + Math.random() * 75;
+        const angle   = Math.random() * Math.PI * 2;
+        const x2      = x1 + Math.cos(angle) * reach;
+        const y2      = y1 + Math.sin(angle) * reach;
+
+        drawArc(x1, y1, x2, y2, isBolt ? 7 : 3, alpha, color, isBolt ? 1.4 : 0.6);
+
+        // Random branch off the midpoint of bolts
+        if (isBolt && Math.random() < 0.65) {
+          const mx  = (x1 + x2) / 2 + (Math.random() - 0.5) * 20;
+          const my  = (y1 + y2) / 2 + (Math.random() - 0.5) * 20;
+          const bx  = mx + (Math.random() - 0.5) * 100;
+          const by  = my + (Math.random() - 0.5) * 100;
+          drawArc(mx, my, bx, by, 4, alpha * 0.55, color, 0.55);
+
+          // Occasional second branch
+          if (Math.random() < 0.3) {
+            const bx2 = mx + (Math.random() - 0.5) * 70;
+            const by2 = my + (Math.random() - 0.5) * 70;
+            drawArc(mx, my, bx2, by2, 3, alpha * 0.35, color, 0.4);
+          }
+        }
+      }
+
+      animId = requestAnimationFrame(animate);
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+    animate();
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ mixBlendMode: 'screen', opacity: 0.9 }}
+    />
+  );
+};
+
+/* ─── Stats Section — shuffle + shape morph + electricity ─── */
+interface StatCardDef {
+  id: number;
   icon: React.ReactNode;
   val: number;
   suf?: string;
   pre?: string;
   label: string;
-  inDelay: number;
   rotDelay: number;
 }
 
-const StatCard = ({ icon, val, suf = '', pre = '', label, inDelay, rotDelay }: StatCardProps) => {
+const STAT_CARDS: StatCardDef[] = [
+  { id: 0, icon: <Award       className="w-6 h-6" />, val: 50, suf: '+',         label: 'Websites Launched',   rotDelay: 0   },
+  { id: 1, icon: <Users       className="w-6 h-6" />, val: 98, suf: '%',         label: 'Client Satisfaction', rotDelay: 1.2 },
+  { id: 2, icon: <Clock       className="w-6 h-6" />, val: 5,  suf: ' Days Avg', label: 'Launch Time',         rotDelay: 2.4 },
+  { id: 3, icon: <ShieldCheck className="w-6 h-6" />, val: 0,  pre: '$', suf: ' Upfront', label: 'Risk-Free Start', rotDelay: 3.6 },
+];
+
+interface StatCardProps extends StatCardDef { isSquare: boolean }
+
+const StatCard = ({ id, icon, val, suf = '', pre = '', label, rotDelay, isSquare }: StatCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 220, h: 148 });
 
@@ -478,85 +592,106 @@ const StatCard = ({ icon, val, suf = '', pre = '', label, inDelay, rotDelay }: S
 
   const { w, h } = dims;
   const r = 20;
-  // Rounded-rect border path the dot travels along
-  const borderPath = `M ${r} 0 L ${w - r} 0 Q ${w} 0 ${w} ${r} L ${w} ${h - r} Q ${w} ${h} ${w - r} ${h} L ${r} ${h} Q 0 ${h} 0 ${h - r} L 0 ${r} Q 0 0 ${r} 0 Z`;
-  const dotDur = 2.8 + rotDelay * 0.45;
-  const uid = `sg-${inDelay}-${rotDelay}`;
+  const borderPath = `M ${r} 0 L ${w-r} 0 Q ${w} 0 ${w} ${r} L ${w} ${h-r} Q ${w} ${h} ${w-r} ${h} L ${r} ${h} Q 0 ${h} 0 ${h-r} L 0 ${r} Q 0 0 ${r} 0 Z`;
+  const dotDur = 2.6 + rotDelay * 0.42;
+  const uid = `sc-${id}`;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: inDelay }} viewport={{ once: true }}
-      style={{ perspective: '700px' }}>
-
+    <div style={{ perspective: '700px' }}>
       <motion.div
         ref={cardRef}
-        className="glass-card noise-texture p-7 text-center relative"
-        animate={{ rotateY: [-4, 4, -4], rotateX: [1.5, -1.5, 1.5] }}
+        className="glass-card noise-texture text-center relative"
+        animate={{
+          rotateY:       [-5, 5, -5],
+          rotateX:       [2, -2, 2],
+          paddingTop:    isSquare ? '44px' : '28px',
+          paddingBottom: isSquare ? '44px' : '28px',
+          paddingLeft:   '28px',
+          paddingRight:  '28px',
+        }}
         transition={{
-          duration: 5 + rotDelay,
-          ease: 'easeInOut',
-          repeat: Infinity,
-          repeatType: 'mirror',
-          delay: rotDelay * 0.9,
+          rotateY:       { duration: 4.5 + rotDelay, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror', delay: rotDelay * 0.85 },
+          rotateX:       { duration: 4.5 + rotDelay, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror', delay: rotDelay * 0.85 },
+          paddingTop:    { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
+          paddingBottom: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
         }}>
 
-        {/* ── Traveling glow dot ──────────────────────────── */}
-        <svg
-          className="absolute inset-0 pointer-events-none"
-          width="100%" height="100%"
-          viewBox={`0 0 ${w} ${h}`}
-          style={{ overflow: 'visible', zIndex: 5 }}>
+        {/* Traveling glow dot */}
+        <svg className="absolute inset-0 pointer-events-none" width="100%" height="100%"
+          viewBox={`0 0 ${w} ${h}`} style={{ overflow: 'visible', zIndex: 5 }}>
           <defs>
-            <filter id={`glow-${uid}`} x="-60%" y="-60%" width="220%" height="220%">
-              <feGaussianBlur stdDeviation="4.5" result="blur" />
-              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            <filter id={`glow-${uid}`} x="-70%" y="-70%" width="240%" height="240%">
+              <feGaussianBlur stdDeviation="5" result="blur" />
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
           </defs>
-
-          {/* Outer halo */}
-          <circle r="12" fill="rgba(37,99,235,0.18)" filter={`url(#glow-${uid})`}>
-            <animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath} />
-          </circle>
-          {/* Mid glow */}
-          <circle r="5.5" fill="rgba(139,92,246,0.75)" filter={`url(#glow-${uid})`}>
-            <animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath} />
-          </circle>
-          {/* Bright core */}
-          <circle r="2.5" fill="white" filter={`url(#glow-${uid})`}>
-            <animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath} />
-          </circle>
+          <circle r="13" fill="rgba(37,99,235,0.16)"  filter={`url(#glow-${uid})`}><animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath}/></circle>
+          <circle r="5.5" fill="rgba(139,92,246,0.8)"  filter={`url(#glow-${uid})`}><animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath}/></circle>
+          <circle r="2.5" fill="white"                  filter={`url(#glow-${uid})`}><animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath}/></circle>
         </svg>
 
-        {/* ── Content ─────────────────────────────────────── */}
         <div className="relative z-10 text-blue-400 mb-3 flex justify-center">{icon}</div>
         <div className="relative z-10 font-display text-5xl gradient-text mb-1">
           <Counter target={val} prefix={pre} suffix={suf} />
         </div>
         <p className="relative z-10 text-gray-500 text-xs uppercase tracking-widest font-semibold">{label}</p>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
 
-const StatsSection = () => (
-  <section className="py-20 relative overflow-hidden bg-[#030712]">
-    <div className="absolute inset-0 bg-dot opacity-40" />
-    {/* Section-level grain overlay */}
-    <div className="absolute inset-0 pointer-events-none noise-texture opacity-40" />
+const StatsSection = () => {
+  const [order,  setOrder]  = useState([0, 1, 2, 3]);
+  const [shapes, setShapes] = useState<boolean[]>([false, false, false, false]);
 
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          { icon: <Award     className="w-6 h-6" />, val: 50, suf: '+',        label: 'Websites Launched',  inDelay: 0,   rotDelay: 0 },
-          { icon: <Users     className="w-6 h-6" />, val: 98, suf: '%',        label: 'Client Satisfaction', inDelay: 0.1, rotDelay: 1.2 },
-          { icon: <Clock     className="w-6 h-6" />, val: 5,  suf: ' Days Avg',label: 'Launch Time',         inDelay: 0.2, rotDelay: 2.4 },
-          { icon: <ShieldCheck className="w-6 h-6" />, val: 0, pre: '$', suf: ' Upfront', label: 'Risk-Free Start', inDelay: 0.3, rotDelay: 3.6 },
-        ].map((s, i) => <StatCard key={i} {...s} />)}
+  useEffect(() => {
+    // Swap two random cards every 2.5 s
+    const shuffleId = setInterval(() => {
+      setOrder(prev => {
+        const next = [...prev];
+        const i = Math.floor(Math.random() * next.length);
+        let j = Math.floor(Math.random() * next.length);
+        while (j === i) j = Math.floor(Math.random() * next.length);
+        [next[i], next[j]] = [next[j], next[i]];
+        return next;
+      });
+    }, 2500);
+
+    // Randomly toggle some cards to square every 3 s
+    const shapeId = setInterval(() => {
+      setShapes(STAT_CARDS.map(() => Math.random() < 0.45));
+    }, 3000);
+
+    return () => { clearInterval(shuffleId); clearInterval(shapeId); };
+  }, []);
+
+  return (
+    <section className="py-20 relative overflow-hidden bg-[#030712]">
+      {/* Static electricity fills the entire section behind cards */}
+      <StaticElectricity />
+      <div className="absolute inset-0 bg-dot opacity-25 pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <LayoutGroup id="stats-cards">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+            {order.map((cardIdx, pos) => {
+              const card = STAT_CARDS[cardIdx];
+              return (
+                <motion.div
+                  key={card.id}
+                  layout
+                  layoutId={`stat-${card.id}`}
+                  transition={{ layout: { duration: 0.75, ease: [0.16, 1, 0.3, 1] } }}>
+                  <StatCard {...card} isSquare={shapes[pos]} />
+                </motion.div>
+              );
+            })}
+          </div>
+        </LayoutGroup>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 /* ─── Perfect For ─────────────────────────────────────────── */
 const PerfectFor = () => (
