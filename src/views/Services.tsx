@@ -95,7 +95,11 @@ export default function Services() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/free-demo" className="flex items-center gap-2 text-sm font-bold transition-all group-hover:gap-3" style={{color:s.color}}>
+                <Link href="/free-demo"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all border"
+                  style={{color:'white', background:`${s.color}20`, borderColor:`${s.color}50`, boxShadow:`0 0 14px ${s.color}25`}}
+                  onMouseOver={e=>{(e.currentTarget as HTMLAnchorElement).style.background=`${s.color}35`;}}
+                  onMouseOut={e=>{(e.currentTarget as HTMLAnchorElement).style.background=`${s.color}20`;}}>
                   Get Demo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
                 </Link>
               </motion.div>
