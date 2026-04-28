@@ -7,21 +7,28 @@ import { ArrowRight } from 'lucide-react';
 
 /* ─── Checkerboard background ─────────────────────────────── */
 const CELL = 50;
-const CHECKER_COLORS = [
-  [59,  130, 246],  // blue
-  [129, 140, 248],  // indigo
-  [168, 85,  247],  // purple
-  [6,   182, 212],  // cyan
-  [16,  185, 129],  // green
-  [245, 158, 11],   // amber
-  [236, 72,  153],  // pink
+// More vibrant, varied palette
+const CHECKER_COLORS: [number,number,number][] = [
+  [59,  130, 246],   // blue
+  [99,  102, 241],   // indigo
+  [168, 85,  247],   // purple
+  [6,   182, 212],   // cyan
+  [16,  185, 129],   // emerald
+  [245, 158, 11],    // amber
+  [236, 72,  153],   // pink
+  [239, 68,  68],    // red
+  [20,  184, 166],   // teal
+  [234, 179, 8],     // yellow
 ];
 
-const CheckerBG = ({ cycle, ballPositions }: {
+const CheckerBG = ({ cycle, ballPositions, clearing }: {
   cycle: number;
   ballPositions: { svgX: number; svgY: number }[];
+  clearing: boolean;
 }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef   = useRef<HTMLCanvasElement>(null);
+  const clearingRef = useRef(clearing);
+  useEffect(() => { clearingRef.current = clearing; }, [clearing]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -32,70 +39,53 @@ const CheckerBG = ({ cycle, ballPositions }: {
     let animId: number;
     let spawnTick = 0;
 
-    interface LitCell { c: number; r: number; alpha: number; col: number[]; decay: number; rising: boolean }
+    interface LitCell { c: number; r: number; alpha: number; col: [number,number,number]; decay: number; rising: boolean }
     let lit: LitCell[] = [];
 
-    const resize = () => {
-      canvas.width  = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
+    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
     resize();
     window.addEventListener('resize', resize);
 
     const getBlocked = () => {
       const set = new Set<string>();
-      const W = canvas.width, H = canvas.height;
-
-      // Block the heading area (top ~260px, center 70% width)
-      const hL = Math.floor(W * 0.12 / CELL);
-      const hR = Math.ceil (W * 0.88 / CELL);
-      const hB = Math.ceil (260 / CELL);
-      for (let c = hL; c <= hR; c++)
-        for (let r = 0; r <= hB; r++)
-          set.add(`${c},${r}`);
-
-      // Block cells near each ball
-      // SVG viewBox 0 0 700 460 → container: ~90% width, 540px tall, offset by ~270px top
-      const svgW   = W * 0.88;
-      const svgL   = (W - svgW) / 2;
-      const svgTop = 270;
-
+      const W = canvas.width;
+      // Heading zone: top ~265px, center 12–88% width
+      const hL = Math.floor(W * 0.12 / CELL), hR = Math.ceil(W * 0.88 / CELL), hB = Math.ceil(265 / CELL);
+      for (let c = hL; c <= hR; c++) for (let r = 0; r <= hB; r++) set.add(`${c},${r}`);
+      // Ball zones: 3-cell radius
+      const svgW = W * 0.88, svgL = (W - svgW) / 2, svgTop = 270;
       ballPositions.forEach(({ svgX, svgY }) => {
-        const px = svgL + (svgX / 700) * svgW;
-        const py = svgTop + (svgY / 460) * 500;
-        const bc = Math.round(px / CELL);
-        const br = Math.round(py / CELL);
-        for (let dc = -3; dc <= 3; dc++)
-          for (let dr = -3; dr <= 3; dr++)
-            set.add(`${bc + dc},${br + dr}`);
+        const bc = Math.round((svgL + (svgX / 700) * svgW) / CELL);
+        const br = Math.round((svgTop + (svgY / 460) * 500) / CELL);
+        for (let dc = -3; dc <= 3; dc++) for (let dr = -3; dr <= 3; dr++) set.add(`${bc+dc},${br+dr}`);
       });
       return set;
     };
 
     const draw = (ts: number) => {
       const W = canvas.width, H = canvas.height;
-      const cols = Math.ceil(W / CELL);
-      const rows = Math.ceil(H / CELL);
+      const cols = Math.ceil(W / CELL), rows = Math.ceil(H / CELL);
       ctx.clearRect(0, 0, W, H);
 
-      // ── Base grid ──
-      ctx.strokeStyle = 'rgba(37,99,235,0.07)';
-      ctx.lineWidth = 0.6;
-      for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(c * CELL, 0); ctx.lineTo(c * CELL, H); ctx.stroke(); }
-      for (let r = 0; r <= rows; r++) { ctx.beginPath(); ctx.moveTo(0, r * CELL); ctx.lineTo(W, r * CELL); ctx.stroke(); }
+      // ── Grid lines ──
+      ctx.strokeStyle = 'rgba(99,102,241,0.09)';
+      ctx.lineWidth = 0.7;
+      for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(c*CELL, 0); ctx.lineTo(c*CELL, H); ctx.stroke(); }
+      for (let r = 0; r <= rows; r++) { ctx.beginPath(); ctx.moveTo(0, r*CELL); ctx.lineTo(W, r*CELL); ctx.stroke(); }
 
-      // ── Spawn new lit cells ──
-      const blocked = getBlocked();
-      if (ts - spawnTick > 110 && lit.length < 32) {
+      const isClearing = clearingRef.current;
+
+      // ── Spawn (only when not clearing) ──
+      if (!isClearing && ts - spawnTick > 75 && lit.length < 55) {
         spawnTick = ts;
-        for (let attempt = 0; attempt < 30; attempt++) {
-          const c = Math.floor(Math.random() * cols);
-          const r = Math.floor(Math.random() * rows);
+        const blocked = getBlocked();
+        for (let attempt = 0; attempt < 40; attempt++) {
+          const c = Math.floor(Math.random() * cols), r = Math.floor(Math.random() * rows);
           if (!blocked.has(`${c},${r}`) && !lit.find(l => l.c === c && l.r === r)) {
             lit.push({
               c, r, alpha: 0,
               col: CHECKER_COLORS[Math.floor(Math.random() * CHECKER_COLORS.length)],
-              decay: 0.003 + Math.random() * 0.005,
+              decay: 0.002 + Math.random() * 0.004,
               rising: true,
             });
             break;
@@ -103,31 +93,40 @@ const CheckerBG = ({ cycle, ballPositions }: {
         }
       }
 
-      // ── Update & draw lit cells ──
+      // ── Update & draw ──
       lit = lit.filter(l => l.alpha >= 0);
       lit.forEach(l => {
+        if (isClearing) {
+          // Fast drain when layout is switching
+          l.rising = false;
+          l.decay = 0.04;
+        }
         if (l.rising) {
-          l.alpha += 0.018;
-          if (l.alpha >= 0.32) { l.alpha = 0.32; l.rising = false; }
+          l.alpha += 0.022;
+          if (l.alpha >= 0.42) { l.alpha = 0.42; l.rising = false; }
         } else {
           l.alpha -= l.decay;
         }
         const x = l.c * CELL, y = l.r * CELL;
-        const [r, g, b] = l.col;
-        ctx.fillStyle   = `rgba(${r},${g},${b},${l.alpha})`;
+        const [rv, gv, bv] = l.col;
+        // Fill
+        ctx.fillStyle = `rgba(${rv},${gv},${bv},${l.alpha})`;
         ctx.fillRect(x + 1, y + 1, CELL - 2, CELL - 2);
-        ctx.strokeStyle = `rgba(${r},${g},${b},${Math.min(0.9, l.alpha * 3.5)})`;
-        ctx.lineWidth   = 1.2;
+        // Bright border
+        ctx.strokeStyle = `rgba(${rv},${gv},${bv},${Math.min(1, l.alpha * 2.8)})`;
+        ctx.lineWidth = 1.4;
         ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
-        // Inner glow dot
-        ctx.fillStyle = `rgba(${r},${g},${b},${l.alpha * 1.8})`;
-        ctx.fillRect(x + CELL/2 - 3, y + CELL/2 - 3, 6, 6);
+        // Corner accent dots
+        const d = 3;
+        ctx.fillStyle = `rgba(${rv},${gv},${bv},${Math.min(1, l.alpha * 3)})`;
+        [[x+d,y+d],[x+CELL-d,y+d],[x+d,y+CELL-d],[x+CELL-d,y+CELL-d]].forEach(([cx,cy]) => {
+          ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI*2); ctx.fill();
+        });
       });
 
       animId = requestAnimationFrame(draw);
     };
     animId = requestAnimationFrame(draw);
-
     return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
   }, [cycle, ballPositions]);
 
@@ -203,9 +202,9 @@ const LAYOUTS: Layout[] = [
 // Timing shared across layouts (ms)
 const T_BALL_START = 500;   // first ball delay after phase starts
 const T_BALL_GAP   = 400;   // stagger between balls
-const T_HOLD       = 1600;  // pause after last ball visible
-const T_FADE       = 600;   // fade-out duration
-const T_GAP        = 300;   // black gap before next cycle
+const T_HOLD       = 8000;  // 8 s hold — gives users time to read each layout
+const T_FADE       = 700;   // fade-out duration
+const T_GAP        = 400;   // black gap before next cycle
 
 export const WhatHappensNextSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -262,8 +261,8 @@ export const WhatHappensNextSection = () => {
 
   return (
     <section ref={sectionRef} className="py-16 relative overflow-hidden bg-[#040a16]">
-      {/* Animated checkerboard — squares light up everywhere except over content */}
-      <CheckerBG cycle={cycle} ballPositions={layout.positions} />
+      {/* Animated checkerboard — lights up, then clears when layout switches */}
+      <CheckerBG cycle={cycle} ballPositions={layout.positions} clearing={fading} />
 
       <div className="absolute inset-0 pointer-events-none"
         style={{ background: 'radial-gradient(ellipse 80% 70% at 50% 50%, rgba(37,99,235,0.06) 0%, transparent 70%)' }} />
@@ -428,29 +427,31 @@ export const WhatHappensNextSection = () => {
                   style={{
                     position: 'absolute',
                     ...(labelAbove
-                      ? { bottom: 78, top: 'auto' }
-                      : { top: 78 }),
+                      ? { bottom: 82, top: 'auto' }
+                      : { top: 82 }),
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    width: 132, textAlign: 'center',
-                    background: 'rgba(6,10,24,0.82)',
-                    backdropFilter: 'blur(10px)',
-                    border: `1px solid ${step.color}28`,
-                    borderRadius: 10, padding: '8px 10px',
+                    width: 150, textAlign: 'center',
+                    background: 'rgba(4,8,20,0.94)',
+                    backdropFilter: 'blur(16px)',
+                    border: `1.5px solid ${step.color}50`,
+                    borderRadius: 12, padding: '10px 12px',
                     pointerEvents: 'none',
+                    boxShadow: `0 0 20px ${step.color}20, 0 8px 32px rgba(0,0,0,0.7)`,
                   }}
                 >
-                  <p style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 11.5,
-                    lineHeight: 1.4, margin: '0 0 5px',
-                    textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                  <p style={{ color: '#f8fafc', fontWeight: 800, fontSize: 13,
+                    lineHeight: 1.35, margin: '0 0 6px',
+                    textShadow: `0 0 12px ${step.color}60, 0 1px 4px rgba(0,0,0,0.9)` }}>
                     {step.label}
                   </p>
                   <span style={{
                     display: 'inline-block',
-                    background: `${step.color}22`, border: `1px solid ${step.color}45`,
-                    borderRadius: 20, padding: '2px 8px',
-                    color: step.color, fontSize: 9.5, fontWeight: 700,
+                    background: `${step.color}28`, border: `1px solid ${step.color}60`,
+                    borderRadius: 20, padding: '3px 10px',
+                    color: step.color, fontSize: 10, fontWeight: 700,
                     textTransform: 'uppercase', letterSpacing: '0.08em',
+                    textShadow: `0 0 8px ${step.color}80`,
                   }}>
                     {step.sub}
                   </span>
