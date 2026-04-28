@@ -794,9 +794,11 @@ const PerfectFor = () => {
   const travelTimer   = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [popup,      setPopup]      = useState<{ biz: Biz; cx: number; cy: number } | null>(null);
   const [ready,      setReady]      = useState(false);
-  const [avatarXY,   setAvatarXY]   = useState({ x: -60, y: -60 });
-  const [avatarPop,  setAvatarPop]  = useState(false);
-  const [avatarBiz,  setAvatarBiz]  = useState<Biz | null>(null); // label next to avatar
+  const [avatarXY,   setAvatarXY]   = useState({ x: -100, y: -100 });
+  const [avatarAngle, setAvatarAngle] = useState(0);
+  const [popBurst,   setPopBurst]   = useState<{ x: number; y: number; color: string } | null>(null);
+  const [avatarBiz,  setAvatarBiz]  = useState<Biz | null>(null);
+  const avatarCurr = useRef({ x: -100, y: -100 }); // tracks actual current pos for angle calc
 
   // keep popupRef in sync so travel callbacks see latest value
   useEffect(() => { popupRef.current = popup; }, [popup]);
@@ -806,12 +808,17 @@ const PerfectFor = () => {
     const alive = ballsRef.current.filter(b => b.alive);
     if (!alive.length) { travelTimer.current = setTimeout(triggerTravel, 800); return; }
     const ball = alive[Math.floor(Math.random() * alive.length)];
+    // Compute angle from current pos to target
+    const dx = ball.x - avatarCurr.current.x;
+    const dy = ball.y - avatarCurr.current.y;
+    setAvatarAngle(Math.atan2(dy, dx) * 180 / Math.PI);
+    avatarCurr.current = { x: ball.x, y: ball.y };
     setAvatarXY({ x: ball.x, y: ball.y });
     setAvatarBiz(ball.biz);
     travelTimer.current = setTimeout(() => {
-      // pop burst
-      setAvatarPop(true);
-      setTimeout(() => setAvatarPop(false), 500);
+      // pop burst at arrival position
+      setPopBurst({ x: ball.x, y: ball.y, color: ball.biz.color });
+      setTimeout(() => setPopBurst(null), 700);
       // only auto-popup when user hasn't opened one
       if (!popupRef.current) {
         const p = { biz: ball.biz, cx: ball.x, cy: ball.y };
@@ -957,45 +964,84 @@ const PerfectFor = () => {
         </div>
       ))}
 
-      {/* ── Traveling avatar ── */}
+      {/* ── Traveling needle ── */}
       <motion.div
-        style={{ position:'absolute', top:0, left:0, zIndex:25, pointerEvents:'none' }}
-        animate={{ x: avatarXY.x - 22, y: avatarXY.y - 22 }}
+        style={{ position:'absolute', top:0, left:0, zIndex:25, pointerEvents:'none',
+          transformOrigin:'0 0' }}
+        animate={{ x: avatarXY.x, y: avatarXY.y }}
         transition={{ duration: TRAVEL_MS / 1000, ease:'easeInOut' }}>
-        {/* Glow ring */}
-        <div style={{ position:'absolute', top:'50%', left:'50%', width:80, height:80,
-          transform:'translate(-50%,-50%)', borderRadius:'50%',
-          background:'radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%)',
-          pointerEvents:'none',
-          animation: avatarPop ? 'none' : undefined,
-          transition:'transform 0.3s, box-shadow 0.3s',
-        }} />
-        {/* Avatar badge */}
-        <div style={{ width:44, height:44, borderRadius:'50%',
-          background:'linear-gradient(135deg, #ffffff 0%, #e0e7ff 60%, #c7d2fe 100%)',
-          border:'3px solid rgba(255,255,255,0.95)',
-          display:'flex', alignItems:'center', justifyContent:'center',
-          boxShadow: avatarPop
-            ? '0 0 0 10px rgba(255,255,255,0.25), 0 0 50px rgba(255,255,255,0.9), 0 0 80px rgba(99,102,241,0.6)'
-            : '0 0 15px rgba(255,255,255,0.6), 0 0 35px rgba(99,102,241,0.45)',
-          transform: avatarPop ? 'scale(1.5)' : 'scale(1)',
-          transition:'transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s',
-          fontSize:22, lineHeight:1,
-        }}>
-          🏃
+        {/* Needle SVG — rotated toward target */}
+        <div style={{ transform:`translate(-50%,-50%) rotate(${avatarAngle}deg)`,
+          transition:`transform ${TRAVEL_MS / 1000}s ease-in-out`,
+          filter:'drop-shadow(0 0 8px rgba(99,102,241,0.9)) drop-shadow(0 0 16px rgba(255,255,255,0.5))' }}>
+          <svg width="72" height="18" viewBox="0 0 72 18" fill="none">
+            {/* Glow layer */}
+            <polygon points="0,7 52,8.5 0,11" fill="rgba(99,102,241,0.55)" style={{filter:'blur(4px)'}}/>
+            {/* Tail fins */}
+            <polygon points="0,5  10,8 0,9"  fill="rgba(199,210,254,0.8)"/>
+            <polygon points="0,13 10,9 0,10" fill="rgba(199,210,254,0.8)"/>
+            {/* Shaft */}
+            <rect x="8" y="8" width="44" height="2" rx="1" fill="white" opacity="0.95"/>
+            {/* Arrowhead */}
+            <polygon points="48,4 72,9 48,14" fill="white"/>
+            {/* Bright tip */}
+            <circle cx="71" cy="9" r="2" fill="rgba(200,210,255,1)"/>
+          </svg>
         </div>
-        {/* Name label next to avatar */}
+        {/* Destination label */}
         {avatarBiz && (
-          <div style={{ position:'absolute', top:'50%', left:52, transform:'translateY(-50%)',
-            background:'rgba(6,10,22,0.92)', border:`1px solid ${avatarBiz.color}60`,
-            borderRadius:8, padding:'4px 10px', whiteSpace:'nowrap',
-            color:'white', fontSize:11, fontWeight:700,
-            boxShadow:`0 0 20px ${avatarBiz.color}30`,
-            backdropFilter:'blur(12px)' }}>
-            → {avatarBiz.name}
+          <div style={{ position:'absolute', top:-26, left:'50%', transform:'translateX(-50%)',
+            background:'rgba(6,10,22,0.90)', border:`1px solid ${avatarBiz.color}70`,
+            borderRadius:6, padding:'3px 9px', whiteSpace:'nowrap',
+            color:'white', fontSize:10, fontWeight:700, letterSpacing:'0.05em',
+            boxShadow:`0 0 14px ${avatarBiz.color}40`, backdropFilter:'blur(10px)' }}>
+            ◎ {avatarBiz.name}
           </div>
         )}
       </motion.div>
+
+      {/* ── Pop burst on arrival ── */}
+      <AnimatePresence>
+        {popBurst && (
+          <div key={`${popBurst.x}-${popBurst.y}`}
+            style={{ position:'absolute', left:popBurst.x, top:popBurst.y,
+              transform:'translate(-50%,-50%)', zIndex:30, pointerEvents:'none' }}>
+            {/* Flash */}
+            <motion.div
+              initial={{ width:0, height:0, opacity:1 }}
+              animate={{ width:90, height:90, opacity:0 }}
+              transition={{ duration:0.28, ease:'easeOut' }}
+              style={{ position:'absolute', transform:'translate(-50%,-50%)',
+                borderRadius:'50%', background:'white' }}
+            />
+            {/* Expanding rings */}
+            {[0,1,2].map(i => (
+              <motion.div key={i}
+                initial={{ width:10, height:10, opacity:0.9 }}
+                animate={{ width:130 + i*45, height:130 + i*45, opacity:0 }}
+                transition={{ duration:0.55 + i*0.08, delay:i*0.06, ease:'easeOut' }}
+                style={{ position:'absolute', transform:'translate(-50%,-50%)',
+                  borderRadius:'50%', border:`2.5px solid ${popBurst.color}`,
+                  boxShadow:`0 0 12px ${popBurst.color}80` }}
+              />
+            ))}
+            {/* Sparkle dots */}
+            {[0,1,2,3,4,5,6,7].map(i => {
+              const a = (i / 8) * Math.PI * 2;
+              return (
+                <motion.div key={`s${i}`}
+                  initial={{ x:0, y:0, opacity:1, scale:1 }}
+                  animate={{ x:Math.cos(a)*55, y:Math.sin(a)*55, opacity:0, scale:0.3 }}
+                  transition={{ duration:0.5, delay:0.05, ease:'easeOut' }}
+                  style={{ position:'absolute', width:7, height:7, borderRadius:'50%',
+                    background:popBurst.color, transform:'translate(-50%,-50%)',
+                    boxShadow:`0 0 8px ${popBurst.color}` }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Popup */}
       <AnimatePresence>
