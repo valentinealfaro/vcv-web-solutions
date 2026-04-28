@@ -728,173 +728,201 @@ const BUSINESSES: Biz[] = [
   { id: 21, name: 'Home Services',    Icon: Store,           color: '#1e90ff', stat: 'Repeat customers = 5× value',      detail: 'Any home service business with a professional website earns 47% more per customer because trust is already established before the first conversation.' },
 ];
 
-/* ─── Bubble popup (detail card) ─────────────────────────── */
-const BubblePopup = ({ biz, rect }: { biz: Biz; rect: DOMRect }) => {
-  const PW = 300;
-  const left = Math.max(12, Math.min((typeof window !== 'undefined' ? window.innerWidth : 1200) - PW - 12, rect.left + rect.width / 2 - PW / 2));
-  const above = rect.top > 240;
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.88, y: above ? 10 : -10 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.88 }}
-      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-      style={{
-        position: 'fixed', zIndex: 9000, width: PW, pointerEvents: 'none',
-        left, top: above ? rect.top - 16 : rect.bottom + 16,
-        transform: above ? 'translateY(-100%)' : 'none',
-      }}>
-      <div style={{ background:'rgba(6,10,22,0.98)', border:`1px solid ${biz.color}45`,
-        borderRadius:16, padding:20, boxShadow:`0 0 50px ${biz.color}18, 0 24px 64px rgba(0,0,0,0.8)`,
-        backdropFilter:'blur(28px)' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:12 }}>
-          <div style={{ width:40,height:40,borderRadius:10,background:`${biz.color}1a`,border:`1px solid ${biz.color}40`,
-            display:'flex',alignItems:'center',justifyContent:'center',color:biz.color,flexShrink:0 }}>
-            <biz.Icon size={18} />
-          </div>
-          <div>
-            <p style={{ color:'#f1f5f9',fontWeight:800,fontSize:15,margin:'0 0 3px' }}>{biz.name}</p>
-            <p style={{ color:biz.color,fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',margin:0 }}>Industry insight</p>
-          </div>
-        </div>
-        <div style={{ background:`${biz.color}18`,border:`1px solid ${biz.color}35`,borderRadius:10,padding:'8px 12px',marginBottom:12,
-          display:'flex',alignItems:'center',gap:8 }}>
-          <TrendingUp size={12} style={{ color:biz.color,flexShrink:0 }} />
-          <span style={{ color:'#e2e8f0',fontWeight:700,fontSize:12 }}>{biz.stat}</span>
-        </div>
-        <p style={{ color:'#94a3b8',fontSize:12,lineHeight:1.65,margin:0 }}>{biz.detail}</p>
-      </div>
-      {above ? (
-        <div style={{ position:'absolute',bottom:-7,left:Math.max(16,Math.min(PW-24,rect.left+rect.width/2-left)),
-          width:14,height:14,background:'rgba(6,10,22,0.98)',border:`1px solid ${biz.color}45`,
-          borderTop:'none',borderLeft:'none',transform:'rotate(45deg)' }} />
-      ) : (
-        <div style={{ position:'absolute',top:-7,left:Math.max(16,Math.min(PW-24,rect.left+rect.width/2-left)),
-          width:14,height:14,background:'rgba(6,10,22,0.98)',border:`1px solid ${biz.color}45`,
-          borderBottom:'none',borderRight:'none',transform:'rotate(45deg)' }} />
-      )}
-    </motion.div>
-  );
-};
+/* ─── Physics bubble section ──────────────────────────────── */
+interface Ball { id: number; biz: Biz; x: number; y: number; vx: number; vy: number; r: number; alive: boolean }
 
-/* ─── Single floating bubble ──────────────────────────────── */
-interface BubbleItem { id: number; biz: Biz; x: number; y: number; size: number }
-
-const FloatingBubble = ({ b, onPopup, clearPopup }: {
-  b: BubbleItem;
-  onPopup: (biz: Biz, rect: DOMRect) => void;
-  clearPopup: () => void;
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-  return (
-    <motion.div
-      ref={ref}
-      style={{ position:'absolute', left:`${b.x}%`, top:`${b.y}%`,
-        transform:'translate(-50%,-50%)', zIndex:10, cursor:'pointer' }}
-      initial={{ scale:0, opacity:0 }}
-      animate={{ scale:[0,1.3,0.85,1.05,1], opacity:[0,1,1,1,1] }}
-      exit={{ scale:[1,1.2,0], opacity:[1,0.8,0], transition:{ duration:0.4 } }}
-      transition={{ duration:0.55, times:[0,0.3,0.55,0.75,1], ease:'easeOut' }}
-      onHoverStart={() => { if (ref.current) onPopup(b.biz, ref.current.getBoundingClientRect()); }}
-      onHoverEnd={clearPopup}>
-      <div style={{
-        width:b.size, height:b.size, borderRadius:'50%',
-        background:`radial-gradient(circle at 35% 28%, ${b.biz.color}ee, ${b.biz.color}44)`,
-        border:`1.5px solid ${b.biz.color}88`,
-        boxShadow:`0 0 22px ${b.biz.color}50, 0 0 50px ${b.biz.color}20, inset 0 1px 0 rgba(255,255,255,0.25)`,
-        display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-        gap:4, padding:'0 8px',
-      }}>
-        {/* Shine */}
-        <div style={{ position:'absolute', top:'10%', left:'18%', width:'40%', height:'28%',
-          background:'rgba(255,255,255,0.22)', borderRadius:'50%', filter:'blur(3px)' }} />
-        <b.biz.Icon size={b.size * 0.22} style={{ color:'white', filter:`drop-shadow(0 0 4px ${b.biz.color})`, flexShrink:0 }} />
-        <span style={{ color:'white', fontSize:b.size * 0.1, fontWeight:800,
-          textTransform:'uppercase', letterSpacing:'0.04em', textAlign:'center',
-          lineHeight:1.15, textShadow:`0 0 10px ${b.biz.color}`,
-          maxWidth:'85%', wordBreak:'break-word' }}>
-          {b.biz.name}
-        </span>
-      </div>
-    </motion.div>
-  );
-};
-
-/* ─── Bubble PerfectFor ───────────────────────────────────── */
 const PerfectFor = () => {
-  const [bubbles, setBubbles] = useState<BubbleItem[]>([]);
-  const [popup, setPopup] = useState<{ biz: Biz; rect: DOMRect } | null>(null);
-  const idRef = useRef(0);
-  const MAX = 14;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const ballsRef     = useRef<Ball[]>([]);
+  const nodeRefs     = useRef<Map<number, HTMLDivElement>>(new Map());
+  const rafRef       = useRef<number>(0);
+  const [popup, setPopup] = useState<{ biz: Biz; cx: number; cy: number } | null>(null);
+  // trigger one React render after init so divs appear
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const spawn = () => {
-      setBubbles(prev => {
-        if (prev.length >= MAX) return prev;
-        const biz = BUSINESSES[Math.floor(Math.random() * BUSINESSES.length)];
-        const id = idRef.current++;
-        const newB: BubbleItem = {
-          id, biz,
-          x: 4 + Math.random() * 92,
-          y: 8 + Math.random() * 78,
-          size: 82 + Math.random() * 54,
-        };
-        setTimeout(() => setBubbles(p => p.filter(b => b.id !== id)), 3600);
-        return [...prev, newB];
-      });
-    };
+    const W = containerRef.current?.offsetWidth || 1200;
+    const H = 560;
 
-    for (let i = 0; i < 10; i++) setTimeout(spawn, i * 220);
-    const iv = setInterval(spawn, 520);
-    return () => clearInterval(iv);
+    // Spread businesses evenly so they don't all start overlapping
+    ballsRef.current = BUSINESSES.map((biz, i) => {
+      const cols = 5;
+      const r    = 52 + Math.random() * 22;
+      const col  = i % cols;
+      const row  = Math.floor(i / cols);
+      return {
+        id: i, biz, r,
+        x: (col + 0.5) * (W / cols) + (Math.random() - 0.5) * 60,
+        y: 140 + row * 120 + (Math.random() - 0.5) * 40,
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: (Math.random() - 0.5) * 1.2,
+        alive: true,
+      };
+    });
+    setReady(true);
+
+    const tick = () => {
+      const W2 = containerRef.current?.offsetWidth || 1200;
+      const balls = ballsRef.current;
+
+      for (const b of balls) {
+        if (!b.alive) continue;
+        b.x += b.vx;
+        b.y += b.vy;
+        // wall bounce
+        if (b.x - b.r < 0)   { b.x = b.r;      b.vx =  Math.abs(b.vx); }
+        if (b.x + b.r > W2)  { b.x = W2 - b.r; b.vx = -Math.abs(b.vx); }
+        if (b.y - b.r < 0)   { b.y = b.r;      b.vy =  Math.abs(b.vy); }
+        if (b.y + b.r > H)   { b.y = H - b.r;  b.vy = -Math.abs(b.vy); }
+      }
+
+      // circle-circle elastic collision
+      for (let i = 0; i < balls.length; i++) {
+        if (!balls[i].alive) continue;
+        for (let j = i + 1; j < balls.length; j++) {
+          if (!balls[j].alive) continue;
+          const a = balls[i], b = balls[j];
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const d  = Math.hypot(dx, dy);
+          const mn = a.r + b.r;
+          if (d < mn && d > 0.01) {
+            const nx = dx / d, ny = dy / d;
+            const ov = (mn - d) / 2;
+            a.x -= nx * ov; a.y -= ny * ov;
+            b.x += nx * ov; b.y += ny * ov;
+            const dot = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny;
+            if (dot > 0) {
+              a.vx -= dot * nx; a.vy -= dot * ny;
+              b.vx += dot * nx; b.vy += dot * ny;
+            }
+          }
+        }
+      }
+
+      // direct DOM update — no React re-render
+      for (const b of balls) {
+        const el = nodeRefs.current.get(b.id);
+        if (!el) continue;
+        if (!b.alive) { el.style.opacity = '0'; el.style.pointerEvents = 'none'; continue; }
+        el.style.opacity = '1';
+        el.style.pointerEvents = 'auto';
+        el.style.transform = `translate(${b.x - b.r}px, ${b.y - b.r}px)`;
+      }
+
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
+  const handleClick = (ball: Ball) => {
+    ball.alive = false;
+    setPopup({ biz: ball.biz, cx: ball.x, cy: ball.y });
+  };
+
+  const closePopup = () => {
+    setPopup(prev => {
+      if (!prev) return null;
+      const ball = ballsRef.current.find(b => b.biz === prev.biz);
+      if (ball) {
+        ball.alive = true;
+        ball.vx = (Math.random() - 0.5) * 1.4;
+        ball.vy = (Math.random() - 0.5) * 1.4;
+      }
+      return null;
+    });
+  };
+
   return (
-    <section className="relative overflow-hidden"
+    <section
+      ref={containerRef}
+      className="relative overflow-hidden"
       style={{ height: 560, background: '#030712', borderTop: '1px solid rgba(37,99,235,0.12)', borderBottom: '1px solid rgba(37,99,235,0.12)' }}>
 
-      {/* Animated background orbs */}
+      {/* Background orbs */}
       <div className="absolute top-[-10%] left-[5%] w-[420px] h-[420px] rounded-full blur-[120px] pointer-events-none animate-orb"
         style={{ background: 'rgba(37,99,235,0.10)' }} />
       <div className="absolute bottom-[-5%] right-[8%] w-[360px] h-[360px] rounded-full blur-[110px] pointer-events-none animate-orb-delay"
         style={{ background: 'rgba(124,58,237,0.09)' }} />
-      <div className="absolute top-[30%] right-[20%] w-[280px] h-[280px] rounded-full blur-[90px] pointer-events-none animate-orb-slow"
-        style={{ background: 'rgba(6,182,212,0.07)' }} />
-      <div className="absolute top-[50%] left-[40%] w-[320px] h-[320px] rounded-full blur-[100px] pointer-events-none animate-orb"
-        style={{ background: 'rgba(168,85,247,0.07)', animationDelay: '3s' }} />
+      <div className="absolute inset-0 bg-grid opacity-[0.25] pointer-events-none" />
 
-      {/* Grid overlay */}
-      <div className="absolute inset-0 bg-grid opacity-[0.30] pointer-events-none" />
-      <div className="absolute inset-0 bg-dot  opacity-[0.15] pointer-events-none" />
-
-      {/* Edge fades */}
-      <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none z-20"
-        style={{ background: 'linear-gradient(to bottom, #030712 0%, transparent 100%)' }} />
-      <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none z-20"
-        style={{ background: 'linear-gradient(to top, #030712 0%, transparent 100%)' }} />
-
-      {/* Section heading — centred overlay */}
-      <div className="absolute top-0 left-0 right-0 z-30 text-center pt-10 pointer-events-none">
-        <p className="neon-badge mx-auto w-fit mb-3">Who We Help</p>
+      {/* Heading */}
+      <div className="absolute top-0 left-0 right-0 z-30 text-center pt-8 pointer-events-none">
+        <p className="neon-badge mx-auto w-fit mb-2">Who We Help</p>
         <h2 className="font-display text-5xl md:text-6xl text-white mb-1">PERFECT FOR</h2>
-        <p className="text-gray-500 text-sm">Hover any bubble to see how a website grows that business</p>
+        <p className="text-gray-500 text-sm">Click any bubble to see how a website grows that business</p>
       </div>
 
-      {/* Bubbles */}
-      <AnimatePresence>
-        {bubbles.map(b => (
-          <FloatingBubble
-            key={b.id}
-            b={b}
-            onPopup={(biz, rect) => setPopup({ biz, rect })}
-            clearPopup={() => setPopup(null)}
-          />
-        ))}
-      </AnimatePresence>
+      {/* Physics bubbles — rendered once, moved via direct DOM */}
+      {ready && ballsRef.current.map(ball => (
+        <div
+          key={ball.id}
+          ref={el => { if (el) nodeRefs.current.set(ball.id, el); }}
+          onClick={() => handleClick(ball)}
+          style={{
+            position: 'absolute', top: 0, left: 0,
+            width: ball.r * 2, height: ball.r * 2,
+            borderRadius: '50%', cursor: 'pointer',
+            transition: 'opacity 0.3s',
+            background: `radial-gradient(circle at 35% 28%, ${ball.biz.color}dd, ${ball.biz.color}44)`,
+            border: `2px solid ${ball.biz.color}88`,
+            boxShadow: `0 0 24px ${ball.biz.color}55, 0 0 50px ${ball.biz.color}18, inset 0 1px 0 rgba(255,255,255,0.2)`,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: 4, zIndex: 10,
+          }}>
+          {/* Shine */}
+          <div style={{ position:'absolute', top:'10%', left:'18%', width:'40%', height:'26%',
+            background:'rgba(255,255,255,0.2)', borderRadius:'50%', filter:'blur(3px)', pointerEvents:'none' }} />
+          <ball.biz.Icon size={ball.r * 0.38} style={{ color:'white', filter:`drop-shadow(0 0 5px ${ball.biz.color})`, flexShrink:0, pointerEvents:'none' }} />
+          <span style={{ color:'white', fontSize: Math.max(9, ball.r * 0.17), fontWeight:800,
+            textTransform:'uppercase', letterSpacing:'0.04em', textAlign:'center',
+            lineHeight:1.2, textShadow:`0 0 10px ${ball.biz.color}`, maxWidth:'80%',
+            wordBreak:'break-word', pointerEvents:'none' }}>
+            {ball.biz.name}
+          </span>
+        </div>
+      ))}
 
-      {/* Hover popup */}
+      {/* Click popup — centered over the bubble */}
       <AnimatePresence>
-        {popup && <BubblePopup key={popup.biz.id} biz={popup.biz} rect={popup.rect} />}
+        {popup && (
+          <motion.div
+            key={popup.biz.id}
+            initial={{ opacity:0, scale:0.85 }}
+            animate={{ opacity:1, scale:1 }}
+            exit={{ opacity:0, scale:0.85 }}
+            transition={{ duration:0.2, ease:[0.16,1,0.3,1] }}
+            onClick={closePopup}
+            style={{
+              position:'absolute', zIndex:200,
+              left: Math.max(12, Math.min((containerRef.current?.offsetWidth || 800) - 312, popup.cx - 156)),
+              top:  Math.max(12, Math.min(560 - 220, popup.cy - 110)),
+              width: 312, cursor:'pointer',
+            }}>
+            <div style={{ background:'rgba(6,10,22,0.97)', border:`1px solid ${popup.biz.color}55`,
+              borderRadius:18, padding:22, boxShadow:`0 0 60px ${popup.biz.color}25, 0 24px 64px rgba(0,0,0,0.85)`,
+              backdropFilter:'blur(28px)' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:12 }}>
+                <div style={{ width:44,height:44,borderRadius:12,background:`${popup.biz.color}1a`,
+                  border:`1px solid ${popup.biz.color}45`, display:'flex',alignItems:'center',
+                  justifyContent:'center', color:popup.biz.color, flexShrink:0 }}>
+                  <popup.biz.Icon size={20} />
+                </div>
+                <div>
+                  <p style={{ color:'#f1f5f9',fontWeight:800,fontSize:15,margin:'0 0 3px' }}>{popup.biz.name}</p>
+                  <p style={{ color:popup.biz.color,fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',margin:0 }}>Industry insight</p>
+                </div>
+              </div>
+              <div style={{ background:`${popup.biz.color}18`,border:`1px solid ${popup.biz.color}35`,
+                borderRadius:10,padding:'8px 12px',marginBottom:12,display:'flex',alignItems:'center',gap:8 }}>
+                <TrendingUp size={12} style={{ color:popup.biz.color,flexShrink:0 }} />
+                <span style={{ color:'#e2e8f0',fontWeight:700,fontSize:12 }}>{popup.biz.stat}</span>
+              </div>
+              <p style={{ color:'#94a3b8',fontSize:12,lineHeight:1.65,margin:'0 0 10px' }}>{popup.biz.detail}</p>
+              <p style={{ color:`${popup.biz.color}88`,fontSize:10,textAlign:'center',margin:0 }}>Click anywhere to close</p>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </section>
   );
