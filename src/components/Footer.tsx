@@ -41,9 +41,9 @@ export const Footer = () => (
           <ul className="space-y-3 text-sm text-gray-500">
             {[
               { label: 'About', path: '/' },
-              { label: 'Portfolio', path: '/portfolio' },
+              { label: 'Services', path: '/services' },
               { label: 'Pricing', path: '/pricing' },
-              { label: 'Blog', path: '/blog' },
+              { label: 'Contact', path: '/contact' },
             ].map(item => (
               <li key={item.label}><Link href={item.path} className="hover:text-blue-400 transition-colors">{item.label}</Link></li>
             ))}
