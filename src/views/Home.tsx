@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, useInView, AnimatePresence, LayoutGroup } from 'motion/react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -771,26 +771,71 @@ const BUSINESSES: Biz[] = [
 /* ─── Physics bubble section ──────────────────────────────── */
 interface Ball { id: number; biz: Biz; x: number; y: number; vx: number; vy: number; r: number; alive: boolean }
 
+// Colorful background blobs — defined outside component to stay stable
+const BG_BLOBS = [
+  { color:'rgba(37,99,235,0.40)',   w:340, h:300, l:'3%',  t:'25%', dur:9  },
+  { color:'rgba(124,58,237,0.35)',  w:300, h:320, l:'68%', t:'12%', dur:11 },
+  { color:'rgba(6,182,212,0.30)',   w:260, h:260, l:'38%', t:'52%', dur:13 },
+  { color:'rgba(34,197,94,0.25)',   w:220, h:240, l:'82%', t:'58%', dur:10 },
+  { color:'rgba(236,72,153,0.28)',  w:200, h:210, l:'14%', t:'62%', dur:14 },
+  { color:'rgba(245,158,11,0.22)',  w:240, h:190, l:'52%', t:'22%', dur:12 },
+  { color:'rgba(99,102,241,0.25)',  w:180, h:200, l:'25%', t:'40%', dur:15 },
+  { color:'rgba(20,184,166,0.22)',  w:200, h:180, l:'75%', t:'38%', dur:10 },
+];
+const TRAVEL_MS  = 2000;
+const POPUP_MS   = 3000;
+
 const PerfectFor = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const ballsRef     = useRef<Ball[]>([]);
-  const nodeRefs     = useRef<Map<number, HTMLDivElement>>(new Map());
-  const rafRef       = useRef<number>(0);
-  const [popup, setPopup] = useState<{ biz: Biz; cx: number; cy: number } | null>(null);
-  // trigger one React render after init so divs appear
-  const [ready, setReady] = useState(false);
+  const containerRef  = useRef<HTMLDivElement>(null);
+  const ballsRef      = useRef<Ball[]>([]);
+  const nodeRefs      = useRef<Map<number, HTMLDivElement>>(new Map());
+  const rafRef        = useRef<number>(0);
+  const popupRef      = useRef<{ biz: Biz; cx: number; cy: number } | null>(null);
+  const travelTimer   = useRef<ReturnType<typeof setTimeout>>();
+  const [popup,      setPopup]      = useState<{ biz: Biz; cx: number; cy: number } | null>(null);
+  const [ready,      setReady]      = useState(false);
+  const [avatarXY,   setAvatarXY]   = useState({ x: -60, y: -60 });
+  const [avatarPop,  setAvatarPop]  = useState(false);
+  const [avatarBiz,  setAvatarBiz]  = useState<Biz | null>(null); // label next to avatar
+
+  // keep popupRef in sync so travel callbacks see latest value
+  useEffect(() => { popupRef.current = popup; }, [popup]);
+
+  const triggerTravel = useCallback(() => {
+    clearTimeout(travelTimer.current);
+    const alive = ballsRef.current.filter(b => b.alive);
+    if (!alive.length) { travelTimer.current = setTimeout(triggerTravel, 800); return; }
+    const ball = alive[Math.floor(Math.random() * alive.length)];
+    setAvatarXY({ x: ball.x, y: ball.y });
+    setAvatarBiz(ball.biz);
+    travelTimer.current = setTimeout(() => {
+      // pop burst
+      setAvatarPop(true);
+      setTimeout(() => setAvatarPop(false), 500);
+      // only auto-popup when user hasn't opened one
+      if (!popupRef.current) {
+        const p = { biz: ball.biz, cx: ball.x, cy: ball.y };
+        setPopup(p);
+        travelTimer.current = setTimeout(() => {
+          setPopup(null);
+          travelTimer.current = setTimeout(triggerTravel, 700);
+        }, POPUP_MS);
+      } else {
+        travelTimer.current = setTimeout(triggerTravel, 1500);
+      }
+    }, TRAVEL_MS + 150);
+  }, []);
 
   useEffect(() => {
     const W = containerRef.current?.offsetWidth || 1200;
     const H = 560;
+    const CEIL = 165;
 
-    // Spread businesses evenly so they don't all start overlapping
-    const CEIL = 165; // px — bubbles stay below the heading
     ballsRef.current = BUSINESSES.map((biz, i) => {
       const cols = 5;
-      const r    = 52 + Math.random() * 22;
-      const col  = i % cols;
-      const row  = Math.floor(i / cols);
+      const r = 52 + Math.random() * 22;
+      const col = i % cols;
+      const row = Math.floor(i / cols);
       return {
         id: i, biz, r,
         x: (col + 0.5) * (W / cols) + (Math.random() - 0.5) * 60,
@@ -801,63 +846,50 @@ const PerfectFor = () => {
       };
     });
     setReady(true);
+    travelTimer.current = setTimeout(triggerTravel, 1800);
 
     const tick = () => {
       const W2 = containerRef.current?.offsetWidth || 1200;
       const balls = ballsRef.current;
-
       for (const b of balls) {
         if (!b.alive) continue;
-        b.x += b.vx;
-        b.y += b.vy;
-        // wall bounce — ceiling at 165px keeps bubbles below heading
-        const CEIL = 165;
-        if (b.x - b.r < 0)        { b.x = b.r;        b.vx =  Math.abs(b.vx); }
-        if (b.x + b.r > W2)       { b.x = W2 - b.r;   b.vx = -Math.abs(b.vx); }
-        if (b.y - b.r < CEIL)     { b.y = CEIL + b.r;  b.vy =  Math.abs(b.vy); }
-        if (b.y + b.r > H)        { b.y = H - b.r;     b.vy = -Math.abs(b.vy); }
+        b.x += b.vx; b.y += b.vy;
+        if (b.x - b.r < 0)    { b.x = b.r;       b.vx =  Math.abs(b.vx); }
+        if (b.x + b.r > W2)   { b.x = W2 - b.r;  b.vx = -Math.abs(b.vx); }
+        if (b.y - b.r < CEIL) { b.y = CEIL + b.r; b.vy =  Math.abs(b.vy); }
+        if (b.y + b.r > H)    { b.y = H - b.r;    b.vy = -Math.abs(b.vy); }
       }
-
-      // circle-circle elastic collision
       for (let i = 0; i < balls.length; i++) {
         if (!balls[i].alive) continue;
         for (let j = i + 1; j < balls.length; j++) {
           if (!balls[j].alive) continue;
           const a = balls[i], b = balls[j];
           const dx = b.x - a.x, dy = b.y - a.y;
-          const d  = Math.hypot(dx, dy);
+          const d = Math.hypot(dx, dy);
           const mn = a.r + b.r;
           if (d < mn && d > 0.01) {
-            const nx = dx / d, ny = dy / d;
-            const ov = (mn - d) / 2;
-            a.x -= nx * ov; a.y -= ny * ov;
-            b.x += nx * ov; b.y += ny * ov;
-            const dot = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny;
-            if (dot > 0) {
-              a.vx -= dot * nx; a.vy -= dot * ny;
-              b.vx += dot * nx; b.vy += dot * ny;
-            }
+            const nx = dx/d, ny = dy/d, ov = (mn - d)/2;
+            a.x -= nx*ov; a.y -= ny*ov; b.x += nx*ov; b.y += ny*ov;
+            const dot = (a.vx-b.vx)*nx + (a.vy-b.vy)*ny;
+            if (dot > 0) { a.vx -= dot*nx; a.vy -= dot*ny; b.vx += dot*nx; b.vy += dot*ny; }
           }
         }
       }
-
-      // direct DOM update — no React re-render
       for (const b of balls) {
         const el = nodeRefs.current.get(b.id);
         if (!el) continue;
         if (!b.alive) { el.style.opacity = '0'; el.style.pointerEvents = 'none'; continue; }
-        el.style.opacity = '1';
-        el.style.pointerEvents = 'auto';
+        el.style.opacity = '1'; el.style.pointerEvents = 'auto';
         el.style.transform = `translate(${b.x - b.r}px, ${b.y - b.r}px)`;
       }
-
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, []);
+    return () => { cancelAnimationFrame(rafRef.current); clearTimeout(travelTimer.current); };
+  }, [triggerTravel]);
 
-  const handleClick = (ball: Ball) => {
+  const handleBubbleClick = (ball: Ball) => {
+    clearTimeout(travelTimer.current);
     ball.alive = false;
     setPopup({ biz: ball.biz, cx: ball.x, cy: ball.y });
   };
@@ -866,64 +898,57 @@ const PerfectFor = () => {
     setPopup(prev => {
       if (!prev) return null;
       const ball = ballsRef.current.find(b => b.biz === prev.biz);
-      if (ball) {
-        ball.alive = true;
-        ball.vx = (Math.random() - 0.5) * 2.2;
-        ball.vy = (Math.random() - 0.5) * 2.2;
-      }
+      if (ball) { ball.alive = true; ball.vx = (Math.random()-0.5)*2.2; ball.vy = (Math.random()-0.5)*2.2; }
+      travelTimer.current = setTimeout(triggerTravel, 900);
       return null;
     });
   };
 
+  const W = containerRef.current?.offsetWidth || 800;
+
   return (
-    <section
-      ref={containerRef}
-      className="relative overflow-hidden"
-      style={{ height: 560, background: '#030712', borderTop: '1px solid rgba(37,99,235,0.12)', borderBottom: '1px solid rgba(37,99,235,0.12)' }}>
+    <section ref={containerRef} className="relative overflow-hidden"
+      style={{ height: 560, borderTop: '1px solid rgba(37,99,235,0.15)', borderBottom: '1px solid rgba(37,99,235,0.15)', background: '#030712' }}>
 
-      {/* Background orbs */}
-      <div className="absolute top-[-10%] left-[5%] w-[420px] h-[420px] rounded-full blur-[120px] pointer-events-none animate-orb"
-        style={{ background: 'rgba(37,99,235,0.10)' }} />
-      <div className="absolute bottom-[-5%] right-[8%] w-[360px] h-[360px] rounded-full blur-[110px] pointer-events-none animate-orb-delay"
-        style={{ background: 'rgba(124,58,237,0.09)' }} />
-      <div className="absolute inset-0 bg-grid opacity-[0.25] pointer-events-none" />
+      {/* Colorful bokeh blobs */}
+      {BG_BLOBS.map((b, i) => (
+        <div key={i} style={{ position:'absolute', borderRadius:'50%', pointerEvents:'none',
+          width: b.w, height: b.h, left: b.l, top: b.t, background: b.color,
+          filter: 'blur(72px)', animation: `orb-float ${b.dur}s ease-in-out infinite`,
+          animationDelay: `${i * 0.65}s` }} />
+      ))}
+      <div className="absolute inset-0 bg-grid opacity-[0.18] pointer-events-none" />
 
-      {/* Heading — frosted backdrop so bubbles can never obscure it */}
+      {/* Heading with opaque gradient backdrop */}
       <div className="absolute top-0 left-0 right-0 z-40 pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, #030712 55%, transparent 100%)', paddingTop: 32, paddingBottom: 48 }}>
+        style={{ background: 'linear-gradient(to bottom, #030712 52%, transparent 100%)', paddingTop: 28, paddingBottom: 52 }}>
         <div className="text-center">
           <p className="neon-badge mx-auto w-fit mb-3">Who We Help</p>
           <h2 className="font-display text-white mb-2"
-            style={{ fontSize: 'clamp(3.5rem, 8vw, 7rem)', lineHeight: 1,
-              textShadow: '0 0 40px rgba(37,99,235,0.5), 0 2px 0 rgba(0,0,0,0.8)' }}>
+            style={{ fontSize:'clamp(3.5rem,8vw,7rem)', lineHeight:1,
+              textShadow:'0 0 50px rgba(37,99,235,0.6), 0 0 100px rgba(124,58,237,0.3), 0 2px 0 rgba(0,0,0,0.9)' }}>
             PERFECT FOR
           </h2>
-          <p className="text-gray-400 text-sm tracking-wide">Click any bubble to see how a website grows that business</p>
+          <p className="text-gray-400 text-sm tracking-wide">Watch the avatar visit bubbles — or click any bubble yourself</p>
         </div>
       </div>
 
-      {/* Physics bubbles — rendered once, moved via direct DOM */}
+      {/* Bubbles */}
       {ready && ballsRef.current.map(ball => (
-        <div
-          key={ball.id}
+        <div key={ball.id}
           ref={el => { if (el) nodeRefs.current.set(ball.id, el); }}
-          onClick={() => handleClick(ball)}
-          style={{
-            position: 'absolute', top: 0, left: 0,
-            width: ball.r * 2, height: ball.r * 2,
-            borderRadius: '50%', cursor: 'pointer',
-            transition: 'opacity 0.3s',
-            background: `radial-gradient(circle at 35% 28%, ${ball.biz.color}dd, ${ball.biz.color}44)`,
-            border: `2px solid ${ball.biz.color}88`,
-            boxShadow: `0 0 24px ${ball.biz.color}55, 0 0 50px ${ball.biz.color}18, inset 0 1px 0 rgba(255,255,255,0.2)`,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            gap: 4, zIndex: 10,
-          }}>
-          {/* Shine */}
+          onClick={() => handleBubbleClick(ball)}
+          style={{ position:'absolute', top:0, left:0, width:ball.r*2, height:ball.r*2,
+            borderRadius:'50%', cursor:'pointer', transition:'opacity 0.3s',
+            background:`radial-gradient(circle at 35% 28%, ${ball.biz.color}ee, ${ball.biz.color}44)`,
+            border:`2px solid ${ball.biz.color}90`,
+            boxShadow:`0 0 28px ${ball.biz.color}60, 0 0 55px ${ball.biz.color}20, inset 0 1px 0 rgba(255,255,255,0.25)`,
+            display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+            gap:4, zIndex:10 }}>
           <div style={{ position:'absolute', top:'10%', left:'18%', width:'40%', height:'26%',
-            background:'rgba(255,255,255,0.2)', borderRadius:'50%', filter:'blur(3px)', pointerEvents:'none' }} />
-          <ball.biz.Icon size={ball.r * 0.38} style={{ color:'white', filter:`drop-shadow(0 0 5px ${ball.biz.color})`, flexShrink:0, pointerEvents:'none' }} />
-          <span style={{ color:'white', fontSize: Math.max(9, ball.r * 0.17), fontWeight:800,
+            background:'rgba(255,255,255,0.22)', borderRadius:'50%', filter:'blur(3px)', pointerEvents:'none' }} />
+          <ball.biz.Icon size={ball.r*0.38} style={{ color:'white', filter:`drop-shadow(0 0 5px ${ball.biz.color})`, flexShrink:0, pointerEvents:'none' }} />
+          <span style={{ color:'white', fontSize:Math.max(9,ball.r*0.17), fontWeight:800,
             textTransform:'uppercase', letterSpacing:'0.04em', textAlign:'center',
             lineHeight:1.2, textShadow:`0 0 10px ${ball.biz.color}`, maxWidth:'80%',
             wordBreak:'break-word', pointerEvents:'none' }}>
@@ -932,28 +957,66 @@ const PerfectFor = () => {
         </div>
       ))}
 
-      {/* Click popup — centered over the bubble */}
+      {/* ── Traveling avatar ── */}
+      <motion.div
+        style={{ position:'absolute', top:0, left:0, zIndex:25, pointerEvents:'none' }}
+        animate={{ x: avatarXY.x - 22, y: avatarXY.y - 22 }}
+        transition={{ duration: TRAVEL_MS / 1000, ease:'easeInOut' }}>
+        {/* Glow ring */}
+        <div style={{ position:'absolute', top:'50%', left:'50%', width:80, height:80,
+          transform:'translate(-50%,-50%)', borderRadius:'50%',
+          background:'radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%)',
+          pointerEvents:'none',
+          animation: avatarPop ? 'none' : undefined,
+          transition:'transform 0.3s, box-shadow 0.3s',
+        }} />
+        {/* Avatar badge */}
+        <div style={{ width:44, height:44, borderRadius:'50%',
+          background:'linear-gradient(135deg, #ffffff 0%, #e0e7ff 60%, #c7d2fe 100%)',
+          border:'3px solid rgba(255,255,255,0.95)',
+          display:'flex', alignItems:'center', justifyContent:'center',
+          boxShadow: avatarPop
+            ? '0 0 0 10px rgba(255,255,255,0.25), 0 0 50px rgba(255,255,255,0.9), 0 0 80px rgba(99,102,241,0.6)'
+            : '0 0 15px rgba(255,255,255,0.6), 0 0 35px rgba(99,102,241,0.45)',
+          transform: avatarPop ? 'scale(1.5)' : 'scale(1)',
+          transition:'transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s',
+          fontSize:22, lineHeight:1,
+        }}>
+          🏃
+        </div>
+        {/* Name label next to avatar */}
+        {avatarBiz && (
+          <div style={{ position:'absolute', top:'50%', left:52, transform:'translateY(-50%)',
+            background:'rgba(6,10,22,0.92)', border:`1px solid ${avatarBiz.color}60`,
+            borderRadius:8, padding:'4px 10px', whiteSpace:'nowrap',
+            color:'white', fontSize:11, fontWeight:700,
+            boxShadow:`0 0 20px ${avatarBiz.color}30`,
+            backdropFilter:'blur(12px)' }}>
+            → {avatarBiz.name}
+          </div>
+        )}
+      </motion.div>
+
+      {/* Popup */}
       <AnimatePresence>
         {popup && (
           <motion.div
-            key={popup.biz.id}
-            initial={{ opacity:0, scale:0.85 }}
-            animate={{ opacity:1, scale:1 }}
-            exit={{ opacity:0, scale:0.85 }}
-            transition={{ duration:0.2, ease:[0.16,1,0.3,1] }}
+            key={`${popup.biz.id}-${Math.round(popup.cx)}`}
+            initial={{ opacity:0, scale:0.82, y:8 }}
+            animate={{ opacity:1, scale:1, y:0 }}
+            exit={{ opacity:0, scale:0.82, y:8 }}
+            transition={{ duration:0.22, ease:[0.16,1,0.3,1] }}
             onClick={closePopup}
-            style={{
-              position:'absolute', zIndex:200,
-              left: Math.max(12, Math.min((containerRef.current?.offsetWidth || 800) - 312, popup.cx - 156)),
-              top:  Math.max(12, Math.min(560 - 220, popup.cy - 110)),
-              width: 312, cursor:'pointer',
-            }}>
-            <div style={{ background:'rgba(6,10,22,0.97)', border:`1px solid ${popup.biz.color}55`,
-              borderRadius:18, padding:22, boxShadow:`0 0 60px ${popup.biz.color}25, 0 24px 64px rgba(0,0,0,0.85)`,
+            style={{ position:'absolute', zIndex:200, cursor:'pointer', width:310,
+              left: Math.max(12, Math.min(W - 322, popup.cx - 155)),
+              top:  Math.max(170, Math.min(540 - 215, popup.cy - 108)) }}>
+            <div style={{ background:'rgba(6,10,22,0.97)', border:`1.5px solid ${popup.biz.color}60`,
+              borderRadius:18, padding:20,
+              boxShadow:`0 0 0 1px ${popup.biz.color}20, 0 0 70px ${popup.biz.color}30, 0 24px 64px rgba(0,0,0,0.9)`,
               backdropFilter:'blur(28px)' }}>
               <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:12 }}>
-                <div style={{ width:44,height:44,borderRadius:12,background:`${popup.biz.color}1a`,
-                  border:`1px solid ${popup.biz.color}45`, display:'flex',alignItems:'center',
+                <div style={{ width:44,height:44,borderRadius:12,background:`${popup.biz.color}20`,
+                  border:`1px solid ${popup.biz.color}50`, display:'flex',alignItems:'center',
                   justifyContent:'center', color:popup.biz.color, flexShrink:0 }}>
                   <popup.biz.Icon size={20} />
                 </div>
@@ -962,13 +1025,13 @@ const PerfectFor = () => {
                   <p style={{ color:popup.biz.color,fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',margin:0 }}>Industry insight</p>
                 </div>
               </div>
-              <div style={{ background:`${popup.biz.color}18`,border:`1px solid ${popup.biz.color}35`,
-                borderRadius:10,padding:'8px 12px',marginBottom:12,display:'flex',alignItems:'center',gap:8 }}>
+              <div style={{ background:`${popup.biz.color}18`, border:`1px solid ${popup.biz.color}35`,
+                borderRadius:10, padding:'8px 12px', marginBottom:12, display:'flex', alignItems:'center', gap:8 }}>
                 <TrendingUp size={12} style={{ color:popup.biz.color,flexShrink:0 }} />
                 <span style={{ color:'#e2e8f0',fontWeight:700,fontSize:12 }}>{popup.biz.stat}</span>
               </div>
               <p style={{ color:'#94a3b8',fontSize:12,lineHeight:1.65,margin:'0 0 10px' }}>{popup.biz.detail}</p>
-              <p style={{ color:`${popup.biz.color}88`,fontSize:10,textAlign:'center',margin:0 }}>Click anywhere to close</p>
+              <p style={{ color:`${popup.biz.color}70`,fontSize:10,textAlign:'center',margin:0 }}>Click to close &amp; respawn</p>
             </div>
           </motion.div>
         )}
