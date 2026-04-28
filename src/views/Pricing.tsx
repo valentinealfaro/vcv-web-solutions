@@ -213,12 +213,12 @@ export default function Pricing() {
       </div>
 
       {/* ROI Section */}
-      <section className="py-24 bg-gray-950">
+      <section className="py-24 bg-[#040a16]">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <TrendingUp className="w-12 h-12 text-blue-500 mx-auto mb-6" />
-          <h2 className="text-3xl font-bold text-white mb-6">This Isn’t a Cost — It’s an Investment</h2>
+          <h2 className="text-3xl font-bold text-white mb-6">This Is Not a Cost — It Is an Investment</h2>
           <p className="text-gray-400 text-lg">
-            If your website brings even 2–3 extra jobs per month, it pays for itself.
+            If your website brings even 2 to 3 extra jobs per month, it pays for itself.
           </p>
         </div>
       </section>
@@ -228,7 +228,7 @@ export default function Pricing() {
         <div className="absolute inset-0 bg-grid opacity-25 pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] bg-blue-600/6 rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-4xl mx-auto px-4 relative z-10">
-          <div className="neon-card p-10 md:p-12 text-center" style={{ borderColor:’rgba(37,99,235,0.3)’, boxShadow:’0 0 60px rgba(37,99,235,0.08)’ }}>
+          <div className="neon-card p-10 md:p-12 text-center">
             <div className="w-14 h-14 btn-neon rounded-full flex items-center justify-center mx-auto mb-6">
               <ShieldCheck className="w-7 h-7 text-white" />
             </div>
@@ -259,8 +259,8 @@ export default function Pricing() {
       {/* Final CTA */}
       <section className="py-24 bg-[#030712] relative overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
-        <div className="absolute top-[-10%] left-[10%] w-[500px] h-[500px] rounded-full blur-[130px] pointer-events-none animate-orb" style={{ background:’rgba(37,99,235,0.12)’ }} />
-        <div className="absolute bottom-[-10%] right-[10%] w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none animate-orb-delay" style={{ background:’rgba(124,58,237,0.10)’ }} />
+        <div className="absolute top-[-10%] left-[10%] w-[500px] h-[500px] rounded-full blur-[130px] pointer-events-none animate-orb bg-blue-600/10" />
+        <div className="absolute bottom-[-10%] right-[10%] w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none animate-orb-delay bg-purple-600/8" />
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{ opacity:0,y:30 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }}>
             <p className="neon-badge mb-5 mx-auto w-fit">Ready to Start?</p>
