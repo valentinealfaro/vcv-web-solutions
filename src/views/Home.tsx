@@ -743,6 +743,7 @@ const PerfectFor = () => {
     const H = 560;
 
     // Spread businesses evenly so they don't all start overlapping
+    const CEIL = 165; // px — bubbles stay below the heading
     ballsRef.current = BUSINESSES.map((biz, i) => {
       const cols = 5;
       const r    = 52 + Math.random() * 22;
@@ -751,9 +752,9 @@ const PerfectFor = () => {
       return {
         id: i, biz, r,
         x: (col + 0.5) * (W / cols) + (Math.random() - 0.5) * 60,
-        y: 140 + row * 120 + (Math.random() - 0.5) * 40,
-        vx: (Math.random() - 0.5) * 1.2,
-        vy: (Math.random() - 0.5) * 1.2,
+        y: CEIL + r + row * 100 + (Math.random() - 0.5) * 30,
+        vx: (Math.random() - 0.5) * 2.2,
+        vy: (Math.random() - 0.5) * 2.2,
         alive: true,
       };
     });
@@ -767,11 +768,12 @@ const PerfectFor = () => {
         if (!b.alive) continue;
         b.x += b.vx;
         b.y += b.vy;
-        // wall bounce
-        if (b.x - b.r < 0)   { b.x = b.r;      b.vx =  Math.abs(b.vx); }
-        if (b.x + b.r > W2)  { b.x = W2 - b.r; b.vx = -Math.abs(b.vx); }
-        if (b.y - b.r < 0)   { b.y = b.r;      b.vy =  Math.abs(b.vy); }
-        if (b.y + b.r > H)   { b.y = H - b.r;  b.vy = -Math.abs(b.vy); }
+        // wall bounce — ceiling at 165px keeps bubbles below heading
+        const CEIL = 165;
+        if (b.x - b.r < 0)        { b.x = b.r;        b.vx =  Math.abs(b.vx); }
+        if (b.x + b.r > W2)       { b.x = W2 - b.r;   b.vx = -Math.abs(b.vx); }
+        if (b.y - b.r < CEIL)     { b.y = CEIL + b.r;  b.vy =  Math.abs(b.vy); }
+        if (b.y + b.r > H)        { b.y = H - b.r;     b.vy = -Math.abs(b.vy); }
       }
 
       // circle-circle elastic collision
@@ -824,8 +826,8 @@ const PerfectFor = () => {
       const ball = ballsRef.current.find(b => b.biz === prev.biz);
       if (ball) {
         ball.alive = true;
-        ball.vx = (Math.random() - 0.5) * 1.4;
-        ball.vy = (Math.random() - 0.5) * 1.4;
+        ball.vx = (Math.random() - 0.5) * 2.2;
+        ball.vy = (Math.random() - 0.5) * 2.2;
       }
       return null;
     });
@@ -844,11 +846,18 @@ const PerfectFor = () => {
         style={{ background: 'rgba(124,58,237,0.09)' }} />
       <div className="absolute inset-0 bg-grid opacity-[0.25] pointer-events-none" />
 
-      {/* Heading */}
-      <div className="absolute top-0 left-0 right-0 z-30 text-center pt-8 pointer-events-none">
-        <p className="neon-badge mx-auto w-fit mb-2">Who We Help</p>
-        <h2 className="font-display text-5xl md:text-6xl text-white mb-1">PERFECT FOR</h2>
-        <p className="text-gray-500 text-sm">Click any bubble to see how a website grows that business</p>
+      {/* Heading — frosted backdrop so bubbles can never obscure it */}
+      <div className="absolute top-0 left-0 right-0 z-40 pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, #030712 55%, transparent 100%)', paddingTop: 32, paddingBottom: 48 }}>
+        <div className="text-center">
+          <p className="neon-badge mx-auto w-fit mb-3">Who We Help</p>
+          <h2 className="font-display text-white mb-2"
+            style={{ fontSize: 'clamp(3.5rem, 8vw, 7rem)', lineHeight: 1,
+              textShadow: '0 0 40px rgba(37,99,235,0.5), 0 2px 0 rgba(0,0,0,0.8)' }}>
+            PERFECT FOR
+          </h2>
+          <p className="text-gray-400 text-sm tracking-wide">Click any bubble to see how a website grows that business</p>
+        </div>
       </div>
 
       {/* Physics bubbles — rendered once, moved via direct DOM */}
