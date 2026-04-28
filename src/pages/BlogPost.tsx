@@ -1,6 +1,8 @@
+'use client';
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { Calendar, User, ArrowLeft, Loader2, Share2, Facebook, Twitter, Linkedin, ArrowRight } from 'lucide-react';
@@ -9,7 +11,7 @@ import { BlogPost as BlogPostType } from '../types';
 
 export default function BlogPost() {
   const { slug } = useParams();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [post, setPost] = useState<BlogPostType | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -19,7 +21,7 @@ export default function BlogPost() {
       const q = query(collection(db, 'blogPosts'), where('slug', '==', slug), limit(1));
       const snapshot = await getDocs(q);
       if (snapshot.empty) {
-        navigate('/blog');
+        router.push('/blog');
         return;
       }
       const postData = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as BlogPostType;

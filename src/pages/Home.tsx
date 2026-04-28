@@ -1,6 +1,7 @@
+'use client';
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView, AnimatePresence, LayoutGroup } from 'motion/react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award, Hammer, Wrench, Thermometer, Leaf, Sparkles, UtensilsCrossed, Store, Paintbrush, Car, Building2, Scissors, Dumbbell, GraduationCap, Truck, Bug, Sun, Stethoscope, Scale, PawPrint, HardHat, TreePine } from 'lucide-react';
 import { Boxes } from '@/components/ui/background-boxes';
 import { MarkerHighlight } from '@/components/ui/marker-highlight';
@@ -407,12 +408,12 @@ const Hero = () => (
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-10">
-            <Link to="/free-demo"
+            <Link href="/free-demo"
               className="btn-glow btn-neon text-white px-8 py-4 rounded-full font-bold text-base flex items-center justify-center gap-2 group">
               Get My Free Demo
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link to="/portfolio"
+            <Link href="/portfolio"
               className="glass-card text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 hover:border-blue-500/40 transition-all">
               See Live Examples
               <Globe className="w-4 h-4" />
@@ -1338,7 +1339,7 @@ const CTASection = () => (
         <p className="text-gray-400 text-xl mb-10 max-w-xl mx-auto">
           No risk. No commitment. Just a professional preview of your business's future — built for free.
         </p>
-        <Link to="/free-demo"
+        <Link href="/free-demo"
           className="btn-glow btn-neon text-white px-12 py-5 rounded-full font-bold text-xl inline-flex items-center gap-3 group">
           Build My Free Demo
           <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />

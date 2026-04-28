@@ -1,6 +1,7 @@
+'use client';
 import { motion } from 'motion/react';
 import { Layout, Search, BarChart3, Users, CheckCircle2, ArrowRight, X, Rocket } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 const ServiceCard = ({ icon, title, benefit, features }: any) => (
   <motion.div
@@ -82,7 +83,7 @@ export default function Services() {
             We don't just build websites; we build growth engines. Our focus is on results, not just aesthetics.
           </p>
           <div className="flex gap-4">
-            <Link to="/free-demo" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg shadow-blue-600/20">
+            <Link href="/free-demo" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg shadow-blue-600/20">
               Get My Free Demo
             </Link>
           </div>

@@ -1,5 +1,6 @@
+'use client';
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { CheckCircle2, ArrowRight, Zap } from 'lucide-react';
 
 const plans = [
@@ -89,7 +90,7 @@ export const PricingSection = () => (
               ))}
             </div>
 
-            <Link to="/free-demo"
+            <Link href="/free-demo"
               className={`block w-full py-3.5 rounded-xl font-bold text-center text-sm transition-all group flex items-center justify-center gap-2 ${plan.featured
                 ? 'btn-neon btn-glow text-white'
                 : 'glass-card text-gray-300 hover:text-white hover:border-blue-500/30'
@@ -104,7 +105,7 @@ export const PricingSection = () => (
       <motion.p
         initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.4 }} viewport={{ once: true }}
         className="text-center text-gray-500 text-sm mt-8">
-        Not sure which plan? <Link to="/free-demo" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">Start with the free demo →</Link>
+        Not sure which plan? <Link href="/free-demo" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">Start with the free demo →</Link>
       </motion.p>
     </div>
   </section>

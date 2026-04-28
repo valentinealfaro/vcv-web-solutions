@@ -1,6 +1,7 @@
+'use client';
 import { motion } from 'motion/react';
 import { CheckCircle2, ArrowRight, X, HelpCircle, TrendingUp, ShieldCheck } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { cn } from '../lib/utils';
 import { useState } from 'react';
 
@@ -97,7 +98,7 @@ export default function Pricing() {
           We build your website before you pay anything. No risk. No surprises.
         </p>
         <div className="flex justify-center gap-4 mb-8">
-          <Link to="/free-demo" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg shadow-blue-600/20">
+          <Link href="/free-demo" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg shadow-blue-600/20">
             Get My Free Demo
           </Link>
         </div>

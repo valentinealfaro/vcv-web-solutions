@@ -1,6 +1,7 @@
+'use client';
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { db, auth } from '../firebase';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Search, Calendar, User, ArrowRight, Loader2, Plus, X } from 'lucide-react';
@@ -159,7 +160,7 @@ export default function Blog() {
                 transition={{ delay: idx * 0.1 }}
                 className="group bg-gray-900 border border-white/5 rounded-3xl overflow-hidden hover:border-blue-500/30 transition-all flex flex-col"
               >
-                <Link to={`/blog/${post.slug}`} className="aspect-video relative overflow-hidden block">
+                <Link href={`/blog/${post.slug}`} className="aspect-video relative overflow-hidden block">
                   <img
                     src={post.featuredImage || `https://picsum.photos/seed/${post.slug}/800/600`}
                     alt={post.title}
@@ -179,7 +180,7 @@ export default function Blog() {
                     </div>
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-blue-500 transition-colors">
-                    <Link to={`/blog/${post.slug}`}>{post.title}</Link>
+                    <Link href={`/blog/${post.slug}`}>{post.title}</Link>
                   </h3>
                   <p className="text-gray-400 text-sm leading-relaxed mb-8 line-clamp-3">
                     {post.excerpt}

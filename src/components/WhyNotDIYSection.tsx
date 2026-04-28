@@ -1,3 +1,4 @@
+'use client';
 export const WhyNotDIYSection = () => (
   <section className="py-24 bg-black">
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 bg-gray-900 p-12 rounded-3xl border border-white/10">

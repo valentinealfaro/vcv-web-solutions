@@ -1,5 +1,6 @@
+'use client';
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { ExternalLink, ArrowRight } from 'lucide-react';
 
 const demos = [
@@ -80,7 +81,7 @@ export const DemoSection = () => (
       </div>
 
       <div className="text-center">
-        <Link to="/portfolio"
+        <Link href="/portfolio"
           className="glass-card inline-flex items-center gap-2 text-white px-8 py-4 rounded-full font-bold hover:border-blue-500/40 transition-all group">
           View All Demo Sites
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

@@ -1,3 +1,4 @@
+'use client';
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { useForm } from 'react-hook-form';
@@ -5,7 +6,7 @@ import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { CheckCircle2, Mail, Phone, Globe, ArrowRight, Loader2, MapPin } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);

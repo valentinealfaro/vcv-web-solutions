@@ -1,5 +1,6 @@
+'use client';
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { ArrowRight, Flame, Clock, CheckCircle2 } from 'lucide-react';
 
 export const UrgencySection = () => (
@@ -47,7 +48,7 @@ export const UrgencySection = () => (
             ))}
           </div>
 
-          <Link to="/free-demo"
+          <Link href="/free-demo"
             className="btn-neon btn-glow text-white px-10 py-5 rounded-full font-bold text-lg inline-flex items-center gap-3 group">
             Claim Your Free Spot
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

@@ -1,6 +1,7 @@
+'use client';
 import { motion } from 'motion/react';
 import { ExternalLink, Globe, Layout, Search, ArrowRight, ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useState } from 'react';
 import { cn } from '../lib/utils';
 

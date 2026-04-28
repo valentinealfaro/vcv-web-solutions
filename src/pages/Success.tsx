@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+'use client';
+import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 

@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useMotionValue, useTransform, type MotionValue } from 'motion/react';
 import { MarkerHighlight } from '@/components/ui/marker-highlight';

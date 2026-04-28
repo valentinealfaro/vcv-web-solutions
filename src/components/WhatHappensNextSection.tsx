@@ -1,7 +1,8 @@
+'use client';
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { useInView } from 'motion/react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 /* ─── Steps (constant data) ───────────────────────────────── */
@@ -359,7 +360,7 @@ export const WhatHappensNextSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           viewport={{ once: true }}>
-          <Link to="/free-demo"
+          <Link href="/free-demo"
             className="btn-neon btn-glow text-white px-10 py-4 rounded-full font-bold text-base inline-flex items-center gap-2 group">
             Start Step 1 — It's Free
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

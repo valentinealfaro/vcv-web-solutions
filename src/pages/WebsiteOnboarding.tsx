@@ -1,8 +1,9 @@
+'use client';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, ArrowLeft, CheckCircle2, Upload, Globe, Phone, Mail, Building2, Target, Palette, FileText, Link as LinkIcon, Star, Zap, Sparkles } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
@@ -22,7 +23,7 @@ export default function WebsiteOnboarding() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<any>({});
   const [isGenerating, setIsGenerating] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleInputChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -33,7 +34,7 @@ export default function WebsiteOnboarding() {
       console.log("Submitting form data:", formData);
       // Here you would typically send data to Firebase
       alert("Onboarding submitted successfully!");
-      navigate('/');
+      router.push('/');
     } else {
       setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     }

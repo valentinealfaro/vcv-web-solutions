@@ -1,3 +1,4 @@
+'use client';
 import { motion } from 'motion/react';
 import {
   Layout, Search, BarChart3, Phone, Zap, ShieldCheck, Users, Rocket,
