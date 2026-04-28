@@ -131,8 +131,6 @@ export default function Pricing() {
               <span className="text-red-400 font-bold text-sm tracking-wide">LIMITED TIME — 50% OFF ALL PLANS</span>
               <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse inline-block" />
             </motion.div>
-          </motion.div>
-
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-6">
               <Link href="/free-demo" className="btn-neon btn-glow text-white px-8 py-4 rounded-full font-bold text-base flex items-center justify-center gap-2 group">
                 Get My Free Demo <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -143,7 +141,7 @@ export default function Pricing() {
               <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Built in 3–7 days</span>
               <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Designed for leads</span>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
