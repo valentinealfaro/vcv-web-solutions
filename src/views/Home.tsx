@@ -371,7 +371,7 @@ const PopOut3DWord = ({ word, delay = 0.8 }: { word: string; delay?: number }) =
 
 /* ─── Hero ────────────────────────────────────────────────── */
 const Hero = () => (
-  <section className="relative min-h-screen flex items-center pt-28 pb-16 bg-hero-radial" style={{ overflowX: 'hidden', overflowY: 'visible' }}>
+  <section className="relative flex items-center pt-28 pb-6 bg-hero-radial" style={{ overflowX: 'hidden', overflowY: 'hidden', minHeight: 'calc(100vh - 80px)' }}>
     <ParticleCanvas />
 
     {/* Glowing orbs */}
@@ -432,8 +432,6 @@ const Hero = () => (
       </div>
     </div>
 
-    {/* Bottom fade */}
-    <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#030712] to-transparent pointer-events-none" />
   </section>
 );
 
