@@ -2,61 +2,49 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { CheckCircle2, ArrowRight, Zap, Loader2 } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Zap, Loader2, Tag } from 'lucide-react';
 
 const plans = [
   {
-    name: 'Starter',
-    description: 'Perfect for new local businesses getting started.',
+    name: 'Monthly',
     price: 97,
     origPrice: 194,
+    period: '/mo',
     amountCents: 9700,
     setup: 'No upfront cost options',
+    description: 'Perfect for getting started with no long-term commitment.',
     features: [
-      'Custom website',
-      'Mobile optimized',
-      'Fast load speeds',
-      'SEO-ready structure',
-      'Hosting included',
+      'Custom website design',
+      'Mobile-responsive layout',
+      'Basic SEO setup',
+      'Contact & lead forms',
+      'Hosting & maintenance',
+      'Monthly updates',
     ],
+    cta: 'Get Started',
     popular: false,
-    cta: 'Get My Free Demo',
   },
   {
-    name: 'Growth',
-    description: 'Best for businesses that want consistent leads.',
-    price: 197,
-    origPrice: 394,
-    amountCents: 19700,
-    setup: 'No upfront cost',
-    badge: 'Most Popular',
+    name: 'Annual',
+    price: 497,
+    origPrice: 994,
+    period: '/yr',
+    amountCents: 49700,
+    setup: 'Best value — save $667',
+    badge: 'Best Value — Save $667',
+    description: 'The complete package. Everything you need to dominate your market.',
     features: [
-      'Custom website',
-      'SEO-ready structure',
-      'Mobile optimized',
-      'Lead tracking',
-      'Hosting included',
-      'Ongoing support',
+      'Everything in Monthly',
+      'Advanced SEO optimization',
+      'Google Ads integration ready',
+      'Blog & content system',
+      'Analytics dashboard',
+      'Priority support',
+      'Quarterly strategy calls',
+      'Free demo included',
     ],
+    cta: 'Start Winning',
     popular: true,
-    cta: 'Get My Free Demo',
-  },
-  {
-    name: 'Pro',
-    description: 'For businesses ready to dominate their market.',
-    price: 297,
-    origPrice: 594,
-    amountCents: 29700,
-    setup: 'Custom setup',
-    features: [
-      'Everything in Growth',
-      'Advanced SEO system',
-      'CRM integration',
-      'Automation systems',
-      'Dedicated manager',
-    ],
-    popular: false,
-    cta: 'Get My Free Demo',
   },
 ];
 
@@ -88,71 +76,93 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.12 }}
+      transition={{ delay: index * 0.15 }}
       viewport={{ once: true }}
-      className="relative flex flex-col"
+      className="relative p-8 rounded-[20px]"
       style={{
-        background: plan.popular ? 'rgba(17,24,60,0.85)' : 'rgba(10,15,30,0.7)',
-        border: plan.popular ? '2px solid rgba(37,99,235,0.6)' : '1px solid rgba(255,255,255,0.08)',
-        borderRadius: 20,
-        padding: '32px 28px',
-        boxShadow: plan.popular ? '0 0 60px rgba(37,99,235,0.18), 0 0 0 1px rgba(37,99,235,0.1)' : 'none',
-        transform: plan.popular ? 'scale(1.04)' : 'scale(1)',
+        background: plan.popular
+          ? 'linear-gradient(145deg, rgba(17,30,80,0.9), rgba(30,15,60,0.85))'
+          : 'rgba(10,15,30,0.7)',
+        border: plan.popular
+          ? '1.5px solid rgba(37,99,235,0.45)'
+          : '1px solid rgba(255,255,255,0.07)',
+        boxShadow: plan.popular
+          ? '0 0 60px rgba(37,99,235,0.15), 0 0 0 1px rgba(37,99,235,0.08)'
+          : 'none',
       }}>
 
-      {/* Popular badge */}
+      {/* Best Value badge */}
       {plan.badge && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-          <span className="bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg whitespace-nowrap">
+          <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap shadow-lg">
             <Zap className="w-3 h-3" /> {plan.badge}
           </span>
         </div>
       )}
 
-      {/* Plan name + description */}
-      <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
-      <p className="text-gray-400 text-sm mb-5 leading-relaxed">{plan.description}</p>
+      {/* 50% OFF badge */}
+      <div className="absolute top-4 right-4">
+        <motion.span
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+          className="flex items-center gap-1 bg-red-500/20 border border-red-500/50 text-red-400 text-xs font-black px-2.5 py-1 rounded-full">
+          <Tag className="w-3 h-3" /> 50% OFF
+        </motion.span>
+      </div>
 
-      {/* Price block */}
-      <div className="mb-1 flex items-center gap-2">
-        <span className="text-gray-600 text-lg font-bold line-through decoration-red-500/70">${plan.origPrice}</span>
-        <span className="text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/25 px-2 py-0.5 rounded-full">50% off</span>
+      {/* Plan name */}
+      <p className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-3">{plan.name}</p>
+
+      {/* Strikethrough original */}
+      <div className="flex items-center gap-2 mb-1">
+        <span className="text-gray-600 text-xl font-bold line-through decoration-red-500/70">${plan.origPrice}</span>
+        <span className="text-gray-600 text-sm line-through decoration-red-500/70">{plan.period}</span>
+        <span className="text-xs font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full">was full price</span>
       </div>
-      <div className="flex items-end gap-1 mb-1">
-        <span className="font-display text-5xl text-white">${plan.price}</span>
-        <span className="text-gray-500 text-base mb-1.5">/month</span>
+
+      {/* Sale price */}
+      <div className="flex items-end gap-1 mb-2">
+        <span className="font-display text-6xl text-white">${plan.price}</span>
+        <span className="text-gray-500 text-lg mb-2">{plan.period}</span>
       </div>
-      <p className="text-blue-400 font-semibold text-sm mb-7">{plan.setup}</p>
+
+      {/* Savings pill */}
+      <div className="inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/25 rounded-full px-3 py-1 mb-4">
+        <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse inline-block" />
+        <span className="text-green-400 text-xs font-bold">You save ${plan.origPrice - plan.price}{plan.period}</span>
+      </div>
+
+      <p className="text-gray-400 text-sm leading-relaxed mb-6">{plan.description}</p>
 
       {/* Features */}
-      <ul className="space-y-3 mb-8 flex-grow">
+      <div className="space-y-3 mb-8">
         {plan.features.map((f, j) => (
-          <li key={j} className="flex items-center gap-3 text-sm text-gray-300">
+          <div key={j} className="flex items-center gap-3 text-sm">
             <CheckCircle2 className={`w-4 h-4 flex-shrink-0 ${plan.popular ? 'text-blue-400' : 'text-gray-500'}`} />
-            {f}
-          </li>
+            <span className={plan.popular ? 'text-gray-200' : 'text-gray-400'}>{f}</span>
+          </div>
         ))}
-      </ul>
+      </div>
 
       {error && <p className="text-red-400 text-xs mb-3 text-center">{error}</p>}
 
-      {/* CTA */}
       <motion.button
         onClick={handleCheckout}
         disabled={loading}
-        whileHover={{ scale: loading ? 1 : 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        className={`w-full py-4 rounded-full font-bold text-sm flex items-center justify-center gap-2 group transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
+        whileHover={{ scale: loading ? 1 : 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 group transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
           plan.popular
             ? 'btn-neon btn-glow text-white'
-            : 'bg-[#1a2035] hover:bg-[#222c45] text-white border border-white/10'
+            : 'glass-card text-gray-300 hover:text-white hover:border-blue-500/30'
         }`}>
-        {loading ? (
-          <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting...</>
-        ) : (
-          <>{plan.cta} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
-        )}
+        {loading
+          ? <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting...</>
+          : <>{plan.cta} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
+        }
       </motion.button>
+
+      <p className="text-center text-gray-600 text-xs mt-3">Secure checkout · Powered by Stripe</p>
     </motion.div>
   );
 };
@@ -160,15 +170,14 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
 export const PricingSection = () => (
   <section className="py-24 bg-[#030712] relative overflow-hidden">
     <div className="absolute inset-0 bg-grid opacity-40" />
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-600/6 blur-[100px] rounded-full pointer-events-none" />
 
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <motion.div className="text-center mb-6"
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <motion.div className="text-center mb-4"
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
         <p className="neon-badge mb-4 mx-auto w-fit">Simple Pricing</p>
         <h2 className="font-display text-6xl md:text-7xl text-white mb-4">PRICING</h2>
 
-        {/* Limited-time banner */}
         <motion.div
           animate={{ scale: [1, 1.03, 1] }}
           transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
@@ -181,14 +190,13 @@ export const PricingSection = () => (
         <p className="text-gray-400 text-lg max-w-lg mx-auto">No hidden fees. No long-term contracts. Cancel anytime.</p>
       </motion.div>
 
-      {/* Cards — 3 column, centre one pops */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center mt-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto mt-8">
         {plans.map((plan, i) => <PlanCard key={i} plan={plan} index={i} />)}
       </div>
 
       <motion.p
         initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.4 }} viewport={{ once: true }}
-        className="text-center text-gray-500 text-sm mt-10">
+        className="text-center text-gray-500 text-sm mt-8">
         Not sure which plan?{' '}
         <Link href="/free-demo" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
           Start with the free demo →
