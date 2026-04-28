@@ -1079,14 +1079,143 @@ const BeforeAfterMockup = () => {
   );
 };
 
+/* ─── Feature carousel (Why Choose Us cards) ──────────────── */
+interface Feature {
+  icon: React.ReactNode; title: string; description: string; color: string;
+}
+
+const FeatureCarousel = ({ features }: { features: Feature[] }) => {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [progress,  setProgress]  = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  const progRef  = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+
+  const INTERVAL = 3600; // ms per card
+
+  const activate = (idx: number) => {
+    setActiveIdx(idx);
+    setProgress(0);
+    if (timerRef.current)  clearInterval(timerRef.current);
+    if (progRef.current)   clearInterval(progRef.current);
+
+    timerRef.current = setInterval(() => {
+      setActiveIdx(p => (p + 1) % features.length);
+      setProgress(0);
+    }, INTERVAL);
+
+    const TICK = 40;
+    progRef.current = setInterval(() => {
+      setProgress(p => Math.min(p + (TICK / INTERVAL) * 100, 100));
+    }, TICK);
+  };
+
+  useEffect(() => { activate(0); return () => { clearInterval(timerRef.current); clearInterval(progRef.current); }; }, []);
+
+  return (
+    <div className="space-y-2.5">
+      {features.map((f, i) => {
+        const isActive = i === activeIdx;
+        return (
+          <motion.div
+            key={i}
+            onClick={() => activate(i)}
+            animate={{
+              scale:   isActive ? 1.02 : 0.97,
+              opacity: isActive ? 1 : 0.5,
+              x:       isActive ? 0 : -6,
+            }}
+            transition={{ type: 'spring', stiffness: 380, damping: 18 }}
+            style={{
+              position: 'relative', overflow: 'hidden', cursor: 'pointer',
+              borderRadius: 16,
+              border: `1px solid ${isActive ? `${f.color}50` : 'rgba(255,255,255,0.06)'}`,
+              background: isActive ? `${f.color}12` : 'rgba(255,255,255,0.02)',
+              boxShadow: isActive ? `0 0 28px ${f.color}20, 0 4px 20px rgba(0,0,0,0.3)` : 'none',
+              padding: isActive ? '18px 20px 14px' : '13px 20px',
+              transition: 'padding 0.3s ease',
+            }}>
+
+            {/* Left color accent bar */}
+            <div style={{ position:'absolute', left:0, top:0, bottom:0, width:3,
+              background: isActive ? f.color : 'transparent', borderRadius:'16px 0 0 16px',
+              boxShadow: isActive ? `0 0 10px ${f.color}` : 'none', transition:'all 0.3s' }} />
+
+            <div className="flex gap-3 items-start pl-2">
+              {/* Icon */}
+              <motion.div
+                animate={{ scale: isActive ? 1.1 : 1 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                style={{ width:38, height:38, borderRadius:10, flexShrink:0,
+                  background: isActive ? `${f.color}25` : `${f.color}10`,
+                  border: `1px solid ${isActive ? `${f.color}50` : 'transparent'}`,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  color: f.color, boxShadow: isActive ? `0 0 12px ${f.color}40` : 'none',
+                }}>
+                {f.icon}
+              </motion.div>
+
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <h4 style={{ color: isActive ? '#f1f5f9' : 'rgba(241,245,249,0.55)',
+                  fontWeight: 700, fontSize: 14, marginBottom: isActive ? 5 : 2,
+                  transition: 'color 0.3s' }}>
+                  {f.title}
+                </h4>
+                <motion.p
+                  animate={{ opacity: isActive ? 1 : 0, height: isActive ? 'auto' : 0 }}
+                  transition={{ duration: 0.25 }}
+                  style={{ color:'rgba(148,163,184,0.85)', fontSize:12.5, lineHeight:1.55,
+                    margin:0, overflow:'hidden' }}>
+                  {f.description}
+                </motion.p>
+              </div>
+
+              {/* Active check */}
+              <AnimatePresence>
+                {isActive && (
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+                    style={{ width:20, height:20, borderRadius:'50%', background:f.color,
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      flexShrink:0, boxShadow:`0 0 10px ${f.color}70`, marginTop:2 }}>
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Progress bar (bottom of active card) */}
+            <AnimatePresence>
+              {isActive && (
+                <motion.div
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  style={{ position:'absolute', bottom:0, left:0, right:0, height:2,
+                    background:'rgba(255,255,255,0.05)', borderRadius:'0 0 16px 16px' }}>
+                  <div style={{ height:'100%', width:`${progress}%`, background:f.color,
+                    borderRadius:'0 0 0 16px', transition:'width 0.04s linear',
+                    boxShadow:`0 0 6px ${f.color}` }} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};
+
 /* ─── Why Choose Us ───────────────────────────────────────── */
 const WhyChooseUs = () => {
-  const features = [
-    { icon: <Rocket className="w-5 h-5" />, title: 'Lead Generation First', description: 'Every design decision is made to generate calls, form fills, and booked jobs.' },
-    { icon: <Clock className="w-5 h-5" />, title: '3–7 Day Launch', description: 'We move fast without sacrificing quality. See results in days, not months.' },
-    { icon: <Search className="w-5 h-5" />, title: 'SEO + Ads Built In', description: 'Traffic strategies baked in from the start — no expensive upsells.' },
-    { icon: <ShieldCheck className="w-5 h-5" />, title: 'You Own Everything', description: 'No vendor lock-in. Your domain, your content, your site — always.' },
-    { icon: <TrendingUp className="w-5 h-5" />, title: 'Proven Track Record', description: 'Real results for real businesses. Check our portfolio to see the proof.' },
+  const features: Feature[] = [
+    { icon: <Rocket className="w-4 h-4" />, color: '#3b82f6', title: 'Lead Generation First', description: 'Every design decision is made to generate calls, form fills, and booked jobs.' },
+    { icon: <Clock className="w-4 h-4" />,  color: '#8b5cf6', title: '3–7 Day Launch',         description: 'We move fast without sacrificing quality. See results in days, not months.' },
+    { icon: <Search className="w-4 h-4" />, color: '#06b6d4', title: 'SEO + Ads Built In',     description: 'Traffic strategies baked in from the start — no expensive upsells.' },
+    { icon: <ShieldCheck className="w-4 h-4" />, color: '#22c55e', title: 'You Own Everything', description: 'No vendor lock-in. Your domain, your content, your site — always.' },
+    { icon: <TrendingUp className="w-4 h-4" />, color: '#f97316', title: 'Proven Track Record', description: 'Real results for real businesses. Check our portfolio to see the proof.' },
   ];
 
   return (
@@ -1100,7 +1229,7 @@ const WhyChooseUs = () => {
               WHY BUSINESSES <br />
               <span className="gradient-text">CHOOSE US</span>
             </h2>
-            <p className="text-gray-400 text-lg mb-10 leading-relaxed">
+            <p className="text-gray-400 text-lg mb-8 leading-relaxed">
               We don't just build websites — we build{' '}
               <MarkerHighlight
                 highlight="growth engines"
@@ -1108,24 +1237,9 @@ const WhyChooseUs = () => {
                 textColor="white"
                 delay={0.15}
               />{' '}
-              tuned to your market. Our focus is always on one metric: your return on investment.
+              tuned to your market. One metric: your return on investment.
             </p>
-            <div className="space-y-5">
-              {features.map((f, i) => (
-                <motion.div key={i}
-                  initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.08 }} viewport={{ once: true }}
-                  className="flex gap-4 group">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600/15 flex items-center justify-center text-blue-400 flex-shrink-0 group-hover:bg-blue-600/25 transition-colors">
-                    {f.icon}
-                  </div>
-                  <div>
-                    <h4 className="text-white font-bold mb-0.5">{f.title}</h4>
-                    <p className="text-gray-400 text-sm leading-relaxed">{f.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            <FeatureCarousel features={features} />
           </motion.div>
 
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }}
