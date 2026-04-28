@@ -169,34 +169,83 @@ export default function LeadFinder() {
 
   /* ── Main UI ── */
   return (
-    <div className="min-h-screen bg-[#030712] pt-20 pb-16">
+    <div className="min-h-screen bg-[#030712] pb-16">
       <div className="absolute inset-0 bg-grid opacity-15 pointer-events-none"/>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+      {/* ── Hero header ── */}
+      <div className="relative overflow-hidden bg-[#030712] pt-24 pb-8 mb-6">
+        {/* Glow orbs */}
+        <div className="absolute top-0 left-1/4 w-[500px] h-[200px] bg-blue-600/10 blur-[100px] rounded-full pointer-events-none"/>
+        <div className="absolute top-0 right-1/4 w-[400px] h-[200px] bg-purple-600/8 blur-[80px] rounded-full pointer-events-none"/>
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent"/>
 
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="font-display text-4xl text-white">LEAD FINDER</h1>
-            <p className="text-gray-400 text-sm mt-1">Outscraper → Filter → HighLevel → Close</p>
-          </div>
-          {/* Stats */}
-          <div className="flex gap-3">
-            {[
-              { icon:<Target className="w-4 h-4"/>,     val:stats.hot,   label:'Hot Today',    color:'#ef4444' },
-              { icon:<Send className="w-4 h-4"/>,        val:stats.today, label:'Pushed Today',  color:'#22c55e' },
-              { icon:<BarChart3 className="w-4 h-4"/>,   val:stats.total, label:'Total Sent',    color:'#3b82f6' },
-              { icon:<TrendingUp className="w-4 h-4"/>,  val:Math.floor(stats.total*0.05), label:'Est. Closes', color:'#8b5cf6' },
-            ].map((s,i) => (
-              <div key={i} className="text-center px-4 py-3 rounded-xl"
-                style={{ background:`${s.color}12`, border:`1px solid ${s.color}30` }}>
-                <div className="flex items-center gap-1 justify-center mb-0.5" style={{ color:s.color }}>
-                  {s.icon}<span className="font-bold text-lg">{s.val}</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+          {/* Title row */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-xl btn-neon flex items-center justify-center flex-shrink-0">
+                  <Target className="w-5 h-5 text-white"/>
                 </div>
-                <p className="text-gray-600 text-[10px] uppercase tracking-wider">{s.label}</p>
+                <p className="text-blue-400 text-xs font-bold uppercase tracking-widest">Admin — VCV Web Solutions</p>
               </div>
+              <h1 className="font-display text-6xl md:text-7xl text-white leading-none"
+                style={{ textShadow:'0 0 40px rgba(59,130,246,0.5)' }}>
+                LEAD<br/><span className="gradient-text">FINDER</span>
+              </h1>
+              <div className="flex items-center gap-2 mt-3">
+                {['Outscraper','→','Filter','→','HighLevel','→','Close'].map((s,i) => (
+                  <span key={i} className={s==='→' ? 'text-gray-700 text-sm' : 'text-xs font-bold px-2.5 py-1 rounded-full'}
+                    style={s!=='→' ? { background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)', color:'#9ca3af' } : {}}>
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Revenue potential callout */}
+            <div className="glass-card px-6 py-4 text-right"
+              style={{ borderColor:'rgba(34,197,94,0.25)', background:'rgba(34,197,94,0.05)' }}>
+              <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Est. Revenue Potential</p>
+              <p className="font-display text-3xl text-green-400"
+                style={{ textShadow:'0 0 20px rgba(34,197,94,0.5)' }}>
+                ${(Math.floor(stats.total * 0.05) * 1497).toLocaleString()}
+              </p>
+              <p className="text-gray-600 text-xs mt-0.5">{Math.floor(stats.total*0.05)} est. closes × $1,497</p>
+            </div>
+          </div>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { icon:<Target className="w-5 h-5"/>,    val:stats.hot,                      label:'Hot Leads Today',  sub:'No website',          color:'#ef4444' },
+              { icon:<Send className="w-5 h-5"/>,       val:stats.today,                    label:'Pushed to HL',     sub:'Today',               color:'#22c55e' },
+              { icon:<BarChart3 className="w-5 h-5"/>,  val:stats.total,                    label:'Total Sent',       sub:'All time',            color:'#3b82f6' },
+              { icon:<TrendingUp className="w-5 h-5"/>, val:Math.floor(stats.total*0.05),   label:'Est. Closes',      sub:'At 5% conversion',    color:'#8b5cf6' },
+            ].map((s,i) => (
+              <motion.div key={i}
+                initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}
+                transition={{ delay: i*0.08 }}
+                className="rounded-2xl p-5 flex items-center gap-4"
+                style={{ background:`${s.color}10`, border:`1px solid ${s.color}30` }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background:`${s.color}20`, color:s.color }}>
+                  {s.icon}
+                </div>
+                <div>
+                  <p className="font-display text-3xl text-white leading-none"
+                    style={{ textShadow:`0 0 15px ${s.color}60` }}>{s.val.toLocaleString()}</p>
+                  <p className="text-white text-xs font-semibold mt-0.5">{s.label}</p>
+                  <p className="text-gray-600 text-[10px]">{s.sub}</p>
+                </div>
+              </motion.div>
             ))}
           </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="hidden">{/* spacer removed */}</div>
         </div>
 
         {/* Search form */}
@@ -425,6 +474,7 @@ export default function LeadFinder() {
           </div>
         </div>
 
+      </div>
       </div>
     </div>
   );
