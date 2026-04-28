@@ -1,9 +1,10 @@
 'use client';
 import { motion } from 'motion/react';
-import { CheckCircle2, ArrowRight, X, HelpCircle, TrendingUp, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '../lib/utils';
 import { useState } from 'react';
+import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay } from '@/components/PageEffects';
 
 const PricingCard = ({ name, description, price, setup, features, isPopular }: any) => (
   <motion.div
@@ -104,12 +105,9 @@ export default function Pricing() {
 
       {/* ── Animated hero ── */}
       <section className="relative pt-28 pb-16 overflow-hidden">
-        {/* Orbs */}
-        <div className="absolute top-[-5%] left-[5%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[130px] pointer-events-none animate-orb" />
-        <div className="absolute bottom-[-10%] right-[5%] w-[450px] h-[450px] bg-purple-600/10 rounded-full blur-[130px] pointer-events-none animate-orb-delay" />
-        <div className="absolute top-[40%] left-[40%] w-[300px] h-[300px] bg-cyan-500/6 rounded-full blur-[100px] pointer-events-none animate-orb-slow" />
-        <div className="absolute inset-0 bg-grid opacity-[0.35] pointer-events-none" />
-        <div className="absolute inset-0 bg-dot  opacity-[0.15] pointer-events-none" />
+        <ParticleCanvas />
+        <SectionOrbs variant="mixed" />
+        <GridOverlay gridOp={0.35} dotOp={0.15} />
 
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{ opacity:0,y:30 }} animate={{ opacity:1,y:0 }} transition={{ duration:.7 }}>
@@ -145,8 +143,14 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* Pricing Cards — 2 columns */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-24 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+      <MarqueeBand />
+
+      {/* Pricing Cards — 2 columns with static electricity bg */}
+      <div className="relative py-16 overflow-hidden bg-[#030712]">
+        <StaticElectricity />
+        <SectionOrbs variant="blue" />
+        <GridOverlay gridOp={0.25} dotOp={0.1} />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start relative z-10">
         {packages.map((pkg, idx) => (
           <div key={idx} className={cn(
             "premium-card p-8 flex flex-col relative transition-all duration-300",
@@ -211,15 +215,20 @@ export default function Pricing() {
           </div>
         ))}
       </div>
+      </div>{/* end static electricity wrapper */}
 
       {/* ROI Section */}
-      <section className="py-24 bg-[#040a16]">
-        <div className="max-w-4xl mx-auto px-4 text-center">
+      <section className="py-20 relative overflow-hidden bg-[#040a16]">
+        <SectionOrbs variant="cyan" />
+        <GridOverlay gridOp={0.2} dotOp={0.1} />
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
           <TrendingUp className="w-12 h-12 text-blue-500 mx-auto mb-6" />
-          <h2 className="text-3xl font-bold text-white mb-6">This Is Not a Cost — It Is an Investment</h2>
+          <h2 className="font-display text-5xl text-white mb-4">NOT A COST — AN INVESTMENT</h2>
           <p className="text-gray-400 text-lg">
             If your website brings even 2 to 3 extra jobs per month, it pays for itself.
           </p>
+          </motion.div>
         </div>
       </section>
 
