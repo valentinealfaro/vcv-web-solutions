@@ -1220,7 +1220,30 @@ const WhyChooseUs = () => {
 
   return (
     <section className="py-24 bg-[#040a16] relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-purple-600/6 blur-[100px] rounded-full" />
+      {/* ── Animated orbs — one per feature-card color ──────── */}
+      <div className="absolute top-[-8%]  left-[-4%]  w-[420px] h-[420px] rounded-full blur-[110px] pointer-events-none animate-orb"
+        style={{ background:'rgba(37,99,235,0.10)' }} />
+      <div className="absolute top-[-4%]  right-[-4%] w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none animate-orb-delay"
+        style={{ background:'rgba(124,58,237,0.09)' }} />
+      <div className="absolute bottom-[-8%] left-[4%]  w-[360px] h-[360px] rounded-full blur-[100px] pointer-events-none animate-orb-slow"
+        style={{ background:'rgba(6,182,212,0.08)' }} />
+      <div className="absolute bottom-[-4%] right-[8%] w-[320px] h-[320px] rounded-full blur-[95px]  pointer-events-none animate-orb"
+        style={{ background:'rgba(34,197,94,0.07)', animationDelay:'3s' }} />
+      <div className="absolute top-[35%]  left-[42%] w-[260px] h-[260px] rounded-full blur-[85px]  pointer-events-none animate-orb-delay"
+        style={{ background:'rgba(249,115,22,0.07)', animationDelay:'1.5s' }} />
+      <div className="absolute top-[20%]  right-[22%] w-[200px] h-[200px] rounded-full blur-[70px]  pointer-events-none animate-orb-slow"
+        style={{ background:'rgba(236,72,153,0.06)', animationDelay:'5s' }} />
+
+      {/* Grid + dot pattern overlay */}
+      <div className="absolute inset-0 bg-grid opacity-[0.35] pointer-events-none" />
+      <div className="absolute inset-0 bg-dot  opacity-[0.25] pointer-events-none" />
+
+      {/* Top edge glow line */}
+      <div className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+        style={{ background:'linear-gradient(90deg,transparent,rgba(37,99,235,0.4),rgba(124,58,237,0.3),transparent)' }} />
+      {/* Bottom edge glow line */}
+      <div className="absolute bottom-0 left-0 right-0 h-px pointer-events-none"
+        style={{ background:'linear-gradient(90deg,transparent,rgba(6,182,212,0.3),transparent)' }} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
