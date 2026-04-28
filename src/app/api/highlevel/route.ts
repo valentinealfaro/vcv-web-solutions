@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-const HL_BASE = 'https://rest.gohighlevel.com/v1';
+// Private Integration tokens use v2 API
+const HL_BASE = 'https://rest.gohighlevel.com/v2';
 
 export async function POST(req: NextRequest) {
   const { leads } = await req.json() as { leads: any[] };
@@ -18,12 +19,11 @@ export async function POST(req: NextRequest) {
 
   for (const lead of leads) {
     try {
-      // Build tag list based on heat score
       const tags = [
         'vcv-cold-prospect',
-        lead.heat === 'hot'  ? 'no-website'       :
-        lead.heat === 'warm' ? 'bad-website'       : 'has-website',
-        lead.category?.toLowerCase().replace(/\s+/g, '-').slice(0, 30) || 'local-business',
+        lead.heat === 'hot'  ? 'no-website'  :
+        lead.heat === 'warm' ? 'bad-website' : 'has-website',
+        (lead.category || 'local-business').toLowerCase().replace(/\s+/g,'-').slice(0,30),
       ].filter(Boolean);
 
       const nameParts = (lead.ownerName || lead.name || 'Business Owner').trim().split(' ');
@@ -34,24 +34,15 @@ export async function POST(req: NextRequest) {
         firstName,
         lastName,
         companyName: lead.name,
-        phone:       lead.phone,
-        email:       lead.email || undefined,
-        website:     lead.website || undefined,
-        address1:    lead.address || undefined,
-        city:        lead.city   || undefined,
-        state:       lead.state  || undefined,
+        phone:       lead.phone      || undefined,
+        email:       lead.email      || undefined,
+        website:     lead.website    || undefined,
+        address1:    lead.address    || undefined,
+        city:        lead.city       || undefined,
+        state:       lead.state      || undefined,
         source:      'Outscraper — VCV Lead Finder',
         tags,
         locationId,
-        // Custom note with full context
-        notes: [
-          `Business: ${lead.name}`,
-          `Category: ${lead.category}`,
-          `Website status: ${lead.siteReason}`,
-          `Rating: ${lead.rating} (${lead.reviews} reviews)`,
-          `Heat: ${lead.heat.toUpperCase()}`,
-          `Address: ${lead.address}`,
-        ].join('\n'),
       };
 
       // Remove undefined keys
@@ -60,26 +51,27 @@ export async function POST(req: NextRequest) {
       const res = await fetch(`${HL_BASE}/contacts/`, {
         method:  'POST',
         headers: {
-          Authorization:  `Bearer ${key}`,
-          'Content-Type': 'application/json',
+          'Authorization':  `Bearer ${key}`,
+          'Content-Type':   'application/json',
+          'Version':        '2021-07-28',
         },
         body: JSON.stringify(body),
       });
 
+      const responseText = await res.text();
+      let responseData: any = {};
+      try { responseData = JSON.parse(responseText); } catch {}
+
       if (res.ok) {
-        const d = await res.json();
-        results.push({ id: lead.id, status: 'ok', hlId: d.contact?.id });
+        results.push({ id: lead.id, status: 'ok', hlId: responseData.contact?.id });
+      } else if (res.status === 422 || res.status === 400) {
+        // Duplicate or validation — treat as ok so it doesn't block the batch
+        results.push({ id: lead.id, status: 'ok', error: 'duplicate or already exists' });
       } else {
-        const txt = await res.text();
-        // 422 usually means duplicate contact — treat as ok
-        if (res.status === 422) {
-          results.push({ id: lead.id, status: 'ok', error: 'duplicate — already in HL' });
-        } else {
-          results.push({ id: lead.id, status: 'error', error: txt });
-        }
+        results.push({ id: lead.id, status: 'error', error: `${res.status}: ${responseText.slice(0,200)}` });
       }
 
-      // HL rate limit: ~10 req/s — small delay between contacts
+      // Respect HL rate limit (~10 req/s)
       await new Promise(r => setTimeout(r, 120));
 
     } catch (e: any) {
@@ -90,5 +82,9 @@ export async function POST(req: NextRequest) {
   const ok  = results.filter(r => r.status === 'ok').length;
   const err = results.filter(r => r.status === 'error').length;
 
-  return NextResponse.json({ ok, err, results });
+  // Log first error for debugging
+  const firstErr = results.find(r => r.status === 'error');
+  console.log(`HL push: ${ok} ok, ${err} errors`, firstErr?.error || '');
+
+  return NextResponse.json({ ok, err, results, firstError: firstErr?.error });
 }

@@ -110,15 +110,20 @@ export default function LeadFinder() {
         body: JSON.stringify({ leads: toSend }),
       });
       const d = await res.json();
+      if (d.ok === 0 && d.err > 0) {
+        alert(`HighLevel error: ${d.firstError || 'Check API key and Location ID in Vercel env vars'}`);
+      }
       setPushResult({ ok: d.ok, err: d.err });
 
-      /* Save sent IDs to Firebase to prevent duplicates */
-      await Promise.all(toSend.map(l =>
-        addDoc(collection(db, 'sent_leads'), {
-          leadId: l.id, name: l.name, phone: l.phone,
-          city: l.city, heat: l.heat, sentAt: serverTimestamp(),
-        })
-      ));
+      /* Save sent IDs to Firebase — non-blocking, ignore permission errors */
+      try {
+        await Promise.all(toSend.map(l =>
+          addDoc(collection(db, 'sent_leads'), {
+            leadId: l.id, name: l.name, phone: l.phone,
+            city: l.city, heat: l.heat, sentAt: serverTimestamp(),
+          })
+        ));
+      } catch { /* Firebase rules may not allow — HL push already succeeded */ }
 
       setSentIds(prev => new Set([...prev, ...toSend.map(l => l.id)]));
       setLeads(prev => prev.filter(l => !selected.has(l.id)));
