@@ -116,26 +116,6 @@ export default function Services() {
         </div>
       </div>
 
-      {/* Demo Section */}
-      <section className="py-24 bg-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-16">See What Your Website Could Look Like</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { title: "Roofing Company Website", img: "https://picsum.photos/seed/roofing/800/600" },
-              { title: "Junk Removal Website", img: "https://picsum.photos/seed/junk/800/600" },
-              { title: "Food Truck Website", img: "https://picsum.photos/seed/foodtruck/800/600" }
-            ].map((demo, i) => (
-              <div key={i} className="premium-card p-4 card-hover">
-                <div className="aspect-video rounded-xl mb-4 overflow-hidden border border-white/10">
-                  <img src={demo.img} alt={demo.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <h3 className="text-white font-bold text-lg">{demo.title}</h3>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* What Makes This Different */}
       <section className="py-24 bg-gray-950">
