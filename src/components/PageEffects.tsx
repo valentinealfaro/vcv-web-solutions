@@ -1,6 +1,52 @@
 'use client';
 import { useEffect, useRef } from 'react';
 
+/* ─── Rainbow wave canvas — full-width / full-height background ── */
+export const RainbowWavesCanvas = () => {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = ref.current; if (!canvas) return;
+    const ctx = canvas.getContext('2d'); if (!ctx) return;
+    let animId: number;
+    const PALETTE = [
+      '#ef4444','#f97316','#eab308','#22c55e',
+      '#06b6d4','#3b82f6','#8b5cf6','#ec4899',
+      '#ef4444','#f97316','#eab308','#22c55e',
+    ];
+    const N = 12;
+    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
+    let t = 0;
+    const draw = () => {
+      animId = requestAnimationFrame(draw);
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < N; i++) {
+        const baseY = (h / (N + 1)) * (i + 1);
+        const freq  = 0.0048 + i * 0.00055;
+        const amp   = 28 + i * 3.5;
+        const speed = 0.011 + i * 0.0028;
+        const phase = i * ((Math.PI * 2) / N);
+        const drift = Math.sin(t * 0.007 + i * 0.8) * 18;
+        const color = PALETTE[i % PALETTE.length];
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += 2) {
+          const y = baseY + drift + amp * Math.sin(x * freq + t * speed + phase);
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = color; ctx.lineWidth = 3;
+        ctx.globalAlpha = 0.55; ctx.shadowColor = color; ctx.shadowBlur = 22; ctx.stroke();
+        ctx.lineWidth = 1.2; ctx.globalAlpha = 0.85; ctx.shadowBlur = 8; ctx.stroke();
+        ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+      }
+      t++;
+    };
+    resize(); draw();
+    window.addEventListener('resize', resize);
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+  }, []);
+  return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none" />;
+};
+
 /* ─── Color-cycling particle canvas (exact home page version) ─ */
 export const ParticleCanvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
