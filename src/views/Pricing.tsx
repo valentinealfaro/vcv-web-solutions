@@ -345,40 +345,38 @@ export default function Pricing() {
         <SectionOrbs variant="cyan" />
         <GridOverlay gridOp={0.2} dotOp={0.1} />
 
-        {/* Floating money emojis */}
+        {/* Freely roaming money emojis — each travels a unique multi-point path */}
         {[
-          { e:'💰', x:'5%',  dur:6,  delay:0,   size:36 },
-          { e:'💵', x:'15%', dur:8,  delay:1.2, size:30 },
-          { e:'💸', x:'28%', dur:7,  delay:0.5, size:34 },
-          { e:'🤑', x:'42%', dur:9,  delay:2,   size:32 },
-          { e:'💳', x:'58%', dur:6.5,delay:0.8, size:28 },
-          { e:'💎', x:'70%', dur:8.5,delay:1.5, size:32 },
-          { e:'💵', x:'80%', dur:7.5,delay:0.3, size:30 },
-          { e:'💰', x:'91%', dur:6,  delay:1.8, size:36 },
-          { e:'📈', x:'35%', dur:9,  delay:0.6, size:30 },
-          { e:'💸', x:'52%', dur:7,  delay:2.2, size:28 },
-          { e:'🏦', x:'64%', dur:8,  delay:1,   size:30 },
-          { e:'💲', x:'88%', dur:6.5,delay:0.4, size:26 },
+          { e:'💰', x:'5%',  y:'15%', dur:7,  delay:0,   size:34, rx:[0, 80,-50,120,-30, 0], ry:[0,-40, 70,-20, 50, 0] },
+          { e:'💵', x:'18%', y:'58%', dur:10, delay:1.5, size:28, rx:[0,-70, 50,-90, 40, 0], ry:[0, 50,-60, 30,-70, 0] },
+          { e:'💸', x:'32%', y:'22%', dur:8,  delay:0.8, size:32, rx:[0, 60,-80, 40,-60, 0], ry:[0,-60, 40,-80, 60, 0] },
+          { e:'🤑', x:'47%', y:'74%', dur:11, delay:2.2, size:30, rx:[0,-90, 60,-40, 80, 0], ry:[0, 40,-70, 50,-40, 0] },
+          { e:'💳', x:'62%', y:'18%', dur:9,  delay:0.5, size:26, rx:[0, 70,-50, 90,-60, 0], ry:[0,-50, 80,-30, 60, 0] },
+          { e:'💎', x:'75%', y:'64%', dur:12, delay:1.8, size:30, rx:[0,-60, 80,-70, 50, 0], ry:[0, 60,-40, 70,-50, 0] },
+          { e:'📈', x:'88%', y:'32%', dur:8,  delay:1.2, size:28, rx:[0,-80, 50,-60, 70, 0], ry:[0,-40, 60,-70, 40, 0] },
+          { e:'🏦', x:'10%', y:'80%', dur:14, delay:0.3, size:28, rx:[0, 90,-60, 70,-80, 0], ry:[0,-70, 50,-60, 80, 0] },
+          { e:'💲', x:'40%', y:'85%', dur:9,  delay:2.8, size:24, rx:[0,-50, 80,-40, 60, 0], ry:[0, 60,-50, 70,-40, 0] },
+          { e:'💵', x:'55%', y:'6%',  dur:11, delay:1,   size:26, rx:[0, 60,-70, 50,-60, 0], ry:[0, 50,-60, 40,-50, 0] },
+          { e:'💰', x:'70%', y:'82%', dur:7,  delay:3,   size:32, rx:[0,-70, 60,-50, 80, 0], ry:[0,-50, 70,-60, 50, 0] },
+          { e:'💸', x:'22%', y:'44%', dur:10, delay:0.7, size:28, rx:[0, 80,-60, 70,-50, 0], ry:[0, 40,-70, 50,-60, 0] },
+          { e:'🤑', x:'83%', y:'52%', dur:13, delay:2,   size:30, rx:[0,-60, 80,-50, 60, 0], ry:[0,-60, 50,-70, 60, 0] },
+          { e:'💎', x:'94%', y:'20%', dur:8,  delay:1.3, size:26, rx:[0,-80, 50,-70, 60, 0], ry:[0, 50,-60, 70,-50, 0] },
+          { e:'💵', x:'50%', y:'40%', dur:15, delay:0.6, size:22, rx:[0, 70,-60, 80,-50, 0], ry:[0,-60, 80,-50, 60, 0] },
+          { e:'📈', x:'3%',  y:'48%', dur:9,  delay:2.4, size:26, rx:[0, 90,-70, 60,-80, 0], ry:[0, 50,-80, 40,-60, 0] },
         ].map((m, i) => (
-          <div key={i} style={{
-            position:'absolute', left:m.x, bottom:'-10%',
-            fontSize: m.size, pointerEvents:'none', zIndex:1, opacity:0.55,
-            animation:`floatMoney ${m.dur}s ease-in-out infinite`,
-            animationDelay:`${m.delay}s`,
-          }}>
+          <motion.div key={i}
+            style={{ position:'absolute', left:m.x, top:m.y, fontSize:m.size, pointerEvents:'none', zIndex:1 }}
+            animate={{
+              x:       m.rx,
+              y:       m.ry,
+              rotate:  [0, 18, -14, 24, -8, 0],
+              scale:   [1, 1.22, 0.88, 1.18, 0.94, 1],
+              opacity: [0.55, 0.88, 0.62, 0.92, 0.58, 0.55],
+            }}
+            transition={{ duration:m.dur, delay:m.delay, repeat:Infinity, ease:'easeInOut', times:[0,.2,.4,.6,.8,1] }}>
             {m.e}
-          </div>
+          </motion.div>
         ))}
-
-        <style>{`
-          @keyframes floatMoney {
-            0%   { transform: translateY(0px)   rotate(-8deg)  scale(1);    opacity: 0.45; }
-            25%  { transform: translateY(-40px) rotate(5deg)   scale(1.12); opacity: 0.65; }
-            50%  { transform: translateY(-80px) rotate(-4deg)  scale(1);    opacity: 0.55; }
-            75%  { transform: translateY(-50px) rotate(8deg)   scale(1.08); opacity: 0.6;  }
-            100% { transform: translateY(-120px)rotate(-6deg)  scale(0.9);  opacity: 0;    }
-          }
-        `}</style>
 
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
