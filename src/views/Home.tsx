@@ -1003,6 +1003,16 @@ const PerfectFor = () => {
 
   const W = containerRef.current?.offsetWidth || 800;
   const [mobilePopup, setMobilePopup] = useState<Biz | null>(null);
+  const [popLabels,   setPopLabels]   = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    const show = setInterval(() => {
+      const biz = BUSINESSES[Math.floor(Math.random() * BUSINESSES.length)];
+      setPopLabels(prev => new Set([...prev, biz.id]));
+      setTimeout(() => setPopLabels(prev => { const n = new Set(prev); n.delete(biz.id); return n; }), 2200);
+    }, 700);
+    return () => clearInterval(show);
+  }, []);
 
   return (
     <section style={{ borderTop: '1px solid rgba(37,99,235,0.15)', borderBottom: '1px solid rgba(37,99,235,0.15)', background: '#030712', position:'relative', overflow:'hidden' }}>
@@ -1022,10 +1032,36 @@ const PerfectFor = () => {
 
       {/* ══ MOBILE: 3-col scrollable grid ══ */}
       <div className="md:hidden px-3 pb-6 relative z-10">
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-3 gap-2.5" style={{ overflow:'visible' }}>
           {BUSINESSES.map((biz, idx) => (
+            <div key={biz.id} style={{ position:'relative' }}>
+              {/* Random pop-up label */}
+              <AnimatePresence>
+                {popLabels.has(biz.id) && (
+                  <motion.div
+                    initial={{ opacity:0, scale:0.5, y:4 }}
+                    animate={{ opacity:1, scale:1, y:-4 }}
+                    exit={{ opacity:0, scale:0.5, y:4 }}
+                    transition={{ type:'spring', stiffness:400, damping:20 }}
+                    style={{
+                      position:'absolute', top:-28, left:'50%', transform:'translateX(-50%)',
+                      background: biz.color, color:'#fff', padding:'3px 9px',
+                      borderRadius:20, fontSize:9, fontWeight:800, whiteSpace:'nowrap',
+                      zIndex:50, boxShadow:`0 0 14px ${biz.color}90`,
+                      pointerEvents:'none',
+                    }}>
+                    {biz.name}
+                    {/* little arrow */}
+                    <div style={{
+                      position:'absolute', bottom:-4, left:'50%', transform:'translateX(-50%)',
+                      width:0, height:0,
+                      borderLeft:'4px solid transparent', borderRight:'4px solid transparent',
+                      borderTop:`5px solid ${biz.color}`,
+                    }}/>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             <motion.button
-              key={biz.id}
               onClick={() => setMobilePopup(biz)}
               initial={{ opacity: 0, scale: 0.7 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -1062,6 +1098,7 @@ const PerfectFor = () => {
                 {biz.name}
               </span>
             </motion.button>
+            </div>
           ))}
         </div>
 
