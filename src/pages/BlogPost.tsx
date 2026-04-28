@@ -29,7 +29,7 @@ export default function BlogPost() {
       setLoading(false);
     };
     fetchPost();
-  }, [slug, navigate]);
+  }, [slug, router]);
 
   if (loading) {
     return (
