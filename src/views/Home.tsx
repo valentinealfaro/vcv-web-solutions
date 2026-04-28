@@ -835,8 +835,8 @@ const PerfectFor = () => {
 
   useEffect(() => {
     const W = containerRef.current?.offsetWidth || 1200;
-    const H = 560;
-    const CEIL = 165;
+    const H = 400;
+    const CEIL = 0;
 
     ballsRef.current = BUSINESSES.map((biz, i) => {
       const cols = 5;
@@ -846,7 +846,7 @@ const PerfectFor = () => {
       return {
         id: i, biz, r,
         x: (col + 0.5) * (W / cols) + (Math.random() - 0.5) * 60,
-        y: CEIL + r + row * 100 + (Math.random() - 0.5) * 30,
+        y: r + row * 90 + (Math.random() - 0.5) * 30,
         vx: (Math.random() - 0.5) * 2.2,
         vy: (Math.random() - 0.5) * 2.2,
         alive: true,
@@ -863,8 +863,8 @@ const PerfectFor = () => {
         b.x += b.vx; b.y += b.vy;
         if (b.x - b.r < 0)    { b.x = b.r;       b.vx =  Math.abs(b.vx); }
         if (b.x + b.r > W2)   { b.x = W2 - b.r;  b.vx = -Math.abs(b.vx); }
-        if (b.y - b.r < CEIL) { b.y = CEIL + b.r; b.vy =  Math.abs(b.vy); }
-        if (b.y + b.r > H)    { b.y = H - b.r;    b.vy = -Math.abs(b.vy); }
+        if (b.y - b.r < 0) { b.y = b.r;      b.vy =  Math.abs(b.vy); }
+        if (b.y + b.r > H) { b.y = H - b.r;  b.vy = -Math.abs(b.vy); }
       }
       for (let i = 0; i < balls.length; i++) {
         if (!balls[i].alive) continue;
@@ -912,10 +912,107 @@ const PerfectFor = () => {
   };
 
   const W = containerRef.current?.offsetWidth || 800;
+  const [mobilePopup, setMobilePopup] = useState<Biz | null>(null);
 
   return (
-    <section ref={containerRef} className="relative overflow-hidden"
-      style={{ height: 560, borderTop: '1px solid rgba(37,99,235,0.15)', borderBottom: '1px solid rgba(37,99,235,0.15)', background: '#030712' }}>
+    <section style={{ borderTop: '1px solid rgba(37,99,235,0.15)', borderBottom: '1px solid rgba(37,99,235,0.15)', background: '#030712' }}>
+
+      {/* ── Shared heading ── */}
+      <div className="text-center pt-8 pb-4 px-4 relative z-10">
+        <p className="neon-badge mx-auto w-fit mb-3">Who We Help</p>
+        <h2 className="font-display text-white mb-2"
+          style={{ fontSize:'clamp(2.8rem,8vw,7rem)', lineHeight:1,
+            textShadow:'0 0 50px rgba(37,99,235,0.6), 0 0 100px rgba(124,58,237,0.3), 0 2px 0 rgba(0,0,0,0.9)' }}>
+          PERFECT FOR
+        </h2>
+        <p className="text-gray-400 text-sm tracking-wide hidden md:block">Watch the avatar visit bubbles — or click any bubble yourself</p>
+        <p className="text-gray-400 text-sm tracking-wide md:hidden">Tap any card to see how a website grows that business</p>
+      </div>
+
+      {/* ══ MOBILE: 3-col scrollable grid ══ */}
+      <div className="md:hidden px-3 pb-6 relative z-10">
+        <div className="grid grid-cols-3 gap-2.5">
+          {BUSINESSES.map(biz => (
+            <button
+              key={biz.id}
+              onClick={() => setMobilePopup(biz)}
+              style={{
+                background: `${biz.color}18`,
+                border: `1.5px solid ${biz.color}55`,
+                borderRadius: 14,
+                padding: '14px 8px 12px',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7,
+                cursor: 'pointer',
+                boxShadow: `0 0 14px ${biz.color}20`,
+                transition: 'transform 0.15s, box-shadow 0.15s',
+              }}
+              onTouchStart={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(0.95)'; }}
+              onTouchEnd={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'; }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%',
+                background: `radial-gradient(circle at 35% 30%, ${biz.color}cc, ${biz.color}44)`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: `0 0 12px ${biz.color}55` }}>
+                <biz.Icon size={16} style={{ color: 'white' }} />
+              </div>
+              <span style={{ color: '#f1f5f9', fontSize: 9.5, fontWeight: 800,
+                textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center',
+                lineHeight: 1.25, textShadow: `0 0 8px ${biz.color}60` }}>
+                {biz.name}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Mobile card popup — centered fixed overlay */}
+        <AnimatePresence>
+          {mobilePopup && (
+            <motion.div
+              initial={{ opacity:0, y:50 }} animate={{ opacity:1, y:0 }}
+              exit={{ opacity:0, y:50 }} transition={{ type:'spring', stiffness:280, damping:22 }}
+              onClick={() => setMobilePopup(null)}
+              style={{ position:'fixed', inset:0, zIndex:300, display:'flex',
+                alignItems:'flex-end', justifyContent:'center',
+                padding: '0 12px 24px', background:'rgba(0,0,0,0.7)',
+                backdropFilter:'blur(6px)' }}>
+              <div onClick={e => e.stopPropagation()}
+                style={{ width:'100%', maxWidth:400, background:'rgba(6,10,22,0.98)',
+                  border:`1.5px solid ${mobilePopup.color}60`, borderRadius:20,
+                  padding:24, boxShadow:`0 0 60px ${mobilePopup.color}30, 0 -24px 64px rgba(0,0,0,0.8)` }}>
+                <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:16 }}>
+                  <div style={{ width:52, height:52, borderRadius:14,
+                    background:`radial-gradient(circle at 35% 30%, ${mobilePopup.color}cc, ${mobilePopup.color}33)`,
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    boxShadow:`0 0 20px ${mobilePopup.color}55`, flexShrink:0 }}>
+                    <mobilePopup.Icon size={24} style={{ color:'white' }} />
+                  </div>
+                  <div>
+                    <p style={{ color:'#f8fafc', fontWeight:800, fontSize:18, margin:'0 0 4px' }}>{mobilePopup.name}</p>
+                    <p style={{ color:mobilePopup.color, fontSize:11, fontWeight:700,
+                      textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>Industry Insight</p>
+                  </div>
+                </div>
+                <div style={{ background:`${mobilePopup.color}18`, border:`1px solid ${mobilePopup.color}40`,
+                  borderRadius:12, padding:'10px 14px', marginBottom:14,
+                  display:'flex', alignItems:'center', gap:10 }}>
+                  <TrendingUp size={14} style={{ color:mobilePopup.color, flexShrink:0 }} />
+                  <span style={{ color:'#e2e8f0', fontWeight:700, fontSize:13 }}>{mobilePopup.stat}</span>
+                </div>
+                <p style={{ color:'#94a3b8', fontSize:13, lineHeight:1.7, marginBottom:18 }}>{mobilePopup.detail}</p>
+                <button onClick={() => setMobilePopup(null)}
+                  style={{ width:'100%', padding:'12px', borderRadius:12, border:'none', cursor:'pointer',
+                    background:`${mobilePopup.color}25`, color:mobilePopup.color,
+                    fontWeight:700, fontSize:13, letterSpacing:'0.05em' }}>
+                  Close ✕
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ══ DESKTOP: physics bubbles (unchanged) ══ */}
+      <div ref={containerRef} className="relative overflow-hidden hidden md:block"
+        style={{ height: 400, background: 'transparent' }}>
 
       {/* Colorful bokeh blobs */}
       {BG_BLOBS.map((b, i) => (
@@ -925,20 +1022,6 @@ const PerfectFor = () => {
           animationDelay: `${i * 0.65}s` }} />
       ))}
       <div className="absolute inset-0 bg-grid opacity-[0.18] pointer-events-none" />
-
-      {/* Heading with opaque gradient backdrop */}
-      <div className="absolute top-0 left-0 right-0 z-40 pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, #030712 52%, transparent 100%)', paddingTop: 28, paddingBottom: 52 }}>
-        <div className="text-center">
-          <p className="neon-badge mx-auto w-fit mb-3">Who We Help</p>
-          <h2 className="font-display text-white mb-2"
-            style={{ fontSize:'clamp(3.5rem,8vw,7rem)', lineHeight:1,
-              textShadow:'0 0 50px rgba(37,99,235,0.6), 0 0 100px rgba(124,58,237,0.3), 0 2px 0 rgba(0,0,0,0.9)' }}>
-            PERFECT FOR
-          </h2>
-          <p className="text-gray-400 text-sm tracking-wide">Watch the avatar visit bubbles — or click any bubble yourself</p>
-        </div>
-      </div>
 
       {/* Bubbles */}
       {ready && ballsRef.current.map(ball => (
@@ -1082,6 +1165,8 @@ const PerfectFor = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>{/* end desktop physics div */}
+
     </section>
   );
 };
