@@ -451,11 +451,11 @@ const Hero = () => (
               Get My Free Demo
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link href="/portfolio"
-              className="glass-card text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 hover:border-blue-500/40 transition-all">
-              See Live Examples
-              <Globe className="w-4 h-4" />
-            </Link>
+            <a href="tel:+15809191386"
+              className="glass-card text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 hover:border-green-500/40 hover:text-green-300 transition-all">
+              <Phone className="w-4 h-4 text-green-400" />
+              (580) 919-1386
+            </a>
           </div>
 
           <div className="flex flex-wrap gap-6 text-sm text-gray-400">
