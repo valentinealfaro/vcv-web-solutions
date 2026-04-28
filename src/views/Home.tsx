@@ -8,16 +8,9 @@ import { Boxes } from '@/components/ui/background-boxes';
 import { MarkerHighlight } from '@/components/ui/marker-highlight';
 
 // Below-fold sections loaded lazily — each becomes its own JS chunk
-const DemoSection         = dynamic(() => import('../components/DemoSection').then(m => ({ default: m.DemoSection })), { ssr: false });
 const WhatHappensNextSection = dynamic(() => import('../components/WhatHappensNextSection').then(m => ({ default: m.WhatHappensNextSection })), { ssr: false });
-const WatchHowItWorksSection = dynamic(() => import('../components/WatchHowItWorksSection').then(m => ({ default: m.WatchHowItWorksSection })), { ssr: false });
 const LeadMagnetSection   = dynamic(() => import('../components/LeadMagnetSection').then(m => ({ default: m.LeadMagnetSection })), { ssr: false });
-const ValueStackSection   = dynamic(() => import('../components/ValueStackSection').then(m => ({ default: m.ValueStackSection })), { ssr: false });
-const TestimonialsSection = dynamic(() => import('../components/TestimonialsSection').then(m => ({ default: m.TestimonialsSection })), { ssr: false });
 const PricingSection      = dynamic(() => import('../components/PricingSection').then(m => ({ default: m.PricingSection })), { ssr: false });
-const UrgencySection      = dynamic(() => import('../components/UrgencySection').then(m => ({ default: m.UrgencySection })), { ssr: false });
-const FAQSection          = dynamic(() => import('../components/FAQSection').then(m => ({ default: m.FAQSection })), { ssr: false });
-const WhyNotDIYSection    = dynamic(() => import('../components/WhyNotDIYSection').then(m => ({ default: m.WhyNotDIYSection })), { ssr: false });
 
 /* ─── Particle Canvas ─────────────────────────────────────── */
 const ParticleCanvas = () => {
@@ -1383,20 +1376,10 @@ export default function Home() {
       <MarqueeBand />
       <StatsSection />
       <PerfectFor />
-      <DemoSection />
       <WhatHappensNextSection />
-      <ServicesOverview />
-      <WatchHowItWorksSection />
       <LeadMagnetSection />
       <WhyChooseUs />
-      <TestimonialsSection />
-      <ProcessSection />
-      <ValueStackSection />
       <PricingSection />
-      <UrgencySection />
-      <FAQSection />
-      <SEOContent />
-      <CTASection />
     </div>
   );
 }
