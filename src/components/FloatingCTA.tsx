@@ -1,46 +1,18 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence, useAnimation } from 'motion/react';
-import { ArrowRight, Rocket, MessageCircle, X, ChevronUp, Phone } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ArrowRight, Rocket, MessageCircle, X, ChevronUp } from 'lucide-react';
 
 export const FloatingCTA = () => {
-  const [visible, setVisible]     = useState(false);
-  const [chatOpen, setChatOpen]   = useState(false);
-  const [showExit, setShowExit]   = useState(false);
-  const [tabOpen, setTabOpen]     = useState(false);   // mobile tab expanded
-  const edgeControls              = useAnimation();
-  const lastScrollY               = useRef(0);
-  const attentionTimer            = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  const [visible,  setVisible]  = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [showExit, setShowExit] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 2500);
     return () => clearTimeout(t);
   }, []);
-
-  // Attention pulse: peek in from edge every 5s while user is scrolling
-  useEffect(() => {
-    const peek = () => {
-      if (tabOpen) return;
-      // Slide in → bounce → slide back
-      edgeControls.start({
-        x: [28, -8, 4, -2, 0, 28],
-        transition: { duration: 1.1, times: [0, 0.35, 0.55, 0.7, 0.85, 1], ease: 'easeInOut' },
-      });
-    };
-    // Fire on scroll (debounced)
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (Math.abs(y - lastScrollY.current) > 80) { lastScrollY.current = y; peek(); }
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    // Also fire on interval for idle users
-    attentionTimer.current = setInterval(peek, 5000);
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      clearInterval(attentionTimer.current);
-    };
-  }, [tabOpen, edgeControls]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -126,98 +98,6 @@ export const FloatingCTA = () => {
         )}
       </AnimatePresence>
 
-      {/* ── Mobile edge-peek tab (visible only on mobile, sm:hidden) ── */}
-      <motion.div
-        animate={edgeControls}
-        initial={{ x: 28 }}
-        className="fixed sm:hidden z-50"
-        style={{ top: '42%', right: 0 }}>
-
-        {/* Collapsed peek tab — sticks out from right edge */}
-        {!tabOpen && (
-          <button
-            onClick={() => { setTabOpen(true); edgeControls.stop(); }}
-            style={{
-              background: 'linear-gradient(135deg, #1d4ed8, #7c3aed)',
-              borderRadius: '14px 0 0 14px',
-              boxShadow: '-4px 0 24px rgba(37,99,235,0.55), 0 0 40px rgba(124,58,237,0.35)',
-              padding: '14px 10px 14px 14px',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-              border: '1px solid rgba(255,255,255,0.15)', borderRight: 'none',
-            }}>
-            {/* Dot indicator */}
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80',
-              boxShadow: '0 0 8px #4ade80', animation: 'pulse 1.4s ease-in-out infinite' }} />
-            <MessageCircle style={{ width: 22, height: 22, color: 'white' }} />
-            {/* Rotated label */}
-            <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 9, fontWeight: 800,
-              textTransform: 'uppercase', letterSpacing: '0.12em',
-              writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
-              Chat
-            </span>
-          </button>
-        )}
-
-        {/* Expanded panel — slides in when tapped */}
-        <AnimatePresence>
-          {tabOpen && (
-            <motion.div
-              initial={{ x: 320, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 320, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-              style={{
-                width: 280, background: 'rgba(6,10,22,0.97)',
-                borderRadius: '16px 0 0 16px', border: '1px solid rgba(99,102,241,0.4)',
-                borderRight: 'none', padding: 20,
-                boxShadow: '-8px 0 40px rgba(37,99,235,0.3)',
-              }}>
-              {/* Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: '50%',
-                    background: 'linear-gradient(135deg,#1d4ed8,#7c3aed)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Rocket style={{ width: 16, height: 16, color: 'white' }} />
-                  </div>
-                  <div>
-                    <p style={{ color: '#f1f5f9', fontWeight: 800, fontSize: 13, margin: 0 }}>VCV Web Solutions</p>
-                    <p style={{ color: '#4ade80', fontSize: 10, margin: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
-                      Online now
-                    </p>
-                  </div>
-                </div>
-                <button onClick={() => setTabOpen(false)}
-                  style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-                  <X style={{ width: 18, height: 18 }} />
-                </button>
-              </div>
-
-              <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 16, lineHeight: 1.5 }}>
-                👋 Ready to get more leads from your website?
-              </p>
-
-              <Link href="/free-demo" onClick={() => setTabOpen(false)}
-                style={{ display: 'block', background: 'linear-gradient(135deg,#1d4ed8,#7c3aed)',
-                  color: 'white', padding: '12px 16px', borderRadius: 12,
-                  textAlign: 'center', fontWeight: 800, fontSize: 13,
-                  textDecoration: 'none', marginBottom: 10,
-                  boxShadow: '0 0 20px rgba(37,99,235,0.4)' }}>
-                Get My Free Demo →
-              </Link>
-
-              <a href="tel:+15809191386"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  color: '#60a5fa', fontSize: 13, fontWeight: 700, textDecoration: 'none',
-                  padding: '10px', borderRadius: 10, background: 'rgba(37,99,235,0.1)',
-                  border: '1px solid rgba(37,99,235,0.25)' }}>
-                <Phone style={{ width: 14, height: 14 }} /> (580) 919-1386
-              </a>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
 
       {/* Exit intent popup */}
       <AnimatePresence>

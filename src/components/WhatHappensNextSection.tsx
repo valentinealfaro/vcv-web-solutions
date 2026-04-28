@@ -49,16 +49,24 @@ const CheckerBG = ({ cycle, ballPositions, clearing }: {
     const getBlocked = () => {
       const set = new Set<string>();
       const W = canvas.width;
-      // Heading zone: top ~265px, center 12–88% width
-      const hL = Math.floor(W * 0.12 / CELL), hR = Math.ceil(W * 0.88 / CELL), hB = Math.ceil(265 / CELL);
-      for (let c = hL; c <= hR; c++) for (let r = 0; r <= hB; r++) set.add(`${c},${r}`);
-      // Ball zones: 3-cell radius
-      const svgW = W * 0.88, svgL = (W - svgW) / 2, svgTop = 270;
-      ballPositions.forEach(({ svgX, svgY }) => {
-        const bc = Math.round((svgL + (svgX / 700) * svgW) / CELL);
-        const br = Math.round((svgTop + (svgY / 460) * 500) / CELL);
-        for (let dc = -3; dc <= 3; dc++) for (let dr = -3; dr <= 3; dr++) set.add(`${bc+dc},${br+dr}`);
-      });
+      const isMobile = W < 768;
+
+      if (isMobile) {
+        // On mobile: only block a narrow center strip for the heading text
+        const hL = Math.floor(W * 0.1 / CELL), hR = Math.ceil(W * 0.9 / CELL), hB = Math.ceil(120 / CELL);
+        for (let c = hL; c <= hR; c++) for (let r = 0; r <= hB; r++) set.add(`${c},${r}`);
+        // No ball blocking on mobile — squares can go everywhere else
+      } else {
+        // Desktop: block heading zone + staircase ball zones
+        const hL = Math.floor(W * 0.12 / CELL), hR = Math.ceil(W * 0.88 / CELL), hB = Math.ceil(265 / CELL);
+        for (let c = hL; c <= hR; c++) for (let r = 0; r <= hB; r++) set.add(`${c},${r}`);
+        const svgW = W * 0.88, svgL = (W - svgW) / 2, svgTop = 270;
+        ballPositions.forEach(({ svgX, svgY }) => {
+          const bc = Math.round((svgL + (svgX / 700) * svgW) / CELL);
+          const br = Math.round((svgTop + (svgY / 460) * 500) / CELL);
+          for (let dc = -3; dc <= 3; dc++) for (let dr = -3; dr <= 3; dr++) set.add(`${bc+dc},${br+dr}`);
+        });
+      }
       return set;
     };
 
