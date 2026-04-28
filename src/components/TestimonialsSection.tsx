@@ -172,13 +172,13 @@ export const TestimonialsSection = () => (
         <TestimonialShowcase
           testimonials={TESTIMONIALS}
           defaultTestimonialId="1"
-          autoPlayInterval={5000}
+          autoPlayInterval={3000}
         />
       </motion.div>
 
       {/* Hint */}
       <p className="text-center text-gray-600 text-xs mt-6">
-        Click any avatar to read their story · Auto-advances every 5 seconds
+        Click any avatar to read their story · Auto-advances every 3 seconds
       </p>
     </div>
   </section>

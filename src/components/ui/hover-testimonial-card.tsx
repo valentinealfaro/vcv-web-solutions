@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'motion/react';
+import { motion, useAnimation, useInView } from 'motion/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
@@ -62,6 +62,85 @@ const CompanyBadge = ({ company }: { company: VCVTestimonial['company'] }) => (
     </div>
   </div>
 );
+
+/* ─── Single bouncing avatar ──────────────────────────────── */
+interface BAProps {
+  t: VCVTestimonial;
+  index: number;
+  isActive: boolean;
+  onClick: () => void;
+}
+
+const BouncingAvatar: React.FC<BAProps> = ({ t, index, isActive, onClick }) => {
+  const elRef    = useRef<HTMLDivElement>(null);
+  const inView   = useInView(elRef, { once: true, amount: 0.4 });
+  const controls = useAnimation();
+  const entered  = useRef(false);
+  const timerId  = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => {
+    if (!inView || entered.current) return;
+    entered.current = true;
+
+    // Stagger: each avatar waits (index × 65ms) before starting
+    timerId.current = setTimeout(async () => {
+      // ── Phase 1: entrance drop with 3 bounces ──────────
+      await controls.start(
+        {
+          y:      [-130, 0,    -52,  0,    -22,  0,    -7,   0],
+          opacity:[0,    1,    1,    1,    1,    1,    1,    1],
+          scaleX: [0.92, 1.28, 0.94, 1.18, 0.96, 1.08, 0.99, 1],
+          scaleY: [1.08, 0.78, 1.06, 0.86, 1.03, 0.93, 1.01, 1],
+        },
+        { duration: 0.95, times: [0, 0.27, 0.44, 0.57, 0.68, 0.78, 0.88, 1], ease: 'easeInOut' }
+      );
+
+      // ── Phase 2: continuous gentle bounce, each avatar offset ─
+      const cycleLen  = 0.6;
+      const phaseShift = (index * 0.072) % cycleLen; // permanent offset per avatar
+      controls.start(
+        { y: [0, -16, 0], scaleX: [1, 0.95, 1.08], scaleY: [1, 1.05, 0.91] },
+        { duration: cycleLen, repeat: Infinity, repeatType: 'loop',
+          ease: 'easeInOut', delay: phaseShift }
+      );
+    }, index * 65);
+
+    return () => { if (timerId.current) clearTimeout(timerId.current); };
+  }, [inView]);
+
+  return (
+    <motion.div
+      ref={elRef}
+      className="relative group/av"
+      style={{ cursor: 'pointer' }}
+      onClick={onClick}
+      initial={{ y: -130, opacity: 0 }}
+      animate={controls}
+      whileHover={{ scale: 1.2 }}>
+
+      <Avatar className="h-10 w-10 rounded-xl border-2 transition-all duration-300"
+        style={{
+          borderColor: isActive ? t.company.color : 'rgba(255,255,255,0.1)',
+          boxShadow:   isActive ? `0 0 18px ${t.company.color}75` : 'none',
+        }}>
+        <AvatarImage src={t.author.avatar} alt={t.author.name} />
+        <AvatarFallback style={{
+          background: `${t.company.color}22`, color: t.company.color,
+          fontWeight: 800, fontSize: 11, borderRadius: 10,
+        }}>
+          {t.author.initials || t.author.name.split(' ').map(n => n[0]).join('')}
+        </AvatarFallback>
+      </Avatar>
+
+      {/* Tooltip */}
+      <div className="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap
+        bg-[#0a0f1e] text-white text-xs px-2 py-1 rounded border border-white/10
+        opacity-0 group-hover/av:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
+        {t.author.name}
+      </div>
+    </motion.div>
+  );
+};
 
 export const TestimonialShowcase: React.FC<TestimonialShowcaseProps> = ({
   testimonials,
@@ -191,61 +270,17 @@ export const TestimonialShowcase: React.FC<TestimonialShowcaseProps> = ({
         </div>
       </div>
 
-      {/* ── Avatar grid — basketball bounce entrance ──────── */}
+      {/* ── Avatar grid — continuous bouncing ─────────────── */}
       <div className="flex flex-wrap gap-2 justify-center">
-        {testimonials.map((t, i) => {
-          const isActive = i === activeIndex;
-          return (
-            <motion.div
-              key={t.id}
-              className="relative group/av"
-              style={{ cursor: 'pointer' }}
-              onClick={() => switchTo(i)}
-              /* ── Basketball bounce keyframes ──────────────────────
-                 y:      drop   hit1  rise1  hit2  rise2  hit3  tiny  settle
-                 scaleX: normal squish normal squish normal squish      1
-                 scaleY: normal squish normal squish normal squish      1
-                 Stagger 65ms apart → wave effect across all 10 avatars  */
-              initial={{ y: -130, opacity: 0, scaleX: 0.92, scaleY: 1.08 }}
-              whileInView={{
-                y:       [-130, 0,    -52,  0,    -22,  0,    -7,   0],
-                opacity: [0,    1,    1,    1,    1,    1,    1,    1],
-                scaleX:  [0.92, 1.28, 0.94, 1.18, 0.96, 1.08, 0.99, 1],
-                scaleY:  [1.08, 0.78, 1.06, 0.86, 1.03, 0.93, 1.01, 1],
-              }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{
-                duration: 0.95,
-                delay: i * 0.065,
-                times: [0, 0.27, 0.44, 0.57, 0.68, 0.78, 0.88, 1],
-                ease: 'easeInOut',
-              }}
-              whileHover={{ scale: isActive ? 1.15 : 1.12 }}>
-
-              <Avatar
-                className="h-10 w-10 rounded-xl border-2 transition-all duration-300"
-                style={{
-                  borderColor: isActive ? t.company.color : 'rgba(255,255,255,0.1)',
-                  boxShadow:   isActive ? `0 0 16px ${t.company.color}70` : 'none',
-                }}>
-                <AvatarImage src={t.author.avatar} alt={t.author.name} />
-                <AvatarFallback style={{
-                  background: `${t.company.color}22`, color: t.company.color,
-                  fontWeight: 800, fontSize: 11, borderRadius: 10,
-                }}>
-                  {t.author.initials || t.author.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-
-              {/* Tooltip */}
-              <div className="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap
-                bg-[#0a0f1e] text-white text-xs px-2 py-1 rounded border border-white/10
-                opacity-0 group-hover/av:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
-                {t.author.name}
-              </div>
-            </motion.div>
-          );
-        })}
+        {testimonials.map((t, i) => (
+          <BouncingAvatar
+            key={t.id}
+            t={t}
+            index={i}
+            isActive={i === activeIndex}
+            onClick={() => switchTo(i)}
+          />
+        ))}
       </div>
 
     </div>
