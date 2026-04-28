@@ -1,2 +1,2 @@
-import Success from '@/pages/Success';
+import Success from '@/views/Success';
 export default Success;

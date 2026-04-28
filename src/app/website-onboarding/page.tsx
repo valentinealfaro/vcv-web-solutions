@@ -1,2 +1,2 @@
-import WebsiteOnboarding from '@/pages/WebsiteOnboarding';
+import WebsiteOnboarding from '@/views/WebsiteOnboarding';
 export default WebsiteOnboarding;
