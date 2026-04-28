@@ -63,6 +63,22 @@ const CompanyBadge = ({ company }: { company: VCVTestimonial['company'] }) => (
   </div>
 );
 
+/* ─── 10 unique bounce trajectories ──────────────────────── */
+// Each avatar gets its own y amplitude, x drift, rotation, and speed
+// so they bounce in all directions and never look in sync.
+const BOUNCE_CONFIGS = [
+  { y:[0,-95,0], x:[0, 8,0], rotate:[0,-6, 0], scaleX:[1.12,0.85,1.12], scaleY:[0.85,1.18,0.85], dur:0.62 },
+  { y:[0,-72,0], x:[0,-32,0], rotate:[0,11, 0], scaleX:[1.10,0.88,1.10], scaleY:[0.88,1.14,0.88], dur:0.78 },
+  { y:[0,-60,0], x:[0, 28,0], rotate:[0,-13,0], scaleX:[1.10,0.91,1.10], scaleY:[0.91,1.11,0.91], dur:0.55 },
+  { y:[0,-108,0],x:[0,  0,0], rotate:[0, 0, 0], scaleX:[1.12,0.82,1.12], scaleY:[0.82,1.20,0.82], dur:0.72 },
+  { y:[0,-52,0], x:[0,-40,0], rotate:[0,16, 0], scaleX:[1.10,0.93,1.10], scaleY:[0.93,1.08,0.93], dur:0.90 },
+  { y:[0,-82,0], x:[0, 24,0], rotate:[0,-9, 0], scaleX:[1.11,0.86,1.11], scaleY:[0.86,1.16,0.86], dur:0.60 },
+  { y:[0,-68,0], x:[0,-20,0], rotate:[0,14, 0], scaleX:[1.10,0.89,1.10], scaleY:[0.89,1.13,0.89], dur:0.68 },
+  { y:[0,-88,0], x:[0, 36,0], rotate:[0,-12,0], scaleX:[1.11,0.85,1.11], scaleY:[0.85,1.17,0.85], dur:0.82 },
+  { y:[0,-58,0], x:[0,-26,0], rotate:[0, 10,0], scaleX:[1.10,0.92,1.10], scaleY:[0.92,1.10,0.92], dur:0.52 },
+  { y:[0,-100,0],x:[0, 18,0], rotate:[0,-15,0], scaleX:[1.12,0.83,1.12], scaleY:[0.83,1.19,0.83], dur:0.66 },
+] as const;
+
 /* ─── Single bouncing avatar ──────────────────────────────── */
 interface BAProps {
   t: VCVTestimonial;
@@ -82,25 +98,27 @@ const BouncingAvatar: React.FC<BAProps> = ({ t, index, isActive, onClick }) => {
     if (!inView || entered.current) return;
     entered.current = true;
 
-    // Stagger: each avatar waits (index × 65ms) before starting
     timerId.current = setTimeout(async () => {
-      // ── Phase 1: entrance drop with 3 bounces ──────────
+      // ── Phase 1: dramatic entrance drop ───────────────────
       await controls.start(
         {
-          y:      [-130, 0,    -52,  0,    -22,  0,    -7,   0],
+          y:      [-140, 0,    -58,  0,    -25,  0,    -8,   0],
+          x:      [0,    0,    0,    0,    0,    0,    0,    0],
           opacity:[0,    1,    1,    1,    1,    1,    1,    1],
-          scaleX: [0.92, 1.28, 0.94, 1.18, 0.96, 1.08, 0.99, 1],
-          scaleY: [1.08, 0.78, 1.06, 0.86, 1.03, 0.93, 1.01, 1],
+          scaleX: [0.90, 1.32, 0.93, 1.22, 0.96, 1.10, 0.99, 1],
+          scaleY: [1.10, 0.74, 1.07, 0.84, 1.03, 0.92, 1.01, 1],
+          rotate: [0,    0,    0,    0,    0,    0,    0,    0],
         },
-        { duration: 0.95, times: [0, 0.27, 0.44, 0.57, 0.68, 0.78, 0.88, 1], ease: 'easeInOut' }
+        { duration: 1.0, times:[0,0.26,0.43,0.56,0.68,0.78,0.88,1], ease:'easeInOut' }
       );
 
-      // ── Phase 2: continuous gentle bounce, each avatar offset ─
-      const cycleLen  = 0.6;
-      const phaseShift = (index * 0.072) % cycleLen; // permanent offset per avatar
+      // ── Phase 2: unique trajectory per avatar, runs forever ─
+      const cfg = BOUNCE_CONFIGS[index % BOUNCE_CONFIGS.length];
+      const phaseShift = (index * 0.085) % cfg.dur;
       controls.start(
-        { y: [0, -16, 0], scaleX: [1, 0.95, 1.08], scaleY: [1, 1.05, 0.91] },
-        { duration: cycleLen, repeat: Infinity, repeatType: 'loop',
+        { y: [...cfg.y], x: [...cfg.x], rotate: [...cfg.rotate],
+          scaleX: [...cfg.scaleX], scaleY: [...cfg.scaleY] },
+        { duration: cfg.dur, repeat: Infinity, repeatType: 'loop',
           ease: 'easeInOut', delay: phaseShift }
       );
     }, index * 65);
