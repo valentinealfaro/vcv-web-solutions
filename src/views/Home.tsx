@@ -791,7 +791,7 @@ const PerfectFor = () => {
   const nodeRefs      = useRef<Map<number, HTMLDivElement>>(new Map());
   const rafRef        = useRef<number>(0);
   const popupRef      = useRef<{ biz: Biz; cx: number; cy: number } | null>(null);
-  const travelTimer   = useRef<ReturnType<typeof setTimeout>>();
+  const travelTimer   = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [popup,      setPopup]      = useState<{ biz: Biz; cx: number; cy: number } | null>(null);
   const [ready,      setReady]      = useState(false);
   const [avatarXY,   setAvatarXY]   = useState({ x: -60, y: -60 });
