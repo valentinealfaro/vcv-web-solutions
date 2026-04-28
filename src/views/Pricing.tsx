@@ -134,10 +134,10 @@ export default function Pricing() {
         <StaticElectricity />
         <SectionOrbs variant="blue" />
         <GridOverlay gridOp={0.25} dotOp={0.1} />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start relative z-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch relative z-10">
         {packages.map((pkg, idx) => (
           <div key={idx} className={cn(
-            "premium-card p-8 flex flex-col relative transition-all duration-300",
+            "premium-card p-8 flex flex-col relative transition-all duration-300 h-full",
             pkg.isPopular ? "border-2 border-blue-500 shadow-2xl shadow-blue-500/10" : "border border-white/10"
           )}>
             {pkg.isPopular && (
