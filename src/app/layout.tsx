@@ -6,7 +6,7 @@ import { Footer } from '@/components/Footer';
 import { FloatingCTA } from '@/components/FloatingCTA';
 import { CustomCursor } from '@/components/CustomCursor';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { Phone, MessageCircle } from 'lucide-react';
+import { MobileStickyBar } from '@/components/MobileStickyBar';
 
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 const OG_DESC  = 'High-converting websites built in 3-7 days for local service businesses. SEO-optimized, mobile-ready, and engineered to generate leads — not just look pretty.';
@@ -68,21 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <FloatingCTA />
 
-        {/* Mobile sticky call/text bar */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden">
-          <a
-            href="tel:+15809191386"
-            className="flex-1 btn-neon py-4 text-center font-bold text-sm flex items-center justify-center gap-2"
-          >
-            <Phone className="w-4 h-4" /> Call Now
-          </a>
-          <a
-            href="sms:+15809191386"
-            className="flex-1 bg-green-600 hover:bg-green-500 text-white py-4 text-center font-bold text-sm flex items-center justify-center gap-2 transition-colors"
-          >
-            <MessageCircle className="w-4 h-4" /> Text Us
-          </a>
-        </div>
+        <MobileStickyBar />
       </body>
     </html>
   );
