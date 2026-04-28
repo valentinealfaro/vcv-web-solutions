@@ -2,19 +2,22 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView, AnimatePresence, LayoutGroup } from 'motion/react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award, Hammer, Wrench, Thermometer, Leaf, Sparkles, UtensilsCrossed, Store, Paintbrush, Car, Building2, Scissors, Dumbbell, GraduationCap, Truck, Bug, Sun, Stethoscope, Scale, PawPrint, HardHat, TreePine } from 'lucide-react';
 import { Boxes } from '@/components/ui/background-boxes';
 import { MarkerHighlight } from '@/components/ui/marker-highlight';
-import { DemoSection } from '../components/DemoSection';
-import { LeadMagnetSection } from '../components/LeadMagnetSection';
-import { TestimonialsSection } from '../components/TestimonialsSection';
-import { UrgencySection } from '../components/UrgencySection';
-import { FAQSection } from '../components/FAQSection';
-import { PricingSection } from '../components/PricingSection';
-import { WhatHappensNextSection } from '../components/WhatHappensNextSection';
-import { ValueStackSection } from '../components/ValueStackSection';
-import { WhyNotDIYSection } from '../components/WhyNotDIYSection';
-import { WatchHowItWorksSection } from '../components/WatchHowItWorksSection';
+
+// Below-fold sections loaded lazily — each becomes its own JS chunk
+const DemoSection         = dynamic(() => import('../components/DemoSection').then(m => ({ default: m.DemoSection })), { ssr: false });
+const WhatHappensNextSection = dynamic(() => import('../components/WhatHappensNextSection').then(m => ({ default: m.WhatHappensNextSection })), { ssr: false });
+const WatchHowItWorksSection = dynamic(() => import('../components/WatchHowItWorksSection').then(m => ({ default: m.WatchHowItWorksSection })), { ssr: false });
+const LeadMagnetSection   = dynamic(() => import('../components/LeadMagnetSection').then(m => ({ default: m.LeadMagnetSection })), { ssr: false });
+const ValueStackSection   = dynamic(() => import('../components/ValueStackSection').then(m => ({ default: m.ValueStackSection })), { ssr: false });
+const TestimonialsSection = dynamic(() => import('../components/TestimonialsSection').then(m => ({ default: m.TestimonialsSection })), { ssr: false });
+const PricingSection      = dynamic(() => import('../components/PricingSection').then(m => ({ default: m.PricingSection })), { ssr: false });
+const UrgencySection      = dynamic(() => import('../components/UrgencySection').then(m => ({ default: m.UrgencySection })), { ssr: false });
+const FAQSection          = dynamic(() => import('../components/FAQSection').then(m => ({ default: m.FAQSection })), { ssr: false });
+const WhyNotDIYSection    = dynamic(() => import('../components/WhyNotDIYSection').then(m => ({ default: m.WhyNotDIYSection })), { ssr: false });
 
 /* ─── Particle Canvas ─────────────────────────────────────── */
 const ParticleCanvas = () => {
