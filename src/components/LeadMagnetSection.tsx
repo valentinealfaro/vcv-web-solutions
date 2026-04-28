@@ -132,7 +132,7 @@ export const LeadMagnetSection = () => {
                 transition={{ duration:1.8,repeat:Infinity,ease:'easeInOut' }}
                 style={{ background:'rgba(74,222,128,0.12)',border:'1px solid rgba(74,222,128,0.5)',borderRadius:999,padding:'6px 18px',display:'inline-flex' }}>
                 <span style={{ fontSize:12,fontWeight:800,color:'#4ade80',textTransform:'uppercase',letterSpacing:'0.1em' }}>
-                  💰 Worth $297 — Yours Free
+                  📬 We Reply Within 24 Hours
                 </span>
               </motion.div>
 
