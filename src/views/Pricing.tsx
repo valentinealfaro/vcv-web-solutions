@@ -1,5 +1,5 @@
 'use client';
-import { motion, LayoutGroup } from 'motion/react';
+import { motion, LayoutGroup, AnimatePresence } from 'motion/react';
 import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '../lib/utils';
@@ -62,18 +62,38 @@ const RiskParticlesCanvas = () => {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-55" />;
 };
 
-const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <div className="border-b border-white/10">
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full py-6 flex justify-between items-center text-left">
-        <span className="text-white font-bold">{question}</span>
-        <HelpCircle className={cn("w-6 h-6 text-blue-500 transition-transform", isOpen && "rotate-180")} />
-      </button>
-      {isOpen && <p className="pb-6 text-gray-400">{answer}</p>}
-    </div>
-  );
-};
+const FAQ_DATA = [
+  { q:'Do I have to pay upfront?',   a:'No. We build your website demo first so you can see exactly what you are getting before you pay anything.' },
+  { q:'How long does it take?',      a:'Most websites are built and launched in 3 to 7 days.' },
+  { q:'Can I cancel?',               a:'Yes, we offer flexible options with no long-term contracts.' },
+  { q:'Do you handle everything?',   a:'Yes, we handle design, development, hosting, and ongoing support.' },
+];
+
+const FAQItem = ({ question, answer, isOpen, onToggle }: {
+  question: string; answer: string; isOpen: boolean; onToggle: () => void;
+}) => (
+  <div className="border-b border-white/10">
+    <button onClick={onToggle} className="w-full py-6 flex justify-between items-center text-left gap-4">
+      <span className={cn('font-bold transition-colors', isOpen ? 'text-blue-400' : 'text-white')}>{question}</span>
+      <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
+        <HelpCircle className={cn('w-6 h-6 flex-shrink-0 transition-colors', isOpen ? 'text-blue-400' : 'text-blue-500')} />
+      </motion.div>
+    </button>
+    <AnimatePresence initial={false}>
+      {isOpen && (
+        <motion.div
+          key="answer"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.35, ease: 'easeInOut' }}
+          className="overflow-hidden">
+          <p className="pb-6 text-gray-400 leading-relaxed">{answer}</p>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </div>
+);
 
 const packages = [
   { name:"Monthly", price:"$97", origPrice:"$194", period:"/mo", amountCents:9700,  setup:"No upfront cost options", isPopular:false,
@@ -86,6 +106,7 @@ export default function Pricing() {
   const [loadingIdx, setLoadingIdx] = useState<number|null>(null);
   const [riskOrder, setRiskOrder]   = useState([0,1,2,3]);
   const [riskShapes, setRiskShapes] = useState([false,false,false,false]);
+  const [openFaq, setOpenFaq]       = useState(0);
 
   useEffect(() => {
     const shuffleId = setInterval(() => {
@@ -101,7 +122,10 @@ export default function Pricing() {
     const shapeId = setInterval(() => {
       setRiskShapes(RISK_ITEMS.map(() => Math.random() < 0.45));
     }, 3200);
-    return () => { clearInterval(shuffleId); clearInterval(shapeId); };
+    const faqId = setInterval(() => {
+      setOpenFaq(prev => (prev + 1) % FAQ_DATA.length);
+    }, 4000);
+    return () => { clearInterval(shuffleId); clearInterval(shapeId); clearInterval(faqId); };
   }, []);
 
   const handleBuy = async (pkg: typeof packages[0], idx: number) => {
@@ -383,13 +407,18 @@ export default function Pricing() {
 
       {/* FAQ */}
       <section className="py-20 bg-[#040a16] relative overflow-hidden">
-        <DottedSurface className="opacity-20" />
+        <DottedSurface colorful className="opacity-30" />
         <div className="max-w-3xl mx-auto px-4 relative z-10">
           <h2 className="font-display text-5xl text-white mb-10 text-center">FAQ</h2>
-          <FAQItem question="Do I have to pay upfront?" answer="No. We build your website demo first so you can see exactly what you are getting before you pay anything." />
-          <FAQItem question="How long does it take?" answer="Most websites are built and launched in 3 to 7 days." />
-          <FAQItem question="Can I cancel?" answer="Yes, we offer flexible options with no long-term contracts." />
-          <FAQItem question="Do you handle everything?" answer="Yes, we handle design, development, hosting, and ongoing support." />
+          {FAQ_DATA.map((item, i) => (
+            <FAQItem
+              key={i}
+              question={item.q}
+              answer={item.a}
+              isOpen={openFaq === i}
+              onToggle={() => setOpenFaq(openFaq === i ? -1 : i)}
+            />
+          ))}
         </div>
       </section>
 

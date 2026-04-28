@@ -3,26 +3,39 @@ import { cn } from '@/lib/utils';
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-type DottedSurfaceProps = Omit<React.ComponentProps<'div'>, 'ref'>;
+// HSL (0-1 each) → RGB (0-1 each)
+const hslToRgb = (h: number, s: number, l: number): [number, number, number] => {
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => { const k = (n + h * 12) % 12; return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); };
+  return [f(0), f(8), f(4)];
+};
 
-export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
+type DottedSurfaceProps = Omit<React.ComponentProps<'div'>, 'ref'> & {
+  colorful?: boolean;
+};
+
+export function DottedSurface({ className, colorful = false, ...props }: DottedSurfaceProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const SEPARATION = 150;
-    const AMOUNTX  = 40;
-    const AMOUNTY  = 60;
+    const COLS = 30;
+    const ROWS = 20;
 
-    const getW = () => container.clientWidth;
-    const getH = () => container.clientHeight;
+    const getW = () => container.clientWidth  || 1;
+    const getH = () => container.clientHeight || 1;
+
+    // Orthographic camera — units == pixels, covers the container exactly
+    const camera = new THREE.OrthographicCamera(
+      -getW() / 2,  getW() / 2,
+       getH() / 2, -getH() / 2,
+      1, 1000,
+    );
+    camera.position.z = 100;
 
     const scene = new THREE.Scene();
-
-    const camera = new THREE.PerspectiveCamera(60, getW() / getH(), 1, 10000);
-    camera.position.set(0, 355, 1220);
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -30,61 +43,69 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
-    const geometry = new THREE.BufferGeometry();
-    const positions: number[] = [];
-    const colors: number[]    = [];
+    // Geometry — positions filled dynamically each frame
+    const COUNT = COLS * ROWS;
+    const geometry  = new THREE.BufferGeometry();
+    const posArr    = new Float32Array(COUNT * 3);
+    const colorArr  = new Float32Array(COUNT * 3);
 
-    for (let ix = 0; ix < AMOUNTX; ix++) {
-      for (let iy = 0; iy < AMOUNTY; iy++) {
-        positions.push(
-          ix * SEPARATION - (AMOUNTX * SEPARATION) / 2,
-          0,
-          iy * SEPARATION - (AMOUNTY * SEPARATION) / 2,
-        );
-        // always white dots (dark theme site)
-        colors.push(200, 200, 200);
-      }
-    }
+    // initialise to white
+    for (let i = 0; i < COUNT; i++) { colorArr[i * 3] = 0.75; colorArr[i * 3 + 1] = 0.75; colorArr[i * 3 + 2] = 0.75; }
 
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geometry.setAttribute('color',    new THREE.Float32BufferAttribute(colors,    3));
+    geometry.setAttribute('position', new THREE.BufferAttribute(posArr,   3));
+    geometry.setAttribute('color',    new THREE.BufferAttribute(colorArr, 3));
 
     const material = new THREE.PointsMaterial({
-      size: 8, vertexColors: true, transparent: true, opacity: 0.6, sizeAttenuation: true,
+      size: 4, vertexColors: true, transparent: true, opacity: 0.75, sizeAttenuation: false,
     });
 
-    const points = new THREE.Points(geometry, material);
-    scene.add(points);
+    scene.add(new THREE.Points(geometry, material));
 
-    let count = 0;
+    let count   = 0;
     let animId: number;
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      const pos = geometry.attributes.position.array as Float32Array;
+      const w = getW(), h = getH();
+      const spacingX = w / (COLS - 1);
+      const spacingY = h / (ROWS - 1);
+      const ampY     = h * 0.04;
+
       let i = 0;
-      for (let ix = 0; ix < AMOUNTX; ix++) {
-        for (let iy = 0; iy < AMOUNTY; iy++) {
-          pos[i * 3 + 1] =
-            Math.sin((ix + count) * 0.3) * 50 +
-            Math.sin((iy + count) * 0.5) * 50;
+      for (let col = 0; col < COLS; col++) {
+        for (let row = 0; row < ROWS; row++) {
+          const idx = i * 3;
+          posArr[idx]     = col * spacingX - w / 2;
+          posArr[idx + 1] = row * spacingY - h / 2
+            + Math.sin((col + count) * 0.5)        * ampY
+            + Math.sin((row + count * 0.8) * 0.65) * ampY * 0.6;
+          posArr[idx + 2] = 0;
+
+          if (colorful) {
+            const hue = ((col * 13 + row * 7 + count * 30) % 360) / 360;
+            const [r, g, b] = hslToRgb(hue, 0.9, 0.65);
+            colorArr[idx] = r; colorArr[idx + 1] = g; colorArr[idx + 2] = b;
+          }
           i++;
         }
       }
+
       geometry.attributes.position.needsUpdate = true;
+      if (colorful) geometry.attributes.color.needsUpdate = true;
       renderer.render(scene, camera);
-      count += 0.1;
+      count += 0.045;
     };
 
     const handleResize = () => {
-      camera.aspect = getW() / getH();
+      const w = getW(), h = getH();
+      camera.left   = -w / 2; camera.right  =  w / 2;
+      camera.top    =  h / 2; camera.bottom = -h / 2;
       camera.updateProjectionMatrix();
-      renderer.setSize(getW(), getH());
+      renderer.setSize(w, h);
     };
 
     const ro = new ResizeObserver(handleResize);
     ro.observe(container);
-
     animate();
 
     return () => {
@@ -93,14 +114,13 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
       scene.traverse(obj => {
         if (obj instanceof THREE.Points) {
           obj.geometry.dispose();
-          if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
-          else obj.material.dispose();
+          (Array.isArray(obj.material) ? obj.material : [obj.material]).forEach(m => m.dispose());
         }
       });
       renderer.dispose();
       if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);
     };
-  }, []);
+  }, [colorful]);
 
   return (
     <div
