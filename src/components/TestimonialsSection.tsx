@@ -82,31 +82,88 @@ export const TestimonialsSection = () => (
 
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
-      {/* Heading */}
-      <motion.div className="text-center mb-14"
-        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-        <p className="neon-badge mb-4 mx-auto w-fit">Social Proof</p>
-        <h2 className="font-display text-6xl md:text-7xl text-white mb-4">
-          CLIENT{' '}
-          <MarkerHighlight
-            highlight="WINS"
-            markerColor="rgba(6, 182, 212, 0.82)"
-            textColor="white"
-            delay={0.2}
-          />
-        </h2>
-        <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
-          10 real businesses. 10 real results. Local contractors, service companies,
-          and small businesses that now dominate their markets.
-        </p>
+      {/* ── Heading box ─────────────────────────────────── */}
+      <div className="relative mb-14 overflow-hidden text-center"
+        style={{
+          background: 'rgba(8,12,26,0.65)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(37,99,235,0.22)',
+          borderRadius: 24,
+          padding: '48px 40px 40px',
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06)',
+        }}>
 
-        {/* Quick proof strip */}
-        <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-sm text-gray-500">
-          {['⭐ 4.9 / 5 Average Rating', '🏆 50+ Businesses Served', '📍 Nationwide', '🔒 100% Money-Back'].map((b, i) => (
-            <span key={i} className="font-semibold">{b}</span>
+        {/* Subtle grid inside the box */}
+        <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" style={{ borderRadius: 24 }} />
+        {/* Top glow line */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(37,99,235,0.5), transparent)' }} />
+
+        {/* Badge — slides in from LEFT */}
+        <motion.div
+          initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }} viewport={{ once: true }}
+          className="mb-5 relative z-10">
+          <p className="neon-badge mx-auto w-fit">Social Proof</p>
+        </motion.div>
+
+        {/* Headline — CLIENT from LEFT, WINS from RIGHT */}
+        <h2 className="font-display text-6xl md:text-7xl text-white mb-5 relative z-10 leading-none">
+          <motion.span
+            initial={{ opacity: 0, x: -70 }} whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.55, delay: 0.1 }} viewport={{ once: true }}
+            style={{ display: 'inline-block' }}>
+            CLIENT
+          </motion.span>
+          {' '}
+          <motion.span
+            initial={{ opacity: 0, x: 70 }} whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.55, delay: 0.2 }} viewport={{ once: true }}
+            style={{ display: 'inline-block' }}>
+            <MarkerHighlight
+              highlight="WINS"
+              markerColor="rgba(6, 182, 212, 0.82)"
+              textColor="white"
+              delay={0.45}
+            />
+          </motion.span>
+        </h2>
+
+        {/* Subtitle — slides in from RIGHT */}
+        <motion.p
+          initial={{ opacity: 0, x: 55 }} whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.28 }} viewport={{ once: true }}
+          className="text-gray-400 text-lg max-w-xl mx-auto leading-relaxed mb-8 relative z-10">
+          10 real businesses. 10 real results. Local contractors and service companies
+          that now dominate their markets.
+        </motion.p>
+
+        {/* Proof pills — alternating left / right */}
+        <div className="flex flex-wrap items-center justify-center gap-3 relative z-10">
+          {[
+            { icon: '⭐', label: '4.9 / 5 Average Rating' },
+            { icon: '🏆', label: '50+ Businesses Served' },
+            { icon: '📍', label: 'Serving Nationwide' },
+            { icon: '🔒', label: '100% Money-Back' },
+          ].map((item, i) => (
+            <motion.div key={i}
+              initial={{ opacity: 0, x: i % 2 === 0 ? -40 : 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.45, delay: 0.35 + i * 0.07 }}
+              viewport={{ once: true }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 7,
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 999, padding: '7px 16px',
+                fontSize: 13, fontWeight: 600, color: '#94a3b8',
+              }}>
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </motion.div>
           ))}
         </div>
-      </motion.div>
+      </div>
 
       {/* Interactive showcase */}
       <motion.div
