@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// Tell Next.js this route is always dynamic (never statically generated)
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
-  // Initialize inside the handler so it only runs at request time,
-  // not during the build when env vars aren't available
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     apiVersion: '2025-02-24.acacia' as any,
   });
 
   try {
-    const { productName } = await req.json();
+    const { productName, amount } = await req.json();
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://vcv-web-solutions.vercel.app';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -22,14 +20,14 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: 'usd',
             product_data: { name: productName || 'VCV Web Solutions Package' },
-            unit_amount: 49700,
+            unit_amount: amount || 9700, // cents
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://vcv-web-solutions.vercel.app'}/success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://vcv-web-solutions.vercel.app'}/pricing`,
+      success_url: `${baseUrl}/success`,
+      cancel_url:  `${baseUrl}/pricing`,
     });
 
     return NextResponse.json({ url: session.url });

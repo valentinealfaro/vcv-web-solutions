@@ -1,13 +1,16 @@
 'use client';
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { CheckCircle2, ArrowRight, Zap } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Zap, Loader2, Tag } from 'lucide-react';
 
 const plans = [
   {
     name: 'Monthly',
     price: 97,
+    origPrice: 194,
     period: '/mo',
+    amountCents: 9700,
     description: 'Perfect for getting started with no long-term commitment.',
     features: [
       'Custom website design',
@@ -23,7 +26,9 @@ const plans = [
   {
     name: 'Annual',
     price: 497,
+    origPrice: 994,
     period: '/yr',
+    amountCents: 49700,
     badge: 'Best Value — Save $667',
     description: 'The complete package. Everything you need to dominate your market.',
     features: [
@@ -41,65 +46,143 @@ const plans = [
   },
 ];
 
+const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError]   = useState('');
+
+  const handleCheckout = async () => {
+    setLoading(true); setError('');
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productName: `VCV Web Solutions — ${plan.name} Plan`,
+          amount: plan.amountCents,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
+      window.location.href = data.url;
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Something went wrong');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <motion.div key={index}
+      initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.15 }} viewport={{ once: true }}
+      className={`relative p-8 rounded-[20px] ${plan.featured
+        ? 'bg-gradient-to-br from-blue-900/40 to-purple-900/30 border border-blue-500/30 shadow-[0_0_60px_rgba(37,99,235,0.15)]'
+        : 'neon-card'
+      }`}>
+
+      {plan.badge && (
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+          <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap shadow-lg">
+            <Zap className="w-3 h-3" /> {plan.badge}
+          </span>
+        </div>
+      )}
+
+      {/* 50% OFF badge */}
+      <div className="absolute top-4 right-4">
+        <motion.span
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+          className="flex items-center gap-1 bg-red-500/20 border border-red-500/50 text-red-400 text-xs font-black px-2.5 py-1 rounded-full"
+          style={{ letterSpacing: '0.05em' }}>
+          <Tag className="w-3 h-3" /> 50% OFF
+        </motion.span>
+      </div>
+
+      <div className="mb-6">
+        <p className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-2">{plan.name}</p>
+
+        {/* Strikethrough original price */}
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-gray-600 text-2xl font-bold line-through decoration-red-500/70">
+            ${plan.origPrice}
+          </span>
+          <span className="text-gray-600 text-sm line-through decoration-red-500/70">{plan.period}</span>
+          <span className="text-xs font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full">was full price</span>
+        </div>
+
+        {/* Sale price */}
+        <div className="flex items-end gap-1 mb-2">
+          <span className="font-display text-6xl text-white">${plan.price}</span>
+          <span className="text-gray-500 text-lg mb-2">{plan.period}</span>
+        </div>
+
+        {/* Savings callout */}
+        <div className="inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/25 rounded-full px-3 py-1 mb-3">
+          <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse inline-block" />
+          <span className="text-green-400 text-xs font-bold">You save ${plan.origPrice - plan.price}{plan.period}</span>
+        </div>
+
+        <p className="text-gray-400 text-sm leading-relaxed">{plan.description}</p>
+      </div>
+
+      <div className="space-y-3 mb-8">
+        {plan.features.map((f, j) => (
+          <div key={j} className="flex items-center gap-3 text-sm">
+            <CheckCircle2 className={`w-4 h-4 flex-shrink-0 ${plan.featured ? 'text-blue-400' : 'text-gray-500'}`} />
+            <span className={plan.featured ? 'text-gray-200' : 'text-gray-400'}>{f}</span>
+          </div>
+        ))}
+      </div>
+
+      {error && <p className="text-red-400 text-xs mb-3 text-center">{error}</p>}
+
+      <motion.button
+        onClick={handleCheckout}
+        disabled={loading}
+        whileHover={{ scale: loading ? 1 : 1.02 }}
+        whileTap={{ scale: loading ? 1 : 0.98 }}
+        className={`w-full py-3.5 rounded-xl font-bold text-center text-sm transition-all flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed ${plan.featured
+          ? 'btn-neon btn-glow text-white'
+          : 'glass-card text-gray-300 hover:text-white hover:border-blue-500/30'
+        }`}>
+        {loading ? (
+          <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting to checkout...</>
+        ) : (
+          <>{plan.cta} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
+        )}
+      </motion.button>
+
+      <p className="text-center text-gray-600 text-xs mt-3">Secure checkout · Powered by Stripe</p>
+    </motion.div>
+  );
+};
+
 export const PricingSection = () => (
   <section className="py-24 bg-[#030712] relative overflow-hidden">
     <div className="absolute inset-0 bg-grid opacity-40" />
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-600/6 blur-[100px] rounded-full" />
 
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <motion.div className="text-center mb-16"
+      <motion.div className="text-center mb-4"
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
         <p className="neon-badge mb-4 mx-auto w-fit">Simple Pricing</p>
         <h2 className="font-display text-6xl md:text-7xl text-white mb-4">PRICING</h2>
+
+        {/* Limited time banner */}
+        <motion.div
+          animate={{ scale: [1, 1.03, 1] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+          className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-full px-5 py-2 mb-4">
+          <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse inline-block" />
+          <span className="text-red-400 font-bold text-sm tracking-wide">LIMITED TIME — 50% OFF ALL PLANS</span>
+          <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse inline-block" />
+        </motion.div>
+
         <p className="text-gray-400 text-lg max-w-lg mx-auto">No hidden fees. No long-term contracts. Cancel anytime.</p>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-        {plans.map((plan, i) => (
-          <motion.div key={i}
-            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.15 }} viewport={{ once: true }}
-            className={`relative p-8 rounded-[20px] ${plan.featured
-              ? 'bg-gradient-to-br from-blue-900/40 to-purple-900/30 border border-blue-500/30 shadow-[0_0_60px_rgba(37,99,235,0.15)]'
-              : 'neon-card'
-            }`}>
-
-            {plan.badge && (
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 whitespace-nowrap shadow-lg">
-                  <Zap className="w-3 h-3" /> {plan.badge}
-                </span>
-              </div>
-            )}
-
-            <div className="mb-6">
-              <p className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">{plan.name}</p>
-              <div className="flex items-end gap-1 mb-2">
-                <span className="font-display text-6xl text-white">${plan.price}</span>
-                <span className="text-gray-500 text-lg mb-2">{plan.period}</span>
-              </div>
-              <p className="text-gray-400 text-sm leading-relaxed">{plan.description}</p>
-            </div>
-
-            <div className="space-y-3 mb-8">
-              {plan.features.map((f, j) => (
-                <div key={j} className="flex items-center gap-3 text-sm">
-                  <CheckCircle2 className={`w-4 h-4 flex-shrink-0 ${plan.featured ? 'text-blue-400' : 'text-gray-500'}`} />
-                  <span className={plan.featured ? 'text-gray-200' : 'text-gray-400'}>{f}</span>
-                </div>
-              ))}
-            </div>
-
-            <Link href="/free-demo"
-              className={`block w-full py-3.5 rounded-xl font-bold text-center text-sm transition-all group flex items-center justify-center gap-2 ${plan.featured
-                ? 'btn-neon btn-glow text-white'
-                : 'glass-card text-gray-300 hover:text-white hover:border-blue-500/30'
-              }`}>
-              {plan.cta}
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </motion.div>
-        ))}
+        {plans.map((plan, i) => <PlanCard key={i} plan={plan} index={i} />)}
       </div>
 
       <motion.p
