@@ -1,6 +1,6 @@
 'use client';
 import { motion } from 'motion/react';
-import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '../lib/utils';
 import { useState } from 'react';
@@ -61,44 +61,28 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
   );
 };
 
+const packages = [
+  { name:"Monthly", price:"$97", origPrice:"$194", period:"/mo", amountCents:9700,  setup:"No upfront cost options", isPopular:false,
+    features:["Custom website design","Mobile-responsive layout","Basic SEO setup","Contact & lead forms","Hosting & maintenance","Monthly updates"] },
+  { name:"Annual",  price:"$497",origPrice:"$994", period:"/yr", amountCents:49700, setup:"Best value — save $667",   isPopular:true,
+    features:["Everything in Monthly","Advanced SEO optimization","Google Ads integration ready","Blog & content system","Analytics dashboard","Priority support","Quarterly strategy calls","Free demo included"] },
+];
+
 export default function Pricing() {
-  const packages = [
-    {
-      name: "Monthly",
-      description: "Perfect for getting started with no long-term commitment.",
-      price: "$97",
-      origPrice: "$194",
-      period: "/mo",
-      setup: "No upfront cost options",
-      features: [
-        "Custom website design",
-        "Mobile-responsive layout",
-        "Basic SEO setup",
-        "Contact & lead forms",
-        "Hosting & maintenance",
-        "Monthly updates",
-      ],
-    },
-    {
-      name: "Annual",
-      description: "The complete package. Everything you need to dominate your market.",
-      price: "$497",
-      origPrice: "$994",
-      period: "/yr",
-      setup: "Best value — save $667",
-      isPopular: true,
-      features: [
-        "Everything in Monthly",
-        "Advanced SEO optimization",
-        "Google Ads integration ready",
-        "Blog & content system",
-        "Analytics dashboard",
-        "Priority support",
-        "Quarterly strategy calls",
-        "Free demo included",
-      ],
-    },
-  ];
+  const [loadingIdx, setLoadingIdx] = useState<number|null>(null);
+
+  const handleBuy = async (pkg: typeof packages[0], idx: number) => {
+    setLoadingIdx(idx);
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productName: `VCV Web Solutions — ${pkg.name} Plan`, amount: pkg.amountCents }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Failed');
+      window.location.href = data.url;
+    } catch { setLoadingIdx(null); }
+  };
 
   return (
     <div className="bg-[#030712] min-h-screen">
@@ -201,16 +185,19 @@ export default function Pricing() {
               ))}
             </ul>
 
-            <Link href="/free-demo"
+            <button
+              onClick={() => handleBuy(pkg, idx)}
+              disabled={loadingIdx === idx}
               className={cn(
-                "block w-full py-4 rounded-xl font-bold text-center transition-all flex items-center justify-center gap-2 group",
+                "w-full py-4 rounded-xl font-bold text-center transition-all flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed",
                 pkg.isPopular
                   ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-blue-500/20"
                   : "bg-gray-800 hover:bg-gray-700 text-white"
               )}>
-              {pkg.isPopular ? 'Start Winning' : 'Get Started'}
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+              {loadingIdx === idx
+                ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
+                : <>Buy Now <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/></>}
+            </button>
             <p className="text-center text-gray-600 text-xs mt-3">Secure checkout · Powered by Stripe</p>
           </div>
         ))}

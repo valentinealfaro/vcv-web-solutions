@@ -21,7 +21,7 @@ const plans = [
       'Hosting & maintenance',
       'Monthly updates',
     ],
-    cta: 'Get Started',
+    cta: 'Buy Now',
     popular: false,
   },
   {
@@ -43,7 +43,7 @@ const plans = [
       'Quarterly strategy calls',
       'Free demo included',
     ],
-    cta: 'Start Winning',
+    cta: 'Buy Now',
     popular: true,
   },
 ];
