@@ -228,20 +228,28 @@ export default function Services() {
 
       {/* ── Process — staircase + bubbles ── */}
       <section className="py-24 bg-[#030712] relative overflow-hidden" style={{minHeight:560}}>
-        {/* Floating color bubbles */}
+        {/* Animated floating bubbles */}
         {[
-          {c:'rgba(59,130,246,0.22)', w:180,h:180,l:'4%',  t:'15%',dur:9 },
-          {c:'rgba(139,92,246,0.22)', w:140,h:140,l:'72%', t:'8%', dur:12},
-          {c:'rgba(6,182,212,0.20)',  w:120,h:120,l:'38%', t:'55%',dur:10},
-          {c:'rgba(168,85,247,0.22)', w:160,h:160,l:'82%', t:'52%',dur:13},
-          {c:'rgba(16,185,129,0.20)', w:130,h:130,l:'18%', t:'60%',dur:11},
-          {c:'rgba(236,72,153,0.18)', w:100,h:100,l:'55%', t:'20%',dur:14},
-          {c:'rgba(245,158,11,0.18)', w:110,h:110,l:'90%', t:'30%',dur:8 },
+          {c:'rgba(59,130,246,0.45)',  w:210,h:210,l:'4%',  t:'15%', dur:9,  dy:[0,-38,12,-28,0],  dx:[0,20,-14,10,0]  },
+          {c:'rgba(139,92,246,0.45)',  w:170,h:170,l:'72%', t:'8%',  dur:12, dy:[0,-22,32,-18,0],  dx:[0,-18,12,-22,0] },
+          {c:'rgba(6,182,212,0.42)',   w:145,h:145,l:'38%', t:'55%', dur:10, dy:[0,28,-22,32,0],   dx:[0,14,-20,10,0]  },
+          {c:'rgba(168,85,247,0.45)',  w:190,h:190,l:'82%', t:'52%', dur:13, dy:[0,-32,22,-12,0],  dx:[0,-12,22,-18,0] },
+          {c:'rgba(16,185,129,0.42)',  w:160,h:160,l:'18%', t:'60%', dur:11, dy:[0,22,-32,18,0],   dx:[0,-20,14,22,0]  },
+          {c:'rgba(236,72,153,0.38)',  w:125,h:125,l:'55%', t:'20%', dur:14, dy:[0,-28,18,-22,0],  dx:[0,22,-12,18,0]  },
+          {c:'rgba(245,158,11,0.38)',  w:135,h:135,l:'90%', t:'30%', dur:8,  dy:[0,32,-22,28,0],   dx:[0,-14,20,-10,0] },
+          {c:'rgba(239,68,68,0.35)',   w:115,h:115,l:'62%', t:'70%', dur:15, dy:[0,-18,26,-14,0],  dx:[0,16,-22,12,0]  },
         ].map((b,i)=>(
-          <div key={i} style={{position:'absolute',borderRadius:'50%',pointerEvents:'none',
-            width:b.w,height:b.h,left:b.l,top:b.t,background:b.c,
-            filter:'blur(40px)',animation:`orb-float ${b.dur}s ease-in-out infinite`,
-            animationDelay:`${i*.6}s`}}/>
+          <motion.div key={i}
+            style={{position:'absolute',borderRadius:'50%',pointerEvents:'none',
+              width:b.w,height:b.h,left:b.l,top:b.t,background:b.c,filter:'blur(48px)'}}
+            animate={{
+              y:     b.dy,
+              x:     b.dx,
+              scale: [1, 1.2, 0.9, 1.15, 1],
+              opacity:[0.75, 1, 0.7, 0.95, 0.75],
+            }}
+            transition={{duration:b.dur, repeat:Infinity, ease:'easeInOut', delay:i*0.55, times:[0,.25,.5,.75,1]}}
+          />
         ))}
         <GridOverlay gridOp={0.22} dotOp={0.1} />
 
