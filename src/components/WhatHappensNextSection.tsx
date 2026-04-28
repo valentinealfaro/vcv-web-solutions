@@ -5,6 +5,138 @@ import { useInView } from 'motion/react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
+/* ─── Checkerboard background ─────────────────────────────── */
+const CELL = 50;
+const CHECKER_COLORS = [
+  [59,  130, 246],  // blue
+  [129, 140, 248],  // indigo
+  [168, 85,  247],  // purple
+  [6,   182, 212],  // cyan
+  [16,  185, 129],  // green
+  [245, 158, 11],   // amber
+  [236, 72,  153],  // pink
+];
+
+const CheckerBG = ({ cycle, ballPositions }: {
+  cycle: number;
+  ballPositions: { svgX: number; svgY: number }[];
+}) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    let spawnTick = 0;
+
+    interface LitCell { c: number; r: number; alpha: number; col: number[]; decay: number; rising: boolean }
+    let lit: LitCell[] = [];
+
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const getBlocked = () => {
+      const set = new Set<string>();
+      const W = canvas.width, H = canvas.height;
+
+      // Block the heading area (top ~260px, center 70% width)
+      const hL = Math.floor(W * 0.12 / CELL);
+      const hR = Math.ceil (W * 0.88 / CELL);
+      const hB = Math.ceil (260 / CELL);
+      for (let c = hL; c <= hR; c++)
+        for (let r = 0; r <= hB; r++)
+          set.add(`${c},${r}`);
+
+      // Block cells near each ball
+      // SVG viewBox 0 0 700 460 → container: ~90% width, 540px tall, offset by ~270px top
+      const svgW   = W * 0.88;
+      const svgL   = (W - svgW) / 2;
+      const svgTop = 270;
+
+      ballPositions.forEach(({ svgX, svgY }) => {
+        const px = svgL + (svgX / 700) * svgW;
+        const py = svgTop + (svgY / 460) * 500;
+        const bc = Math.round(px / CELL);
+        const br = Math.round(py / CELL);
+        for (let dc = -3; dc <= 3; dc++)
+          for (let dr = -3; dr <= 3; dr++)
+            set.add(`${bc + dc},${br + dr}`);
+      });
+      return set;
+    };
+
+    const draw = (ts: number) => {
+      const W = canvas.width, H = canvas.height;
+      const cols = Math.ceil(W / CELL);
+      const rows = Math.ceil(H / CELL);
+      ctx.clearRect(0, 0, W, H);
+
+      // ── Base grid ──
+      ctx.strokeStyle = 'rgba(37,99,235,0.07)';
+      ctx.lineWidth = 0.6;
+      for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(c * CELL, 0); ctx.lineTo(c * CELL, H); ctx.stroke(); }
+      for (let r = 0; r <= rows; r++) { ctx.beginPath(); ctx.moveTo(0, r * CELL); ctx.lineTo(W, r * CELL); ctx.stroke(); }
+
+      // ── Spawn new lit cells ──
+      const blocked = getBlocked();
+      if (ts - spawnTick > 110 && lit.length < 32) {
+        spawnTick = ts;
+        for (let attempt = 0; attempt < 30; attempt++) {
+          const c = Math.floor(Math.random() * cols);
+          const r = Math.floor(Math.random() * rows);
+          if (!blocked.has(`${c},${r}`) && !lit.find(l => l.c === c && l.r === r)) {
+            lit.push({
+              c, r, alpha: 0,
+              col: CHECKER_COLORS[Math.floor(Math.random() * CHECKER_COLORS.length)],
+              decay: 0.003 + Math.random() * 0.005,
+              rising: true,
+            });
+            break;
+          }
+        }
+      }
+
+      // ── Update & draw lit cells ──
+      lit = lit.filter(l => l.alpha >= 0);
+      lit.forEach(l => {
+        if (l.rising) {
+          l.alpha += 0.018;
+          if (l.alpha >= 0.32) { l.alpha = 0.32; l.rising = false; }
+        } else {
+          l.alpha -= l.decay;
+        }
+        const x = l.c * CELL, y = l.r * CELL;
+        const [r, g, b] = l.col;
+        ctx.fillStyle   = `rgba(${r},${g},${b},${l.alpha})`;
+        ctx.fillRect(x + 1, y + 1, CELL - 2, CELL - 2);
+        ctx.strokeStyle = `rgba(${r},${g},${b},${Math.min(0.9, l.alpha * 3.5)})`;
+        ctx.lineWidth   = 1.2;
+        ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
+        // Inner glow dot
+        ctx.fillStyle = `rgba(${r},${g},${b},${l.alpha * 1.8})`;
+        ctx.fillRect(x + CELL/2 - 3, y + CELL/2 - 3, 6, 6);
+      });
+
+      animId = requestAnimationFrame(draw);
+    };
+    animId = requestAnimationFrame(draw);
+
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+  }, [cycle, ballPositions]);
+
+  return (
+    <canvas ref={canvasRef}
+      style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none', zIndex:1 }} />
+  );
+};
+
 /* ─── Steps (constant data) ───────────────────────────────── */
 interface Step {
   n: number; emoji: string; label: string; sub: string; color: string;
@@ -130,9 +262,11 @@ export const WhatHappensNextSection = () => {
 
   return (
     <section ref={sectionRef} className="py-16 relative overflow-hidden bg-[#040a16]">
-      <div className="absolute inset-0 bg-dot opacity-20 pointer-events-none" />
+      {/* Animated checkerboard — squares light up everywhere except over content */}
+      <CheckerBG cycle={cycle} ballPositions={layout.positions} />
+
       <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse 80% 70% at 50% 50%, rgba(37,99,235,0.05) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(ellipse 80% 70% at 50% 50%, rgba(37,99,235,0.06) 0%, transparent 70%)' }} />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
