@@ -3,132 +3,266 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, ArrowRight, Phone } from 'lucide-react';
+import { Menu, X, ArrowRight, Phone, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+const LINKS = [
+  { name: 'Home',     path: '/' },
+  { name: 'Services', path: '/services' },
+  { name: 'Pricing',  path: '/pricing' },
+  { name: 'Contact',  path: '/contact' },
+];
+
+const LOGO_SRC = 'https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FVCV%20Websolutions%20Logo.png?alt=media&token=aed21397-69ca-4846-a45d-267482b81acf';
+
+/* Cycling color sequences — border / VCV text / subtitle text — always different */
+const BORDER_CYCLE = ['#3b82f6','#8b5cf6','#06b6d4','#22c55e','#ec4899','#eab308','#ef4444','#3b82f6'];
+const VCV_CYCLE    = ['#f97316','#22c55e','#ec4899','#8b5cf6','#eab308','#ef4444','#06b6d4','#f97316'];
+const SUB_CYCLE    = ['#ec4899','#06b6d4','#eab308','#ef4444','#3b82f6','#8b5cf6','#22c55e','#ec4899'];
+const LOGO_DUR     = 3.5;
+
 export const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen,   setIsOpen]   = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+  useEffect(() => { setIsOpen(false); }, [pathname]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
-    window.addEventListener('scroll', onScroll);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const links = [
-    { name: 'Home', path: '/' },
-    { name: 'Services', path: '/services' },
-    { name: 'Pricing', path: '/pricing' },
-    { name: 'Contact', path: '/contact' },
-  ];
-
   return (
     <nav className={cn(
-      'fixed top-0 left-0 right-0 z-50 transition-all duration-400',
+      'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
       scrolled
-        ? 'bg-[#030712]/90 backdrop-blur-xl border-b border-white/[0.07] py-3 shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
-        : 'bg-transparent py-5'
+        ? 'py-2 bg-[#030712]/92 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.6)]'
+        : 'py-4 bg-transparent',
     )}>
-      {scrolled && (
-        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-600/40 to-transparent" />
-      )}
+
+      {/* Animated bottom border line */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 h-[1px]"
+        animate={{
+          background: [
+            'linear-gradient(90deg,transparent,rgba(59,130,246,0.6),transparent)',
+            'linear-gradient(90deg,transparent,rgba(139,92,246,0.6),transparent)',
+            'linear-gradient(90deg,transparent,rgba(6,182,212,0.6),transparent)',
+            'linear-gradient(90deg,transparent,rgba(236,72,153,0.6),transparent)',
+            'linear-gradient(90deg,transparent,rgba(59,130,246,0.6),transparent)',
+          ],
+        }}
+        transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
+        style={{ opacity: scrolled ? 1 : 0.35 }}
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
-          <Link href="/" className="group">
+        <div className="flex items-center justify-between gap-4">
+
+          {/* ── Logo ── */}
+          <Link href="/" className="group flex-shrink-0">
             <motion.div
               className="flex flex-col items-center px-3 py-1.5 rounded-xl border-2 cursor-pointer select-none"
-              animate={{
-                borderColor: ['#3b82f6','#8b5cf6','#06b6d4','#22c55e','#ec4899','#eab308','#ef4444','#3b82f6'],
-                boxShadow:   [
-                  '0 0 14px rgba(59,130,246,0.55)',
-                  '0 0 14px rgba(139,92,246,0.55)',
-                  '0 0 14px rgba(6,182,212,0.55)',
-                  '0 0 14px rgba(34,197,94,0.55)',
-                  '0 0 14px rgba(236,72,153,0.55)',
-                  '0 0 14px rgba(234,179,8,0.55)',
-                  '0 0 14px rgba(239,68,68,0.55)',
-                  '0 0 14px rgba(59,130,246,0.55)',
-                ],
-              }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}
-              whileHover={{ scale: 1.05 }}>
-              <img
-                src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FVCV%20Websolutions%20Logo.png?alt=media&token=aed21397-69ca-4846-a45d-267482b81acf"
-                alt="VCV Web Solutions"
-                className="w-9 h-9 object-contain mb-0.5"
-                referrerPolicy="no-referrer"
-              />
+              animate={{ borderColor: BORDER_CYCLE, boxShadow: BORDER_CYCLE.map(c => `0 0 16px ${c}60`) }}
+              transition={{ duration: LOGO_DUR, repeat: Infinity, ease: 'linear' }}
+              whileHover={{ scale: 1.06 }}>
+              <img src={LOGO_SRC} alt="VCV Web Solutions" className="w-9 h-9 object-contain mb-0.5" referrerPolicy="no-referrer" />
               <motion.span
-                className="text-sm font-black leading-none block tracking-widest"
-                animate={{ color: ['#f97316','#22c55e','#ec4899','#8b5cf6','#eab308','#ef4444','#06b6d4','#f97316'] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}>
+                className="text-sm font-black leading-none tracking-widest"
+                animate={{ color: VCV_CYCLE }}
+                transition={{ duration: LOGO_DUR, repeat: Infinity, ease: 'linear' }}>
                 VCV
               </motion.span>
               <motion.span
-                className="text-[9px] font-bold leading-none block tracking-widest uppercase mt-0.5"
-                animate={{ color: ['#ec4899','#06b6d4','#eab308','#ef4444','#3b82f6','#8b5cf6','#22c55e','#ec4899'] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}>
+                className="text-[9px] font-bold leading-none tracking-widest uppercase mt-0.5"
+                animate={{ color: SUB_CYCLE }}
+                transition={{ duration: LOGO_DUR, repeat: Infinity, ease: 'linear' }}>
                 Web Solutions
               </motion.span>
             </motion.div>
           </Link>
 
-          <div className="hidden md:flex items-center gap-5">
-            <a href="tel:+15809191386" className="text-xs font-bold text-gray-400 hover:text-white transition-colors flex items-center gap-1.5 group">
-              <Phone className="w-3.5 h-3.5 text-blue-500 group-hover:animate-pulse" />
-              (580) 919-1386
+          {/* ── Desktop nav ── */}
+          <div className="hidden md:flex items-center gap-1 flex-1 justify-center">
+
+            {/* Phone */}
+            <a href="tel:+15809191386"
+              className="flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/[0.05] group mr-2">
+              <motion.div
+                animate={{ color:['#3b82f6','#8b5cf6','#06b6d4','#3b82f6'] }}
+                transition={{ duration:3, repeat:Infinity, ease:'linear' }}>
+                <Phone className="w-3.5 h-3.5" />
+              </motion.div>
+              <span className="hidden lg:inline">(580) 919-1386</span>
             </a>
-            <div className="h-4 w-px bg-white/10" />
-            {links.map(link => (
-              <Link key={link.name} href={link.path}
-                className={cn(
-                  'text-sm font-medium transition-colors relative group',
-                  pathname === link.path ? 'text-blue-400' : 'text-gray-400 hover:text-white'
-                )}>
-                {link.name}
-                <span className={cn(
-                  'absolute -bottom-1 left-0 h-px bg-blue-500 transition-all duration-300',
-                  pathname === link.path ? 'w-full' : 'w-0 group-hover:w-full'
-                )} />
-              </Link>
-            ))}
-            <Link href="/free-demo" className="btn-glow btn-neon text-white px-5 py-2.5 rounded-full text-sm font-bold ml-1 flex items-center gap-1.5">
-              Free Demo <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+
+            <div className="w-px h-5 bg-white/10 mx-1" />
+
+            {/* Nav links */}
+            {LINKS.map(link => {
+              const active = pathname === link.path;
+              return (
+                <Link key={link.name} href={link.path}
+                  className="relative px-4 py-2 rounded-lg text-sm font-semibold transition-all group">
+
+                  {/* Active / hover background */}
+                  {active && (
+                    <motion.span
+                      layoutId="nav-pill"
+                      className="absolute inset-0 rounded-lg"
+                      style={{ background:'rgba(37,99,235,0.15)', border:'1px solid rgba(37,99,235,0.3)' }}
+                      transition={{ type:'spring', stiffness:380, damping:30 }}
+                    />
+                  )}
+
+                  <span className={cn(
+                    'relative z-10 transition-colors',
+                    active ? 'text-white' : 'text-gray-300 group-hover:text-white',
+                  )}>
+                    {link.name}
+                  </span>
+
+                  {/* Hover underline sweep */}
+                  {!active && (
+                    <span className="absolute bottom-1 left-3 right-3 h-[2px] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+                      style={{ background:'linear-gradient(90deg,#3b82f6,#8b5cf6)' }} />
+                  )}
+
+                  {/* Active dot */}
+                  {active && (
+                    <motion.span
+                      className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-blue-400"
+                      animate={{ opacity:[1,0.4,1], scale:[1,1.4,1] }}
+                      transition={{ duration:1.8, repeat:Infinity }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
           </div>
 
-          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-gray-300 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-all">
-            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          {/* ── CTA button ── */}
+          <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+            <motion.div
+              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+              <Link href="/free-demo"
+                className="relative overflow-hidden flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm text-white">
+                {/* Rainbow bg */}
+                <motion.span
+                  className="absolute inset-0 rounded-full"
+                  animate={{
+                    backgroundImage:[
+                      'linear-gradient(135deg,#3b82f6,#8b5cf6)',
+                      'linear-gradient(135deg,#8b5cf6,#06b6d4)',
+                      'linear-gradient(135deg,#06b6d4,#22c55e)',
+                      'linear-gradient(135deg,#22c55e,#ec4899)',
+                      'linear-gradient(135deg,#ec4899,#3b82f6)',
+                    ],
+                    boxShadow:[
+                      '0 0 18px rgba(59,130,246,0.65)',
+                      '0 0 18px rgba(139,92,246,0.65)',
+                      '0 0 18px rgba(6,182,212,0.65)',
+                      '0 0 18px rgba(34,197,94,0.65)',
+                      '0 0 18px rgba(236,72,153,0.65)',
+                    ],
+                  }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                />
+                <Zap className="w-3.5 h-3.5 relative z-10" />
+                <span className="relative z-10">Free Demo</span>
+                <ArrowRight className="w-3.5 h-3.5 relative z-10 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* ── Mobile hamburger ── */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden relative w-9 h-9 flex items-center justify-center rounded-lg transition-all"
+            style={{ background: isOpen ? 'rgba(37,99,235,0.2)' : 'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)' }}>
+            <AnimatePresence mode="wait">
+              {isOpen
+                ? <motion.div key="x" initial={{rotate:-90,opacity:0}} animate={{rotate:0,opacity:1}} exit={{rotate:90,opacity:0}} transition={{duration:.2}}><X className="w-4 h-4 text-white"/></motion.div>
+                : <motion.div key="m" initial={{rotate:90,opacity:0}} animate={{rotate:0,opacity:1}} exit={{rotate:-90,opacity:0}} transition={{duration:.2}}><Menu className="w-4 h-4 text-gray-300"/></motion.div>
+              }
+            </AnimatePresence>
           </button>
+
         </div>
       </div>
 
+      {/* ── Mobile drawer ── */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="md:hidden absolute top-full left-0 right-0 bg-[#030712]/95 backdrop-blur-xl border-b border-white/[0.07] py-6 px-6 space-y-1">
-            {links.map(link => (
-              <Link key={link.name} href={link.path} onClick={() => setIsOpen(false)}
-                className={cn(
-                  'block py-3 text-base font-medium border-b border-white/[0.04] transition-colors',
-                  pathname === link.path ? 'text-blue-400' : 'text-gray-300 hover:text-white'
-                )}>
-                {link.name}
-              </Link>
-            ))}
-            <Link href="/free-demo" onClick={() => setIsOpen(false)}
-              className="block btn-neon text-white px-5 py-3 rounded-xl text-center font-bold mt-3">
-              Get Free Demo
-            </Link>
+            initial={{ opacity:0, height:0 }}
+            animate={{ opacity:1, height:'auto' }}
+            exit={{ opacity:0, height:0 }}
+            transition={{ duration:.3, ease:'easeInOut' }}
+            className="md:hidden overflow-hidden"
+            style={{ background:'rgba(3,7,18,0.97)', borderTop:'1px solid rgba(255,255,255,0.07)', backdropFilter:'blur(20px)' }}>
+            <div className="px-5 py-5 space-y-1">
+
+              {/* Phone */}
+              <a href="tel:+15809191386"
+                className="flex items-center gap-3 py-3 px-3 rounded-xl text-sm font-semibold text-gray-300 hover:text-white hover:bg-white/[0.05] transition-all border border-transparent hover:border-white/[0.06]">
+                <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-600/30 flex items-center justify-center">
+                  <Phone className="w-3.5 h-3.5 text-blue-400"/>
+                </div>
+                (580) 919-1386
+              </a>
+
+              <div className="h-px bg-white/[0.05] my-2" />
+
+              {/* Nav links */}
+              {LINKS.map((link, i) => {
+                const active = pathname === link.path;
+                return (
+                  <motion.div key={link.name}
+                    initial={{ opacity:0, x:-12 }} animate={{ opacity:1, x:0 }}
+                    transition={{ delay: i * 0.05 }}>
+                    <Link href={link.path} onClick={() => setIsOpen(false)}
+                      className={cn(
+                        'flex items-center gap-3 py-3 px-3 rounded-xl text-base font-semibold transition-all',
+                        active
+                          ? 'text-white bg-blue-600/15 border border-blue-600/25'
+                          : 'text-gray-300 hover:text-white hover:bg-white/[0.05] border border-transparent',
+                      )}>
+                      {active && <motion.span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" animate={{ opacity:[1,.3,1] }} transition={{ duration:1.5, repeat:Infinity }}/>}
+                      {link.name}
+                    </Link>
+                  </motion.div>
+                );
+              })}
+
+              <div className="h-px bg-white/[0.05] my-2" />
+
+              {/* CTA */}
+              <motion.div
+                whileTap={{ scale: 0.97 }}>
+                <Link href="/free-demo" onClick={() => setIsOpen(false)}
+                  className="relative overflow-hidden flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-white text-base mt-1">
+                  <motion.span
+                    className="absolute inset-0"
+                    animate={{
+                      backgroundImage:[
+                        'linear-gradient(135deg,#3b82f6,#8b5cf6)',
+                        'linear-gradient(135deg,#8b5cf6,#06b6d4)',
+                        'linear-gradient(135deg,#06b6d4,#ec4899)',
+                        'linear-gradient(135deg,#ec4899,#3b82f6)',
+                      ],
+                    }}
+                    transition={{ duration:3, repeat:Infinity, ease:'linear' }}
+                  />
+                  <Zap className="w-4 h-4 relative z-10"/>
+                  <span className="relative z-10">Get My Design Preview</span>
+                  <ArrowRight className="w-4 h-4 relative z-10"/>
+                </Link>
+              </motion.div>
+
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
