@@ -23,9 +23,33 @@ const ParticleCanvas = () => {
     if (!ctx) return;
 
     let animId: number;
+    let frame = 0;
     const mouse = { x: -1000, y: -1000 };
 
-    interface P { x: number; y: number; vx: number; vy: number; size: number; alpha: number }
+    // Color palette that cycles: blue → cyan → purple → green → pink → blue
+    const COLORS: [number, number, number][] = [
+      [37,  99,  235], // blue
+      [6,   182, 212], // cyan
+      [124, 58,  237], // purple
+      [34,  197, 94],  // green
+      [236, 72,  153], // pink
+      [245, 158, 11],  // amber
+    ];
+    const lerpColor = (t: number): [number, number, number] => {
+      const scaled = ((t % 1) + 1) % 1;
+      const n = COLORS.length;
+      const idx = scaled * n;
+      const i = Math.floor(idx) % n;
+      const j = (i + 1) % n;
+      const f = idx - Math.floor(idx);
+      return [
+        Math.round(COLORS[i][0] * (1 - f) + COLORS[j][0] * f),
+        Math.round(COLORS[i][1] * (1 - f) + COLORS[j][1] * f),
+        Math.round(COLORS[i][2] * (1 - f) + COLORS[j][2] * f),
+      ];
+    };
+
+    interface P { x: number; y: number; vx: number; vy: number; size: number; alpha: number; hue: number }
     let pts: P[] = [];
 
     const resize = () => {
@@ -35,51 +59,69 @@ const ParticleCanvas = () => {
 
     const spawn = () => {
       pts = [];
-      const n = Math.min(90, Math.floor((canvas.width * canvas.height) / 14000));
+      const n = Math.min(110, Math.floor((canvas.width * canvas.height) / 11000));
       for (let i = 0; i < n; i++) {
         pts.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.35,
-          vy: (Math.random() - 0.5) * 0.35,
-          size: Math.random() * 1.8 + 0.5,
-          alpha: Math.random() * 0.5 + 0.25,
+          vx: (Math.random() - 0.5) * 0.55,
+          vy: (Math.random() - 0.5) * 0.55,
+          size: Math.random() * 2.8 + 1.0,
+          alpha: Math.random() * 0.6 + 0.35,
+          hue: Math.random(), // each particle has its own colour offset
         });
       }
     };
 
     const draw = () => {
+      frame++;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Global colour cycle — full rotation every ~600 frames (~10s at 60fps)
+      const globalT = frame / 600;
+
       pts.forEach((p, i) => {
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.x < 0 || p.x > canvas.width)  p.vx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
         p.x += p.vx; p.y += p.vy;
 
+        // Each particle shifts colour at its own speed
+        const t = globalT + p.hue;
+        const [r, g, b] = lerpColor(t);
+
+        // Dot
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(37,99,235,${p.alpha})`;
+        ctx.fillStyle = `rgba(${r},${g},${b},${p.alpha})`;
         ctx.fill();
 
+        // Connections
         for (let j = i + 1; j < pts.length; j++) {
           const dx = pts[j].x - p.x, dy = pts[j].y - p.y;
           const d = Math.hypot(dx, dy);
-          if (d < 130) {
+          if (d < 150) {
+            const a = 0.55 * (1 - d / 150);
+            // Blend colours of the two endpoints for the line
+            const t2 = globalT + pts[j].hue;
+            const [r2, g2, b2] = lerpColor(t2);
+            const mr = Math.round((r + r2) / 2), mg = Math.round((g + g2) / 2), mb = Math.round((b + b2) / 2);
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(pts[j].x, pts[j].y);
-            ctx.strokeStyle = `rgba(37,99,235,${0.22 * (1 - d / 130)})`;
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = `rgba(${mr},${mg},${mb},${a})`;
+            ctx.lineWidth = 1.8;
             ctx.stroke();
           }
         }
 
+        // Mouse attraction line
         const md = Math.hypot(mouse.x - p.x, mouse.y - p.y);
-        if (md < 160) {
+        if (md < 180) {
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
           ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = `rgba(168,85,247,${0.55 * (1 - md / 160)})`;
-          ctx.lineWidth = 0.8;
+          ctx.strokeStyle = `rgba(${r},${g},${b},${0.7 * (1 - md / 180)})`;
+          ctx.lineWidth = 2.2;
           ctx.stroke();
         }
       });
