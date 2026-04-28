@@ -784,6 +784,48 @@ const StatsSection = () => {
   );
 };
 
+/* ─── Aurora background for PerfectFor ───────────────────── */
+const AuroraCanvas = () => {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = ref.current; if (!canvas) return;
+    const ctx = canvas.getContext('2d'); if (!ctx) return;
+    let animId: number; let t = 0;
+    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
+    const BLOBS = [
+      { bx:0.15, by:0.45, r:0.38, hue:220, spd:0.28 },
+      { bx:0.80, by:0.25, r:0.32, hue:280, spd:0.35 },
+      { bx:0.55, by:0.75, r:0.30, hue:170, spd:0.42 },
+      { bx:0.10, by:0.80, r:0.28, hue: 20, spd:0.30 },
+      { bx:0.88, by:0.65, r:0.34, hue: 80, spd:0.38 },
+      { bx:0.42, by:0.15, r:0.26, hue:330, spd:0.45 },
+      { bx:0.65, by:0.50, r:0.22, hue:130, spd:0.32 },
+    ];
+    const draw = () => {
+      animId = requestAnimationFrame(draw);
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      BLOBS.forEach((b, i) => {
+        const x = (b.bx + Math.sin(t * 0.25 + i * 1.1) * 0.10) * w;
+        const y = (b.by + Math.cos(t * 0.20 + i * 0.8) * 0.09) * h;
+        const r = b.r * Math.min(w, h);
+        const hue = (b.hue + t * b.spd * 25) % 360;
+        const grd = ctx.createRadialGradient(x, y, 0, x, y, r);
+        grd.addColorStop(0, `hsla(${hue},85%,58%,0.20)`);
+        grd.addColorStop(0.5, `hsla(${hue},80%,50%,0.08)`);
+        grd.addColorStop(1, `hsla(${hue},80%,50%,0)`);
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, w, h);
+      });
+      t += 0.008;
+    };
+    resize(); draw();
+    window.addEventListener('resize', resize);
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+  }, []);
+  return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex:0 }} />;
+};
+
 /* ─── Perfect For ─────────────────────────────────────────── */
 interface Biz {
   id: number;
@@ -966,7 +1008,8 @@ const PerfectFor = () => {
   const [mobilePopup, setMobilePopup] = useState<Biz | null>(null);
 
   return (
-    <section style={{ borderTop: '1px solid rgba(37,99,235,0.15)', borderBottom: '1px solid rgba(37,99,235,0.15)', background: '#030712' }}>
+    <section style={{ borderTop: '1px solid rgba(37,99,235,0.15)', borderBottom: '1px solid rgba(37,99,235,0.15)', background: '#030712', position:'relative', overflow:'hidden' }}>
+      <AuroraCanvas />
 
       {/* ── Shared heading ── */}
       <div className="text-center pt-8 pb-4 px-4 relative z-10">
