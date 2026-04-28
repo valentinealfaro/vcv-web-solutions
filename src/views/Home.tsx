@@ -1002,9 +1002,27 @@ const PerfectFor = () => {
   };
 
   const W = containerRef.current?.offsetWidth || 800;
-  const [mobilePopup, setMobilePopup] = useState<Biz | null>(null);
-  const [popLabels,   setPopLabels]   = useState<Set<number>>(new Set());
+  const [mobilePopup,     setMobilePopup]     = useState<Biz | null>(null);
+  const [mobileAutoIdx,   setMobileAutoIdx]   = useState(0);
+  const [mobileUserOpen,  setMobileUserOpen]  = useState(false);
+  const [popLabels,       setPopLabels]       = useState<Set<number>>(new Set());
 
+  /* Auto-cycle popup on mobile */
+  useEffect(() => {
+    const cycle = setInterval(() => {
+      if (mobileUserOpen) return; // user manually opened one — don't override
+      setMobileAutoIdx(i => (i + 1) % BUSINESSES.length);
+    }, 3500);
+    return () => clearInterval(cycle);
+  }, [mobileUserOpen]);
+
+  useEffect(() => {
+    if (!mobileUserOpen) setMobilePopup(BUSINESSES[mobileAutoIdx]);
+  }, [mobileAutoIdx, mobileUserOpen]);
+
+  const closeMobilePopup = () => { setMobileUserOpen(false); setMobilePopup(null); };
+
+  /* Label sparkles */
   useEffect(() => {
     const show = setInterval(() => {
       const biz = BUSINESSES[Math.floor(Math.random() * BUSINESSES.length)];
@@ -1062,7 +1080,7 @@ const PerfectFor = () => {
                 )}
               </AnimatePresence>
             <motion.button
-              onClick={() => setMobilePopup(biz)}
+              onClick={() => { setMobileUserOpen(true); setMobilePopup(biz); }}
               initial={{ opacity: 0, scale: 0.7 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, amount: 0.2 }}
@@ -1107,7 +1125,7 @@ const PerfectFor = () => {
           {mobilePopup && (
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setMobilePopup(null)}
+              onClick={closeMobilePopup}
               style={{ position:'fixed', inset:0, zIndex:300, display:'flex',
                 alignItems:'center', justifyContent:'center',
                 padding: '20px 16px', background:'rgba(0,0,0,0.75)',
@@ -1136,6 +1154,9 @@ const PerfectFor = () => {
                     <p style={{ color:'#f8fafc', fontWeight:800, fontSize:20, margin:'0 0 4px' }}>{mobilePopup.name}</p>
                     <p style={{ color:mobilePopup.color, fontSize:11, fontWeight:700,
                       textTransform:'uppercase', letterSpacing:'0.12em', margin:0 }}>Industry Insight</p>
+                    {!mobileUserOpen && (
+                      <p style={{ color:'#475569', fontSize:9, marginTop:3 }}>Auto-cycling · tap to pause</p>
+                    )}
                   </div>
                 </div>
 
@@ -1149,11 +1170,23 @@ const PerfectFor = () => {
 
                 <p style={{ color:'#94a3b8', fontSize:14, lineHeight:1.75, marginBottom:20 }}>{mobilePopup.detail}</p>
 
-                <button onClick={() => setMobilePopup(null)}
+                {/* Auto-progress bar */}
+                {!mobileUserOpen && (
+                  <div style={{ height:3, borderRadius:99, background:'rgba(255,255,255,0.06)', marginBottom:14, overflow:'hidden' }}>
+                    <motion.div
+                      key={mobileAutoIdx}
+                      initial={{ width:'0%' }} animate={{ width:'100%' }}
+                      transition={{ duration:3.5, ease:'linear' }}
+                      style={{ height:'100%', borderRadius:99, background: mobilePopup.color }}
+                    />
+                  </div>
+                )}
+
+                <button onClick={closeMobilePopup}
                   style={{ width:'100%', padding:'14px', borderRadius:14, border:`1.5px solid ${mobilePopup.color}50`,
                     cursor:'pointer', background:`${mobilePopup.color}20`, color:'white',
                     fontWeight:800, fontSize:14, letterSpacing:'0.06em' }}>
-                  Close ✕
+                  {mobileUserOpen ? 'Close ✕' : 'Tap to pause auto-cycle'}
                 </button>
               </motion.div>
             </motion.div>
