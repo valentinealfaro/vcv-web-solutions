@@ -63,46 +63,56 @@ const RiskParticlesCanvas = () => {
 };
 
 const FAQ_DATA = [
-  { q:'Do I have to pay upfront?',   a:'No. We build your website demo first so you can see exactly what you are getting before you pay anything.' },
-  { q:'How long does it take?',      a:'Most websites are built and launched in 3 to 7 days.' },
-  { q:'Can I cancel?',               a:'Yes, we offer flexible options with no long-term contracts.' },
-  { q:'Do you handle everything?',   a:'Yes, we handle design, development, hosting, and ongoing support.' },
+  { q:'Do I have to pay upfront?',   a:'No. We build your website demo first so you can see exactly what you are getting before you pay anything.', color:'#3b82f6' },
+  { q:'How long does it take?',      a:'Most websites are built and launched in 3 to 7 days.',                                                       color:'#8b5cf6' },
+  { q:'Can I cancel?',               a:'Yes, we offer flexible options with no long-term contracts.',                                                 color:'#06b6d4' },
+  { q:'Do you handle everything?',   a:'Yes, we handle design, development, hosting, and ongoing support.',                                           color:'#22c55e' },
 ];
 
-const FAQItem = ({ question, answer, isOpen, onToggle }: {
-  question: string; answer: string; isOpen: boolean; onToggle: () => void;
+const FAQItem = ({ question, answer, color, isOpen, onToggle }: {
+  question: string; answer: string; color: string; isOpen: boolean; onToggle: () => void;
 }) => (
   <motion.div
-    className="rounded-2xl overflow-hidden"
+    className="rounded-2xl overflow-hidden flex"
     animate={{
-      background:  isOpen ? 'rgba(37,99,235,0.07)'    : 'rgba(255,255,255,0.03)',
-      borderColor: isOpen ? 'rgba(37,99,235,0.4)'     : 'rgba(255,255,255,0.08)',
-      boxShadow:   isOpen ? '0 0 28px rgba(37,99,235,0.12)' : '0 0 0px rgba(0,0,0,0)',
+      boxShadow: isOpen
+        ? `0 0 32px ${color}30, 0 4px 24px rgba(0,0,0,0.5)`
+        : '0 2px 12px rgba(0,0,0,0.4)',
     }}
-    style={{ border: '1.5px solid rgba(255,255,255,0.08)' }}
+    style={{
+      background: 'rgba(8,12,28,0.92)',
+      border: `1.5px solid ${isOpen ? color + '70' : 'rgba(255,255,255,0.1)'}`,
+      transition: 'border-color 0.3s',
+    }}
     transition={{ duration: 0.3 }}>
-    <button onClick={onToggle} className="w-full px-6 py-5 flex justify-between items-center text-left gap-4">
-      <span className={cn('font-bold transition-colors text-base', isOpen ? 'text-blue-400' : 'text-white')}>
-        {question}
-      </span>
-      <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }} className="flex-shrink-0">
-        <HelpCircle className={cn('w-5 h-5 transition-colors', isOpen ? 'text-blue-400' : 'text-gray-500')} />
-      </motion.div>
-    </button>
-    <AnimatePresence initial={false}>
-      {isOpen && (
-        <motion.div
-          key="answer"
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: 'auto', opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.35, ease: 'easeInOut' }}
-          className="overflow-hidden">
-          <div className="h-px mx-6 bg-blue-500/20" />
-          <p className="px-6 py-5 text-gray-400 leading-relaxed text-sm">{answer}</p>
+    {/* Colored left accent bar */}
+    <div className="w-1 flex-shrink-0 rounded-l-2xl transition-all duration-300"
+      style={{ background: isOpen ? `linear-gradient(180deg,${color},${color}88)` : 'rgba(255,255,255,0.08)' }} />
+    <div className="flex-1 min-w-0">
+      <button onClick={onToggle} className="w-full px-5 py-5 flex justify-between items-center text-left gap-4">
+        <span className="font-bold text-base transition-colors duration-300"
+          style={{ color: isOpen ? color : '#f1f5f9' }}>
+          {question}
+        </span>
+        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }} className="flex-shrink-0">
+          <HelpCircle className="w-5 h-5" style={{ color: isOpen ? color : '#94a3b8' }} />
+        </motion.div>
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            key="answer"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease: 'easeInOut' }}
+            className="overflow-hidden">
+            <div className="h-px mx-5" style={{ background: `${color}35` }} />
+            <p className="px-5 py-4 text-gray-200 leading-relaxed text-sm">{answer}</p>
         </motion.div>
       )}
     </AnimatePresence>
+    </div>{/* end content wrapper */}
   </motion.div>
 );
 
@@ -441,6 +451,7 @@ export default function Pricing() {
               key={i}
               question={item.q}
               answer={item.a}
+              color={item.color}
               isOpen={openFaq === i}
               onToggle={() => setOpenFaq(openFaq === i ? -1 : i)}
             />
