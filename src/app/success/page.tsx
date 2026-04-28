@@ -1,2 +1,4 @@
-import Success from '@/views/Success';
-export default Success;
+'use client';
+import dynamic from 'next/dynamic';
+const View = dynamic(() => import('@/views/Success'), { ssr: false });
+export default function Page() { return <View />; }

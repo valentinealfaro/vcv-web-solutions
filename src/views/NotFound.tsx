@@ -105,7 +105,7 @@ export default function NotFound() {
             <span className="text-gray-600 ml-2">terminal</span>
           </div>
           <div className="space-y-1">
-            <p><span className="text-green-400">vcv@websolutions</span><span className="text-gray-500">:~$</span> <span className="text-white">find {window.location.pathname}</span></p>
+            <p><span className="text-green-400">vcv@websolutions</span><span className="text-gray-500">:~$</span> <span className="text-white">find {typeof window !== 'undefined' ? window.location.pathname : '/404'}</span></p>
             <p className="text-red-400">find: page not found</p>
             <p><span className="text-green-400">vcv@websolutions</span><span className="text-gray-500">:~$</span> <span className="text-white">cd /home</span></p>
             <p className="text-blue-400">Redirecting to safety...</p>

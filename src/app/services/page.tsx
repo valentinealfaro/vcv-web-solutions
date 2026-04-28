@@ -1,2 +1,4 @@
-import Services from '@/views/Services';
-export default Services;
+'use client';
+import dynamic from 'next/dynamic';
+const View = dynamic(() => import('@/views/Services'), { ssr: false });
+export default function Page() { return <View />; }

@@ -1,8 +1,4 @@
 'use client';
-import { useParams } from 'next/navigation';
-import BlogPost from '@/views/BlogPost';
-
-export default function BlogPostPage() {
-  // BlogPost reads params internally via useParams from next/navigation
-  return <BlogPost />;
-}
+import dynamic from 'next/dynamic';
+const View = dynamic(() => import('@/views/BlogPost'), { ssr: false });
+export default function Page() { return <View />; }

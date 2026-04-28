@@ -1,2 +1,4 @@
-import Pricing from '@/views/Pricing';
-export default Pricing;
+'use client';
+import dynamic from 'next/dynamic';
+const View = dynamic(() => import('@/views/Pricing'), { ssr: false });
+export default function Page() { return <View />; }

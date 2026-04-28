@@ -1,2 +1,4 @@
-import Contact from '@/views/Contact';
-export default Contact;
+'use client';
+import dynamic from 'next/dynamic';
+const View = dynamic(() => import('@/views/Contact'), { ssr: false });
+export default function Page() { return <View />; }

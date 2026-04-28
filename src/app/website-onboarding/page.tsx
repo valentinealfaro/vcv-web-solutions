@@ -1,2 +1,4 @@
-import WebsiteOnboarding from '@/views/WebsiteOnboarding';
-export default WebsiteOnboarding;
+'use client';
+import dynamic from 'next/dynamic';
+const View = dynamic(() => import('@/views/WebsiteOnboarding'), { ssr: false });
+export default function Page() { return <View />; }
