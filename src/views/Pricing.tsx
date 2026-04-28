@@ -19,35 +19,59 @@ const RiskParticlesCanvas = () => {
   useEffect(() => {
     const canvas = canvasRef.current; if (!canvas) return;
     const ctx = canvas.getContext('2d'); if (!ctx) return;
-    let animId: number;
+    let animId: number; let frame = 0;
     const COLS = ['#3b82f6','#8b5cf6','#06b6d4','#22c55e','#ec4899','#eab308','#ef4444'];
     const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
-    interface P { x:number; y:number; vx:number; vy:number; r:number; al:number; col:string }
+    interface P { x:number; y:number; vx:number; vy:number; r:number; al:number; col:string; pulse:number }
     let pts: P[] = [];
     const spawn = () => {
       pts = [];
-      const n = Math.min(80, Math.floor(canvas.width * canvas.height / 8000));
+      const n = Math.min(110, Math.floor(canvas.width * canvas.height / 5500));
       for (let i = 0; i < n; i++) pts.push({
-        x: Math.random() * canvas.width,  y: Math.random() * canvas.height,
-        vx:(Math.random() - .5) * .42,    vy:(Math.random() - .5) * .42,
-        r: Math.random() * 2.5 + .7,      al: Math.random() * .55 + .18,
+        x:  Math.random() * canvas.width,
+        y:  Math.random() * canvas.height,
+        vx: (Math.random() - .5) * 1.6,
+        vy: (Math.random() - .5) * 1.6,
+        r:  Math.random() * 3.5 + 1.2,
+        al: Math.random() * .6 + .35,
         col: COLS[Math.floor(Math.random() * COLS.length)],
+        pulse: Math.random() * Math.PI * 2,
       });
     };
     const draw = () => {
+      frame++;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       pts.forEach((p, i) => {
+        // bounce + accelerate slightly toward center to keep things active
         if (p.x < 0 || p.x > canvas.width)  p.vx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
         p.x += p.vx; p.y += p.vy;
-        ctx.globalAlpha = p.al; ctx.fillStyle = p.col;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+
+        // pulsing radius
+        const pr = p.r + Math.sin(frame * 0.05 + p.pulse) * 1.2;
+        ctx.globalAlpha = p.al + Math.sin(frame * 0.04 + p.pulse) * 0.15;
+        ctx.fillStyle = p.col;
+        // glow halo
+        ctx.shadowColor = p.col; ctx.shadowBlur = 10;
+        ctx.beginPath(); ctx.arc(p.x, p.y, pr, 0, Math.PI * 2); ctx.fill();
+        ctx.shadowBlur = 0;
+
         for (let j = i + 1; j < pts.length; j++) {
           const dx = pts[j].x - p.x, dy = pts[j].y - p.y, d = Math.hypot(dx, dy);
-          if (d < 95) {
-            ctx.globalAlpha = .22 * (1 - d / 95);
-            ctx.strokeStyle = p.col; ctx.lineWidth = .75;
+          if (d < 140) {
+            const alpha = .55 * (1 - d / 140);
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = p.col;
+            // thick outer glow line
+            ctx.lineWidth = 2.8;
+            ctx.shadowColor = p.col; ctx.shadowBlur = 8;
             ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke();
+            // bright thin core on top
+            ctx.lineWidth = 1.2;
+            ctx.globalAlpha = alpha * 1.5;
+            ctx.shadowBlur = 3;
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke();
+            ctx.shadowBlur = 0;
           }
         }
       });
@@ -59,7 +83,7 @@ const RiskParticlesCanvas = () => {
     window.addEventListener('resize', onResize);
     return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', onResize); };
   }, []);
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-55" />;
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-80" />;
 };
 
 const FAQ_DATA = [
