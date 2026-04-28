@@ -254,11 +254,25 @@ export default function Pricing() {
                 Get My Free Demo <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
-              <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> No upfront cost</span>
-              <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Built in 3-7 days</span>
-              <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Designed for leads</span>
-            </div>
+            <motion.div
+              className="inline-flex flex-wrap justify-center gap-6 text-sm px-8 py-3 rounded-full"
+              style={{ border: '1.5px solid #3b82f6' }}
+              animate={{
+                borderColor: ['#3b82f6','#8b5cf6','#06b6d4','#22c55e','#ec4899','#3b82f6'],
+                boxShadow: [
+                  '0 0 14px rgba(59,130,246,0.55),  inset 0 0 14px rgba(59,130,246,0.08)',
+                  '0 0 14px rgba(139,92,246,0.55),  inset 0 0 14px rgba(139,92,246,0.08)',
+                  '0 0 14px rgba(6,182,212,0.55),   inset 0 0 14px rgba(6,182,212,0.08)',
+                  '0 0 14px rgba(34,197,94,0.55),   inset 0 0 14px rgba(34,197,94,0.08)',
+                  '0 0 14px rgba(236,72,153,0.55),  inset 0 0 14px rgba(236,72,153,0.08)',
+                  '0 0 14px rgba(59,130,246,0.55),  inset 0 0 14px rgba(59,130,246,0.08)',
+                ],
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}>
+              <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> No upfront cost</span>
+              <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Built in 3-7 days</span>
+              <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Designed for leads</span>
+            </motion.div>
           </motion.div>
         </div>
       </section>
