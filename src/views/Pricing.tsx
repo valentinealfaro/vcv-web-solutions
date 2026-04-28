@@ -87,7 +87,7 @@ const RiskParticlesCanvas = () => {
 };
 
 const FAQ_DATA = [
-  { q:'How does the design preview work?',  a:'We build a custom mockup of your website first. You review it, request any changes, then approve it. Once you choose your plan and pay, we go live — usually within 3-7 days.', color:'#3b82f6' },
+  { q:'What do I pay to get started?',  a:'Monthly plan is $147/mo — no setup fee, no contract, cancel anytime. Annual plan is $1,497 for the full year with the setup fee waived (saves you an extra $297). Either way, you see your custom design preview and approve it before your first payment is due.', color:'#3b82f6' },
   { q:'Why is there a 50% discount?',       a:'We are in a growth phase and taking on select new clients at half price in exchange for a testimonial. Once we reach capacity the discount ends — no fake countdown, just limited spots.', color:'#8b5cf6' },
   { q:'What if my project is more complex?', a:'Standard local business sites fit the prices above. If you need e-commerce, booking systems, or custom integrations we will quote you separately — usually $1,500 to $5,000+ one-time depending on scope.', color:'#06b6d4' },
   { q:'Do you handle everything?',          a:'Yes — design, development, copywriting guidance, SEO setup, hosting, and ongoing support. You focus on running your business, we handle your online presence.', color:'#22c55e' },
