@@ -174,7 +174,7 @@ export default function Pricing() {
               </span>
             </div>
 
-            <p className="text-gray-400 text-sm leading-relaxed mb-6">{pkg.description}</p>
+            <p className="text-gray-400 text-sm leading-relaxed mb-6">{pkg.name === 'Monthly' ? 'Perfect for getting started with no long-term commitment.' : 'The complete package. Everything you need to dominate your market.'}</p>
 
             <ul className="space-y-3 mb-8 flex-grow">
               {pkg.features.map((f, i) => (
