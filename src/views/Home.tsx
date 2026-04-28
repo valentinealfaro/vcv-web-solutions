@@ -1007,17 +1007,18 @@ const PerfectFor = () => {
   const [mobileUserOpen,  setMobileUserOpen]  = useState(false);
   const [popLabels,       setPopLabels]       = useState<Set<number>>(new Set());
 
-  /* Auto-cycle popup on mobile */
+  /* Auto-cycle: show 3.5s → hide 1.5s → next */
   useEffect(() => {
-    const cycle = setInterval(() => {
-      if (mobileUserOpen) return; // user manually opened one — don't override
-      setMobileAutoIdx(i => (i + 1) % BUSINESSES.length);
+    if (mobileUserOpen) return;
+    setMobilePopup(BUSINESSES[mobileAutoIdx]);
+    const hideTimer = setTimeout(() => {
+      setMobilePopup(null);
+      const nextTimer = setTimeout(() => {
+        setMobileAutoIdx(i => (i + 1) % BUSINESSES.length);
+      }, 1500);
+      return () => clearTimeout(nextTimer);
     }, 3500);
-    return () => clearInterval(cycle);
-  }, [mobileUserOpen]);
-
-  useEffect(() => {
-    if (!mobileUserOpen) setMobilePopup(BUSINESSES[mobileAutoIdx]);
+    return () => clearTimeout(hideTimer);
   }, [mobileAutoIdx, mobileUserOpen]);
 
   const closeMobilePopup = () => { setMobileUserOpen(false); setMobilePopup(null); };
