@@ -76,16 +76,27 @@ export const LeadMagnetSection = () => {
     }
     setStatus('loading');
     try {
-      const res = await fetch('/api/send-email', {
+      const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          service_id:  'service_ryxz9tk',
+          template_id: 'template_m1kkbm5',
+          user_id:     'QhgVuWgPA8Rj-BGpQ',
+          template_params: {
+            from_name: form.name,
+            reply_to:  form.email,
+            phone:     form.phone || 'Not provided',
+            business:  form.business || 'Not provided',
+            message:   form.message,
+          },
+        }),
       });
-      if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Failed'); }
+      if (!res.ok) throw new Error('Failed to send');
       setStatus('success');
       setForm({ name:'', business:'', email:'', phone:'', message:'' });
     } catch (err: unknown) {
-      setErrMsg(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setErrMsg('Something went wrong. Please try again.');
       setStatus('error');
     }
   };
