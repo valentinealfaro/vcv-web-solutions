@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     q: 'Do you offer monthly plans?',
-    a: 'Yes — $97/month with no long-term commitment. Or save big with our annual plan at $497/year (that\'s over $660 in savings).',
+    a: 'Yes — $147/month with no long-term commitment. Or save big with our annual plan at $1,497/year (that saves you $1,473 off the regular $2,970 rate, and the setup fee is waived).',
   },
   {
     q: 'What industries do you work with?',

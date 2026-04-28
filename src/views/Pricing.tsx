@@ -87,10 +87,10 @@ const RiskParticlesCanvas = () => {
 };
 
 const FAQ_DATA = [
-  { q:'Do I have to pay upfront?',   a:'No. We build your website demo first so you can see exactly what you are getting before you pay anything.', color:'#3b82f6' },
-  { q:'How long does it take?',      a:'Most websites are built and launched in 3 to 7 days.',                                                       color:'#8b5cf6' },
-  { q:'Can I cancel?',               a:'Yes, we offer flexible options with no long-term contracts.',                                                 color:'#06b6d4' },
-  { q:'Do you handle everything?',   a:'Yes, we handle design, development, hosting, and ongoing support.',                                           color:'#22c55e' },
+  { q:'How does the design preview work?',  a:'We build a custom mockup of your website first. You review it, request any changes, then approve it. Once you choose your plan and pay, we go live — usually within 3-7 days.', color:'#3b82f6' },
+  { q:'Why is there a 50% discount?',       a:'We are in a growth phase and taking on select new clients at half price in exchange for a testimonial. Once we reach capacity the discount ends — no fake countdown, just limited spots.', color:'#8b5cf6' },
+  { q:'What if my project is more complex?', a:'Standard local business sites fit the prices above. If you need e-commerce, booking systems, or custom integrations we will quote you separately — usually $1,500 to $5,000+ one-time depending on scope.', color:'#06b6d4' },
+  { q:'Do you handle everything?',          a:'Yes — design, development, copywriting guidance, SEO setup, hosting, and ongoing support. You focus on running your business, we handle your online presence.', color:'#22c55e' },
 ];
 
 const FAQItem = ({ question, answer, color, isOpen, onToggle }: {
@@ -141,10 +141,10 @@ const FAQItem = ({ question, answer, color, isOpen, onToggle }: {
 );
 
 const packages = [
-  { name:"Monthly", price:"$97", origPrice:"$194", period:"/mo", amountCents:9700,  setup:"No upfront cost options", isPopular:false,
-    features:["Custom website design","Mobile-responsive layout","Basic SEO setup","Contact & lead forms","Hosting & maintenance","Monthly updates"] },
-  { name:"Annual",  price:"$497",origPrice:"$994", period:"/yr", amountCents:49700, setup:"Best value — save $667",   isPopular:true,
-    features:["Everything in Monthly","Advanced SEO optimization","Google Ads integration ready","Blog & content system","Analytics dashboard","Priority support","Quarterly strategy calls","Free demo included"] },
+  { name:"Monthly", price:"$147", origPrice:"$297", period:"/mo", amountCents:14700, setup:"No long-term commitment", isPopular:false,
+    features:["Custom website design","Mobile-responsive layout","Basic SEO setup","Contact & lead forms","Hosting & maintenance","Monthly updates","Email support"] },
+  { name:"Annual",  price:"$1,497", origPrice:"$2,970", period:"/yr", amountCents:149700, setup:"Best value — save $1,473", isPopular:true,
+    features:["Everything in Monthly","Advanced SEO optimization","Google Ads landing page ready","Blog & content system","Analytics dashboard","Priority 24hr support","Quarterly strategy calls","Google My Business setup","Setup fee waived ($297 value)"] },
 ];
 
 export default function Pricing() {
@@ -235,7 +235,7 @@ export default function Pricing() {
                 ],
               }}
               transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}>
-              <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Starts at $97/mo</span>
+              <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> From $147/mo</span>
               <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Built in 3-7 days</span>
               <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> 30-day results guarantee</span>
             </motion.div>
@@ -286,7 +286,7 @@ export default function Pricing() {
             <div className="inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/25 rounded-full px-3 py-1 mb-5 w-fit">
               <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse inline-block" />
               <span className="text-green-400 text-xs font-bold">
-                You save {pkg.isPopular ? '$497/yr' : '$97/mo'}
+                You save {pkg.isPopular ? '$1,473/yr' : '$150/mo'}
               </span>
             </div>
 
@@ -337,6 +337,14 @@ export default function Pricing() {
             <p className="text-center text-gray-600 text-xs mt-3">Secure checkout · Powered by Stripe</p>
           </div>
         ))}
+      </div>
+
+      {/* Complexity disclaimer */}
+      <div className="max-w-2xl mx-auto px-4 pb-10 text-center relative z-10">
+        <p className="text-gray-500 text-xs leading-relaxed">
+          <span className="text-gray-400 font-semibold">* Pricing note:</span> Prices shown are for standard local business websites. Projects requiring custom features, e-commerce, booking systems, or advanced integrations may be quoted differently.{' '}
+          <a href="/contact" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">Contact us for a custom quote.</a>
+        </p>
       </div>
       </div>{/* end static electricity wrapper */}
 
