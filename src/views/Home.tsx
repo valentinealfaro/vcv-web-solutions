@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, useInView, AnimatePresence, LayoutGroup } from 'motion/react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award, Hammer, Wrench, Thermometer, Leaf, Sparkles, UtensilsCrossed, Store, Paintbrush, Car, Building2, Scissors, Dumbbell, GraduationCap, Truck, Bug, Sun, Stethoscope, Scale, PawPrint, HardHat, TreePine } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award, Hammer, Wrench, Thermometer, Leaf, Sparkles, UtensilsCrossed, Store, Paintbrush, Car, Building2, Scissors, Dumbbell, GraduationCap, Truck, Bug, Sun, Stethoscope, Scale, PawPrint, HardHat, TreePine, Phone } from 'lucide-react';
 import { Boxes } from '@/components/ui/background-boxes';
 import { MarkerHighlight } from '@/components/ui/marker-highlight';
 
