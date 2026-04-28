@@ -507,21 +507,27 @@ export default function Pricing() {
               Build My Free Demo <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Link>
             <motion.p
-              className="text-gray-200 text-sm mt-6 px-8 py-3 rounded-full inline-block"
-              style={{ border: '1.5px solid #3b82f6' }}
+              className="mt-6 px-8 py-3.5 rounded-full inline-block font-semibold text-base tracking-wide"
+              style={{
+                border: '2px solid #3b82f6',
+                background: 'rgba(10,15,35,0.85)',
+                color: '#ffffff',
+                textShadow: '0 0 12px rgba(255,255,255,0.4)',
+              }}
               animate={{
                 borderColor: ['#3b82f6','#8b5cf6','#06b6d4','#22c55e','#ec4899','#3b82f6'],
                 boxShadow: [
-                  '0 0 14px rgba(59,130,246,0.55),  inset 0 0 14px rgba(59,130,246,0.08)',
-                  '0 0 14px rgba(139,92,246,0.55),  inset 0 0 14px rgba(139,92,246,0.08)',
-                  '0 0 14px rgba(6,182,212,0.55),   inset 0 0 14px rgba(6,182,212,0.08)',
-                  '0 0 14px rgba(34,197,94,0.55),   inset 0 0 14px rgba(34,197,94,0.08)',
-                  '0 0 14px rgba(236,72,153,0.55),  inset 0 0 14px rgba(236,72,153,0.08)',
-                  '0 0 14px rgba(59,130,246,0.55),  inset 0 0 14px rgba(59,130,246,0.08)',
+                  '0 0 22px rgba(59,130,246,0.75),  inset 0 0 20px rgba(59,130,246,0.12)',
+                  '0 0 22px rgba(139,92,246,0.75),  inset 0 0 20px rgba(139,92,246,0.12)',
+                  '0 0 22px rgba(6,182,212,0.75),   inset 0 0 20px rgba(6,182,212,0.12)',
+                  '0 0 22px rgba(34,197,94,0.75),   inset 0 0 20px rgba(34,197,94,0.12)',
+                  '0 0 22px rgba(236,72,153,0.75),  inset 0 0 20px rgba(236,72,153,0.12)',
+                  '0 0 22px rgba(59,130,246,0.75),  inset 0 0 20px rgba(59,130,246,0.12)',
                 ],
+                color: ['#ffffff','#e0d4ff','#ccf5ff','#d4ffe8','#ffd4f0','#ffffff'],
               }}
               transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}>
-              Starts at $97/mo · 30-day guarantee · Cancel anytime
+              From $147/mo &nbsp;·&nbsp; 30-day results guarantee &nbsp;·&nbsp; Cancel anytime
             </motion.p>
           </motion.div>
         </div>
