@@ -331,7 +331,11 @@ export default function Landing() {
                         </motion.button>
 
                         <p className="text-center text-xs text-gray-600 leading-relaxed">
-                          By submitting you agree to our terms and privacy policy. We will never spam you or share your info.
+                          By submitting you agree to our{' '}
+                          <a href="/terms" className="text-blue-500 hover:text-blue-400 underline underline-offset-2">Terms of Service</a>
+                          {' '}and{' '}
+                          <a href="/terms#privacy" className="text-blue-500 hover:text-blue-400 underline underline-offset-2">Privacy Policy</a>.
+                          {' '}We will never spam you or share your info.
                         </p>
 
                         {/* Pricing reminder */}
