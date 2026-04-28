@@ -208,13 +208,49 @@ export default function Pricing() {
       <section className="py-20 relative overflow-hidden bg-[#040a16]">
         <SectionOrbs variant="cyan" />
         <GridOverlay gridOp={0.2} dotOp={0.1} />
+
+        {/* Floating money emojis */}
+        {[
+          { e:'💰', x:'5%',  dur:6,  delay:0,   size:36 },
+          { e:'💵', x:'15%', dur:8,  delay:1.2, size:30 },
+          { e:'💸', x:'28%', dur:7,  delay:0.5, size:34 },
+          { e:'🤑', x:'42%', dur:9,  delay:2,   size:32 },
+          { e:'💳', x:'58%', dur:6.5,delay:0.8, size:28 },
+          { e:'💎', x:'70%', dur:8.5,delay:1.5, size:32 },
+          { e:'💵', x:'80%', dur:7.5,delay:0.3, size:30 },
+          { e:'💰', x:'91%', dur:6,  delay:1.8, size:36 },
+          { e:'📈', x:'35%', dur:9,  delay:0.6, size:30 },
+          { e:'💸', x:'52%', dur:7,  delay:2.2, size:28 },
+          { e:'🏦', x:'64%', dur:8,  delay:1,   size:30 },
+          { e:'💲', x:'88%', dur:6.5,delay:0.4, size:26 },
+        ].map((m, i) => (
+          <div key={i} style={{
+            position:'absolute', left:m.x, bottom:'-10%',
+            fontSize: m.size, pointerEvents:'none', zIndex:1, opacity:0.55,
+            animation:`floatMoney ${m.dur}s ease-in-out infinite`,
+            animationDelay:`${m.delay}s`,
+          }}>
+            {m.e}
+          </div>
+        ))}
+
+        <style>{`
+          @keyframes floatMoney {
+            0%   { transform: translateY(0px)   rotate(-8deg)  scale(1);    opacity: 0.45; }
+            25%  { transform: translateY(-40px) rotate(5deg)   scale(1.12); opacity: 0.65; }
+            50%  { transform: translateY(-80px) rotate(-4deg)  scale(1);    opacity: 0.55; }
+            75%  { transform: translateY(-50px) rotate(8deg)   scale(1.08); opacity: 0.6;  }
+            100% { transform: translateY(-120px)rotate(-6deg)  scale(0.9);  opacity: 0;    }
+          }
+        `}</style>
+
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <TrendingUp className="w-12 h-12 text-blue-500 mx-auto mb-6" />
-          <h2 className="font-display text-5xl text-white mb-4">NOT A COST — AN INVESTMENT</h2>
-          <p className="text-gray-400 text-lg">
-            If your website brings even 2 to 3 extra jobs per month, it pays for itself.
-          </p>
+            <TrendingUp className="w-12 h-12 text-blue-500 mx-auto mb-6" />
+            <h2 className="font-display text-5xl text-white mb-4">NOT A COST — AN INVESTMENT</h2>
+            <p className="text-gray-400 text-lg">
+              If your website brings even 2 to 3 extra jobs per month, it pays for itself.
+            </p>
           </motion.div>
         </div>
       </section>
