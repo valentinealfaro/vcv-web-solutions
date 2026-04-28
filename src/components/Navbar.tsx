@@ -40,20 +40,43 @@ export const Navbar = () => {
       )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="relative">
+          <Link href="/" className="group">
+            <motion.div
+              className="flex flex-col items-center px-3 py-1.5 rounded-xl border-2 cursor-pointer select-none"
+              animate={{
+                borderColor: ['#3b82f6','#8b5cf6','#06b6d4','#22c55e','#ec4899','#eab308','#ef4444','#3b82f6'],
+                boxShadow:   [
+                  '0 0 14px rgba(59,130,246,0.55)',
+                  '0 0 14px rgba(139,92,246,0.55)',
+                  '0 0 14px rgba(6,182,212,0.55)',
+                  '0 0 14px rgba(34,197,94,0.55)',
+                  '0 0 14px rgba(236,72,153,0.55)',
+                  '0 0 14px rgba(234,179,8,0.55)',
+                  '0 0 14px rgba(239,68,68,0.55)',
+                  '0 0 14px rgba(59,130,246,0.55)',
+                ],
+              }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}
+              whileHover={{ scale: 1.05 }}>
               <img
                 src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FVCV%20Websolutions%20Logo.png?alt=media&token=aed21397-69ca-4846-a45d-267482b81acf"
                 alt="VCV Web Solutions"
-                className="w-10 h-10 object-contain group-hover:scale-105 transition-transform"
+                className="w-9 h-9 object-contain mb-0.5"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-blue-500/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-            <div>
-              <span className="text-lg font-bold text-white leading-none block">VCV</span>
-              <span className="text-xs font-semibold text-blue-400 leading-none block tracking-wider uppercase">Web Solutions</span>
-            </div>
+              <motion.span
+                className="text-sm font-black leading-none block tracking-widest"
+                animate={{ color: ['#f97316','#22c55e','#ec4899','#8b5cf6','#eab308','#ef4444','#06b6d4','#f97316'] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}>
+                VCV
+              </motion.span>
+              <motion.span
+                className="text-[9px] font-bold leading-none block tracking-widest uppercase mt-0.5"
+                animate={{ color: ['#ec4899','#06b6d4','#eab308','#ef4444','#3b82f6','#8b5cf6','#22c55e','#ec4899'] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}>
+                Web Solutions
+              </motion.span>
+            </motion.div>
           </Link>
 
           <div className="hidden md:flex items-center gap-5">

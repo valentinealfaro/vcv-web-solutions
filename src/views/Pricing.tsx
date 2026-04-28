@@ -1,52 +1,66 @@
 'use client';
-import { motion } from 'motion/react';
+import { motion, LayoutGroup } from 'motion/react';
 import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '../lib/utils';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay } from '@/components/PageEffects';
+import { DottedSurface } from '@/components/ui/dotted-surface';
 
-const PricingCard = ({ name, description, price, setup, features, isPopular }: any) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    className={cn(
-      "premium-card p-8 flex flex-col transition-all duration-300",
-      isPopular ? "border-2 border-blue-500 shadow-2xl shadow-blue-500/10 scale-105 z-10" : "border border-white/10"
-    )}
-  >
-    {isPopular && (
-      <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
-        Most Popular
-      </div>
-    )}
-    <h3 className="text-2xl font-bold text-white mb-2">{name}</h3>
-    <p className="text-gray-400 text-sm mb-6 h-10">{description}</p>
-    <div className="mb-2">
-      <span className="text-5xl font-black text-white">{price}</span>
-      <span className="text-gray-400 ml-2">/month</span>
-    </div>
-    <p className="text-blue-500 font-semibold text-sm mb-8">{setup}</p>
-    <ul className="space-y-4 mb-10 flex-grow">
-      {features.map((feature: string, idx: number) => (
-        <li key={idx} className="flex items-center gap-3 text-sm text-gray-300">
-          <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0" />
-          <span>{feature}</span>
-        </li>
-      ))}
-    </ul>
-    <Link
-      href="/free-demo"
-      className={cn(
-        "block w-full py-4 rounded-full font-bold text-center transition-all",
-        isPopular ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-gray-800 hover:bg-gray-700 text-white"
-      )}
-    >
-      Get My Free Demo
-    </Link>
-  </motion.div>
-);
+const RISK_ITEMS = [
+  { id:'ri-a', icon:'🚀', title:'Free Demo First',  body:'We build your site before you pay a single dollar.',  color:'#3b82f6', bg:'rgba(59,130,246,0.09)'  },
+  { id:'ri-b', icon:'🔓', title:'No Contracts',     body:'Month-to-month. Cancel anytime. Zero lock-in.',       color:'#8b5cf6', bg:'rgba(139,92,246,0.09)'  },
+  { id:'ri-c', icon:'💸', title:'No Upfront Cost',  body:'Flexible payment options with zero down payment.',    color:'#06b6d4', bg:'rgba(6,182,212,0.09)'   },
+  { id:'ri-d', icon:'💯', title:'Love It or Leave', body:'Move forward only when you are 100% satisfied.',      color:'#ec4899', bg:'rgba(236,72,153,0.09)'  },
+];
+
+const RiskParticlesCanvas = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext('2d'); if (!ctx) return;
+    let animId: number;
+    const COLS = ['#3b82f6','#8b5cf6','#06b6d4','#22c55e','#ec4899','#eab308','#ef4444'];
+    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
+    interface P { x:number; y:number; vx:number; vy:number; r:number; al:number; col:string }
+    let pts: P[] = [];
+    const spawn = () => {
+      pts = [];
+      const n = Math.min(80, Math.floor(canvas.width * canvas.height / 8000));
+      for (let i = 0; i < n; i++) pts.push({
+        x: Math.random() * canvas.width,  y: Math.random() * canvas.height,
+        vx:(Math.random() - .5) * .42,    vy:(Math.random() - .5) * .42,
+        r: Math.random() * 2.5 + .7,      al: Math.random() * .55 + .18,
+        col: COLS[Math.floor(Math.random() * COLS.length)],
+      });
+    };
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pts.forEach((p, i) => {
+        if (p.x < 0 || p.x > canvas.width)  p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        p.x += p.vx; p.y += p.vy;
+        ctx.globalAlpha = p.al; ctx.fillStyle = p.col;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+        for (let j = i + 1; j < pts.length; j++) {
+          const dx = pts[j].x - p.x, dy = pts[j].y - p.y, d = Math.hypot(dx, dy);
+          if (d < 95) {
+            ctx.globalAlpha = .22 * (1 - d / 95);
+            ctx.strokeStyle = p.col; ctx.lineWidth = .75;
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke();
+          }
+        }
+      });
+      ctx.globalAlpha = 1;
+      animId = requestAnimationFrame(draw);
+    };
+    const onResize = () => { resize(); spawn(); };
+    resize(); spawn(); draw();
+    window.addEventListener('resize', onResize);
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', onResize); };
+  }, []);
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-55" />;
+};
 
 const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -70,6 +84,25 @@ const packages = [
 
 export default function Pricing() {
   const [loadingIdx, setLoadingIdx] = useState<number|null>(null);
+  const [riskOrder, setRiskOrder]   = useState([0,1,2,3]);
+  const [riskShapes, setRiskShapes] = useState([false,false,false,false]);
+
+  useEffect(() => {
+    const shuffleId = setInterval(() => {
+      setRiskOrder(prev => {
+        const next = [...prev];
+        const i = Math.floor(Math.random() * 4);
+        let j = Math.floor(Math.random() * 3);
+        if (j >= i) j++;
+        [next[i], next[j]] = [next[j], next[i]];
+        return next;
+      });
+    }, 2500);
+    const shapeId = setInterval(() => {
+      setRiskShapes(RISK_ITEMS.map(() => Math.random() < 0.45));
+    }, 3200);
+    return () => { clearInterval(shuffleId); clearInterval(shapeId); };
+  }, []);
 
   const handleBuy = async (pkg: typeof packages[0], idx: number) => {
     setLoadingIdx(idx);
@@ -120,7 +153,7 @@ export default function Pricing() {
             </div>
             <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
               <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> No upfront cost</span>
-              <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Built in 3–7 days</span>
+              <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Built in 3-7 days</span>
               <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Designed for leads</span>
             </div>
           </motion.div>
@@ -142,7 +175,7 @@ export default function Pricing() {
           )}>
             {pkg.isPopular && (
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap shadow-lg">
-                ⚡ Best Value — Save $667
+                Best Value - Save $667
               </div>
             )}
             {/* 50% off badge */}
@@ -267,7 +300,7 @@ export default function Pricing() {
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
             <TrendingUp className="w-12 h-12 text-blue-500 mx-auto mb-6" />
-            <h2 className="font-display text-5xl text-white mb-4">NOT A COST — AN INVESTMENT</h2>
+            <h2 className="font-display text-5xl text-white mb-4">NOT A COST - AN INVESTMENT</h2>
             <p className="text-gray-400 text-lg">
               If your website brings even 2 to 3 extra jobs per month, it pays for itself.
             </p>
@@ -275,29 +308,82 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* No Risk */}
+      {/* No Risk — enhanced with particle bg + shuffling cards */}
       <section className="py-20 relative overflow-hidden bg-[#030712]">
-        <div className="absolute inset-0 bg-grid opacity-25 pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] bg-blue-600/6 rounded-full blur-[100px] pointer-events-none" />
+        <RiskParticlesCanvas />
+        <GridOverlay gridOp={0.18} dotOp={0.08} />
         <div className="max-w-4xl mx-auto px-4 relative z-10">
-          <div className="neon-card p-10 md:p-12 text-center">
-            <div className="w-14 h-14 btn-neon rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="neon-card p-10 md:p-12 text-center relative overflow-hidden">
+
+            {/* Inner ambient orbs */}
+            <div className="absolute top-0 left-1/4 w-60 h-60 bg-blue-600/8 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute bottom-0 right-1/4 w-60 h-60 bg-purple-600/8 rounded-full blur-[80px] pointer-events-none" />
+
+            <div className="w-14 h-14 btn-neon rounded-full flex items-center justify-center mx-auto mb-6 relative z-10">
               <ShieldCheck className="w-7 h-7 text-white" />
             </div>
-            <h2 className="font-display text-5xl text-white mb-8">TRY IT RISK-FREE</h2>
-            <ul className="grid md:grid-cols-2 gap-4 text-left max-w-xl mx-auto">
-              <li className="flex items-center gap-3 text-gray-300 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" /> We build your demo before you pay</li>
-              <li className="flex items-center gap-3 text-gray-300 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" /> No long-term contracts</li>
-              <li className="flex items-center gap-3 text-gray-300 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" /> No upfront cost options</li>
-              <li className="flex items-center gap-3 text-gray-300 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" /> You only move forward if you love it</li>
-            </ul>
+
+            {/* Rainbow glow heading — particle text effect */}
+            <motion.h2
+              className="font-display text-5xl md:text-6xl text-white mb-3 relative z-10"
+              animate={{ textShadow:[
+                '0 0 28px rgba(59,130,246,0.95),  0 0 65px rgba(59,130,246,0.4)',
+                '0 0 28px rgba(139,92,246,0.95),  0 0 65px rgba(139,92,246,0.4)',
+                '0 0 28px rgba(6,182,212,0.95),   0 0 65px rgba(6,182,212,0.4)',
+                '0 0 28px rgba(34,197,94,0.95),   0 0 65px rgba(34,197,94,0.4)',
+                '0 0 28px rgba(236,72,153,0.95),  0 0 65px rgba(236,72,153,0.4)',
+                '0 0 28px rgba(234,179,8,0.95),   0 0 65px rgba(234,179,8,0.4)',
+                '0 0 28px rgba(239,68,68,0.95),   0 0 65px rgba(239,68,68,0.4)',
+              ]}}
+              transition={{ duration:4.5, repeat:Infinity, ease:'linear' }}>
+              TRY IT RISK-FREE
+            </motion.h2>
+
+            <p className="text-gray-400 text-base mb-10 relative z-10">
+              Everything you need to feel 100% confident before spending a dime.
+            </p>
+
+            {/* Shuffling + shape-morphing guarantee cards */}
+            <LayoutGroup id="risk-cards">
+              <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto relative z-10">
+                {riskOrder.map((itemIdx, pos) => {
+                  const item = RISK_ITEMS[itemIdx];
+                  const tall = riskShapes[pos];
+                  return (
+                    <motion.div
+                      key={item.id}
+                      layoutId={item.id}
+                      layout
+                      className="rounded-2xl text-left cursor-default"
+                      style={{ background: item.bg, border: `1.5px solid ${item.color}35` }}
+                      animate={{
+                        paddingTop:    tall ? '2rem'   : '1.25rem',
+                        paddingBottom: tall ? '2rem'   : '1.25rem',
+                        paddingLeft:   '1.25rem',
+                        paddingRight:  '1.25rem',
+                      }}
+                      transition={{
+                        layout:        { type:'spring', stiffness:280, damping:28 },
+                        paddingTop:    { duration:0.55, ease:'easeInOut' },
+                        paddingBottom: { duration:0.55, ease:'easeInOut' },
+                        default:       { duration:0.3 },
+                      }}
+                      whileHover={{ scale:1.04, boxShadow:`0 0 40px ${item.color}35` }}>
+                      <div className="text-3xl mb-3">{item.icon}</div>
+                      <h4 className="text-white font-bold text-sm md:text-base mb-1.5">{item.title}</h4>
+                      <p className="text-gray-400 text-xs md:text-sm leading-relaxed">{item.body}</p>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </LayoutGroup>
           </div>
         </div>
       </section>
 
       {/* FAQ */}
       <section className="py-20 bg-[#040a16] relative overflow-hidden">
-        <div className="absolute inset-0 bg-dot opacity-15 pointer-events-none" />
+        <DottedSurface className="opacity-20" />
         <div className="max-w-3xl mx-auto px-4 relative z-10">
           <h2 className="font-display text-5xl text-white mb-10 text-center">FAQ</h2>
           <FAQItem question="Do I have to pay upfront?" answer="No. We build your website demo first so you can see exactly what you are getting before you pay anything." />
