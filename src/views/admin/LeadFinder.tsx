@@ -245,8 +245,6 @@ export default function LeadFinder() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-        <div className="hidden">{/* spacer removed */}</div>
-        </div>
 
         {/* Search form */}
         <div className="neon-card p-6 mb-6">
