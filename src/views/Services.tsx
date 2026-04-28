@@ -1,8 +1,53 @@
 'use client';
+import { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Layout, Search, BarChart3, CheckCircle2, ArrowRight, X, Rocket, Zap, Shield, Star, Users } from 'lucide-react';
 import Link from 'next/link';
 import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay } from '@/components/PageEffects';
+
+/* ── Rainbow checkerboard canvas ── */
+const RainbowChecker = () => {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const c = ref.current; if (!c) return;
+    const ctx = c.getContext('2d'); if (!ctx) return;
+    let id: number; let t = 0;
+    const CELL = 54;
+    const resize = () => { c.width = c.offsetWidth; c.height = c.offsetHeight; };
+    resize(); window.addEventListener('resize', resize);
+    const draw = () => {
+      t += 0.008;
+      const cols = Math.ceil(c.width / CELL), rows = Math.ceil(c.height / CELL);
+      ctx.clearRect(0, 0, c.width, c.height);
+      for (let col = 0; col < cols; col++) {
+        for (let row = 0; row < rows; row++) {
+          if ((col + row) % 2 === 0) continue; // checkerboard — only odd squares
+          const phase = (col * 0.18 + row * 0.22) % 1;
+          const hue = ((t + phase) * 180) % 360;
+          const alpha = 0.13 + 0.07 * Math.sin(t * 2 + phase * 6);
+          ctx.fillStyle = `hsla(${hue},100%,58%,${alpha})`;
+          ctx.fillRect(col * CELL + 1, row * CELL + 1, CELL - 2, CELL - 2);
+          // bright border on each lit cell
+          ctx.strokeStyle = `hsla(${hue},100%,70%,${alpha * 2.2})`;
+          ctx.lineWidth = 0.8;
+          ctx.strokeRect(col * CELL + 1, row * CELL + 1, CELL - 2, CELL - 2);
+        }
+      }
+      id = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => { cancelAnimationFrame(id); window.removeEventListener('resize', resize); };
+  }, []);
+  return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none" />;
+};
+
+/* button slide speeds + directions (each card is different) */
+const BTN_ANIMS = [
+  { dur: 1.6, from: -10, to: 10  }, // card 0: slow, left→right
+  { dur: 2.4, from: 10,  to: -10 }, // card 1: medium, right→left
+  { dur: 1.9, from: -8,  to: 12  }, // card 2: medium-fast, left→right wider
+  { dur: 2.8, from: 12,  to: -8  }, // card 3: slowest, right→left wider
+];
 
 const fade   = (d=0) => ({ initial:{opacity:0,y:30}, whileInView:{opacity:1,y:0}, transition:{delay:d}, viewport:{once:true} });
 const slideL = (d=0) => ({ initial:{opacity:0,x:-30}, whileInView:{opacity:1,x:0}, transition:{delay:d}, viewport:{once:true} });
@@ -72,10 +117,10 @@ export default function Services() {
         </div>
       </section>
 
-      {/* ── Services grid ── */}
+      {/* ── Services grid with rainbow checkerboard ── */}
       <section className="py-24 relative overflow-hidden bg-[#030712]">
+        <RainbowChecker />
         <SectionOrbs variant="purple" />
-        <GridOverlay gridOp={0.25} dotOp={0.1} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-16">
             <p className="neon-badge mb-4 mx-auto w-fit">What We Build</p>
@@ -83,27 +128,34 @@ export default function Services() {
             <p className="text-gray-400 max-w-xl mx-auto">Everything you need to dominate your local market — built and managed for you.</p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {SERVICES.map((s,i) => (
-              <motion.div key={i} {...fade(i*.1)} whileHover={{y:-4}} className="neon-card noise-texture p-8 flex flex-col h-full group" style={{borderColor:`${s.color}30`}}>
-                <div className="mb-5 w-14 h-14 rounded-2xl flex items-center justify-center" style={{background:`${s.color}15`,border:`1px solid ${s.color}35`,boxShadow:`0 0 20px ${s.color}20`,color:s.color}}>{s.icon}</div>
-                <h3 className="text-xl font-bold text-white mb-2">{s.title}</h3>
-                <p className="font-semibold text-sm mb-5" style={{color:s.color}}>{s.benefit}</p>
-                <ul className="space-y-3 mb-7 flex-grow">
-                  {s.features.map((f,j) => (
-                    <li key={j} className="flex items-center gap-3 text-sm text-gray-300">
-                      <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{color:s.color}}/> {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link href="/free-demo"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all border"
-                  style={{color:'white', background:`${s.color}20`, borderColor:`${s.color}50`, boxShadow:`0 0 14px ${s.color}25`}}
-                  onMouseOver={e=>{(e.currentTarget as HTMLAnchorElement).style.background=`${s.color}35`;}}
-                  onMouseOut={e=>{(e.currentTarget as HTMLAnchorElement).style.background=`${s.color}20`;}}>
-                  Get Demo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
-                </Link>
-              </motion.div>
-            ))}
+            {SERVICES.map((s,i) => {
+              const btn = BTN_ANIMS[i];
+              return (
+                <motion.div key={i} {...fade(i*.1)} whileHover={{y:-4}} className="neon-card noise-texture p-8 flex flex-col h-full group" style={{borderColor:`${s.color}30`}}>
+                  <div className="mb-5 w-14 h-14 rounded-2xl flex items-center justify-center" style={{background:`${s.color}15`,border:`1px solid ${s.color}35`,boxShadow:`0 0 20px ${s.color}20`,color:s.color}}>{s.icon}</div>
+                  <h3 className="text-xl font-bold text-white mb-2">{s.title}</h3>
+                  <p className="font-semibold text-sm mb-5" style={{color:s.color}}>{s.benefit}</p>
+                  <ul className="space-y-3 mb-7 flex-grow">
+                    {s.features.map((f,j) => (
+                      <li key={j} className="flex items-center gap-3 text-sm text-gray-300">
+                        <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{color:s.color}}/> {f}
+                      </li>
+                    ))}
+                  </ul>
+                  {/* Button with sliding text */}
+                  <Link href="/free-demo"
+                    className="overflow-hidden relative inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-sm transition-all border"
+                    style={{color:'white', background:`${s.color}20`, borderColor:`${s.color}50`, boxShadow:`0 0 14px ${s.color}25`}}>
+                    <motion.span
+                      className="flex items-center gap-2"
+                      animate={{ x: [btn.from, btn.to] }}
+                      transition={{ duration: btn.dur, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}>
+                      Get Demo <ArrowRight className="w-4 h-4"/>
+                    </motion.span>
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
