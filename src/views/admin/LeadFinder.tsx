@@ -475,7 +475,6 @@ export default function LeadFinder() {
         </div>
 
       </div>
-      </div>
     </div>
   );
 }
