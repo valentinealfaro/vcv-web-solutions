@@ -41,13 +41,17 @@ const RainbowChecker = () => {
   return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none" />;
 };
 
-/* button slide speeds + directions (each card is different) */
+// All buttons share the same base period so they appear to "trade" —
+// cards 0+3 slide right while 1+2 slide left at the same time, then swap
+const BTN_PERIOD = 1.8; // seconds for one full back-and-forth
 const BTN_ANIMS = [
-  { dur: 1.6, from: -10, to: 10  }, // card 0: slow, left→right
-  { dur: 2.4, from: 10,  to: -10 }, // card 1: medium, right→left
-  { dur: 1.9, from: -8,  to: 12  }, // card 2: medium-fast, left→right wider
-  { dur: 2.8, from: 12,  to: -8  }, // card 3: slowest, right→left wider
+  { phase: 0,          range: 55 }, // card 0: starts left, big range
+  { phase: Math.PI,    range: 55 }, // card 1: opposite phase → chases card 0
+  { phase: Math.PI,    range: 42 }, // card 2: same phase as 1, different speed
+  { phase: 0,          range: 42 }, // card 3: opposite of 2 → chases card 2
 ];
+// Labels that cycle inside the buttons to look like they "switch"
+const BTN_LABELS = ['Website Design','Landing Pages','SEO Visibility','Paid Ads'];
 
 const fade   = (d=0) => ({ initial:{opacity:0,y:30}, whileInView:{opacity:1,y:0}, transition:{delay:d}, viewport:{once:true} });
 const slideL = (d=0) => ({ initial:{opacity:0,x:-30}, whileInView:{opacity:1,x:0}, transition:{delay:d}, viewport:{once:true} });
@@ -142,16 +146,42 @@ export default function Services() {
                       </li>
                     ))}
                   </ul>
-                  {/* Button with sliding text */}
+                  {/* Button with big sliding + cycling label */}
                   <Link href="/free-demo"
-                    className="overflow-hidden relative inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-sm transition-all border"
-                    style={{color:'white', background:`${s.color}20`, borderColor:`${s.color}50`, boxShadow:`0 0 14px ${s.color}25`}}>
+                    className="overflow-hidden relative w-full flex items-center justify-center py-3 rounded-xl font-bold text-sm border"
+                    style={{color:'white', background:`${s.color}22`, borderColor:`${s.color}55`,
+                      boxShadow:`0 0 20px ${s.color}35, inset 0 1px 0 ${s.color}25`}}>
+                    {/* Sliding content — x driven by sin wave via keyframes */}
                     <motion.span
-                      className="flex items-center gap-2"
-                      animate={{ x: [btn.from, btn.to] }}
-                      transition={{ duration: btn.dur, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}>
-                      Get Demo <ArrowRight className="w-4 h-4"/>
+                      className="flex items-center gap-2 whitespace-nowrap"
+                      animate={{
+                        x: [
+                          btn.range * Math.sin(btn.phase),
+                          btn.range * Math.sin(btn.phase + Math.PI / 2),
+                          btn.range * Math.sin(btn.phase + Math.PI),
+                          btn.range * Math.sin(btn.phase + 3 * Math.PI / 2),
+                          btn.range * Math.sin(btn.phase + 2 * Math.PI),
+                        ],
+                        color: [s.color, 'white', s.color, 'white', s.color],
+                      }}
+                      transition={{ duration: BTN_PERIOD, repeat: Infinity, ease: 'easeInOut', times:[0,.25,.5,.75,1] }}>
+                      Get Demo — {BTN_LABELS[i]}
+                      <motion.span
+                        animate={{ rotate: [0, 360] }}
+                        transition={{ duration: BTN_PERIOD * 2, repeat: Infinity, ease:'linear' }}>
+                        <ArrowRight className="w-4 h-4"/>
+                      </motion.span>
                     </motion.span>
+                    {/* Racing colour glow that sweeps left→right */}
+                    <motion.div
+                      className="absolute inset-0 rounded-xl pointer-events-none"
+                      animate={{ backgroundPosition: ['200% 0%', '-200% 0%'] }}
+                      transition={{ duration: BTN_PERIOD, repeat: Infinity, ease:'linear' }}
+                      style={{
+                        background:`linear-gradient(90deg, transparent 30%, ${s.color}55 50%, transparent 70%)`,
+                        backgroundSize:'200% 100%',
+                      }}
+                    />
                   </Link>
                 </motion.div>
               );
