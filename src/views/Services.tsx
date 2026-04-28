@@ -196,16 +196,87 @@ export default function Services() {
         </div>
       </section>
 
-      {/* ── Process ── */}
-      <section className="py-24 bg-[#030712] relative overflow-hidden">
-        <SectionOrbs variant="cyan" />
-        <GridOverlay gridOp={0.3} dotOp={0.12} />
+      {/* ── Process — staircase + bubbles ── */}
+      <section className="py-24 bg-[#030712] relative overflow-hidden" style={{minHeight:560}}>
+        {/* Floating color bubbles */}
+        {[
+          {c:'rgba(59,130,246,0.22)', w:180,h:180,l:'4%',  t:'15%',dur:9 },
+          {c:'rgba(139,92,246,0.22)', w:140,h:140,l:'72%', t:'8%', dur:12},
+          {c:'rgba(6,182,212,0.20)',  w:120,h:120,l:'38%', t:'55%',dur:10},
+          {c:'rgba(168,85,247,0.22)', w:160,h:160,l:'82%', t:'52%',dur:13},
+          {c:'rgba(16,185,129,0.20)', w:130,h:130,l:'18%', t:'60%',dur:11},
+          {c:'rgba(236,72,153,0.18)', w:100,h:100,l:'55%', t:'20%',dur:14},
+          {c:'rgba(245,158,11,0.18)', w:110,h:110,l:'90%', t:'30%',dur:8 },
+        ].map((b,i)=>(
+          <div key={i} style={{position:'absolute',borderRadius:'50%',pointerEvents:'none',
+            width:b.w,height:b.h,left:b.l,top:b.t,background:b.c,
+            filter:'blur(40px)',animation:`orb-float ${b.dur}s ease-in-out infinite`,
+            animationDelay:`${i*.6}s`}}/>
+        ))}
+        <GridOverlay gridOp={0.22} dotOp={0.1} />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-16">
             <p className="neon-badge mb-4 mx-auto w-fit">How It Works</p>
             <h2 className="font-display text-6xl md:text-7xl text-white">THE PROCESS</h2>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
+
+          {/* Desktop staircase */}
+          <div className="hidden md:flex items-start gap-3 relative" style={{minHeight:420}}>
+            {/* Connecting line */}
+            <div className="absolute top-0 left-0 right-0 pointer-events-none" style={{top:80}}>
+              <svg width="100%" height="4" style={{overflow:'visible'}}>
+                <defs>
+                  <linearGradient id="stepLine" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%"   stopColor="#3b82f6"/>
+                    <stop offset="25%"  stopColor="#8b5cf6"/>
+                    <stop offset="50%"  stopColor="#06b6d4"/>
+                    <stop offset="75%"  stopColor="#a855f7"/>
+                    <stop offset="100%" stopColor="#10b981"/>
+                  </linearGradient>
+                </defs>
+                <line x1="10%" y1="2" x2="90%" y2="2" stroke="url(#stepLine)" strokeWidth="2" strokeDasharray="6 4" opacity="0.4"/>
+              </svg>
+            </div>
+
+            {[
+              {n:'01',t:'Request Demo',  d:'Tell us about your business and goals.',      color:'#3b82f6', mt:0   },
+              {n:'02',t:'We Build It',   d:'Custom site designed for your niche in 48h.', color:'#8b5cf6', mt:70  },
+              {n:'03',t:'You Approve',   d:'Review and revise — unlimited changes.',       color:'#06b6d4', mt:140 },
+              {n:'04',t:'We Launch',     d:'Go live in 3-7 days, fully set up.',           color:'#a855f7', mt:210 },
+              {n:'05',t:'Leads Come In', d:'Your site works 24/7 generating calls.',       color:'#10b981', mt:280 },
+            ].map((s,i)=>(
+              <motion.div key={i} {...fade(i*.12)}
+                className="flex-1 relative rounded-2xl p-5"
+                style={{
+                  marginTop: s.mt,
+                  background:`linear-gradient(145deg, ${s.color}18, ${s.color}08)`,
+                  border:`1.5px solid ${s.color}60`,
+                  boxShadow:`0 0 28px ${s.color}35, 0 0 60px ${s.color}15, inset 0 1px 0 ${s.color}25`,
+                }}>
+                {/* Number */}
+                <div className="font-display text-5xl mb-3 leading-none" style={{
+                  color:s.color,
+                  textShadow:`0 0 20px ${s.color}80, 0 0 40px ${s.color}40`
+                }}>{s.n}</div>
+                {/* Step dot */}
+                <div className="absolute top-4 right-4 w-3 h-3 rounded-full" style={{
+                  background:s.color,
+                  boxShadow:`0 0 10px ${s.color}, 0 0 20px ${s.color}80`,
+                  animation:'pulse 1.8s ease-in-out infinite',
+                }}/>
+                <h3 className="font-bold text-white text-base mb-2">{s.t}</h3>
+                <p className="text-sm leading-relaxed" style={{color:`${s.color}cc`}}>{s.d}</p>
+                {/* Connector arrow */}
+                {i < 4 && (
+                  <div className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 text-xl font-bold" style={{color:s.color,textShadow:`0 0 10px ${s.color}`}}>›</div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Mobile: vertical stacked */}
+          <div className="md:hidden space-y-4">
             {[
               {n:'01',t:'Request Demo',  d:'Tell us about your business.',           color:'#3b82f6'},
               {n:'02',t:'We Build It',   d:'Custom site designed for your niche.',    color:'#8b5cf6'},
@@ -213,11 +284,14 @@ export default function Services() {
               {n:'04',t:'We Launch',     d:'Go live in 3-7 days, fully set up.',      color:'#a855f7'},
               {n:'05',t:'Leads Come In', d:'Your site works 24/7 generating calls.',  color:'#10b981'},
             ].map((s,i)=>(
-              <motion.div key={i} {...fade(i*.1)} className="neon-card p-6 relative" style={{borderColor:`${s.color}25`}}>
-                <div className="font-display text-5xl mb-3" style={{color:`${s.color}30`}}>{s.n}</div>
-                <h3 className="font-bold text-white mb-2 text-base">{s.t}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{s.d}</p>
-                <div className="absolute top-4 right-4 w-2 h-2 rounded-full animate-pulse" style={{background:s.color}}/>
+              <motion.div key={i} {...fade(i*.08)}
+                className="rounded-2xl p-5 flex items-start gap-4"
+                style={{background:`${s.color}15`,border:`1.5px solid ${s.color}55`,boxShadow:`0 0 20px ${s.color}25`}}>
+                <div className="font-display text-4xl leading-none flex-shrink-0" style={{color:s.color,textShadow:`0 0 15px ${s.color}`}}>{s.n}</div>
+                <div>
+                  <h3 className="font-bold text-white mb-1">{s.t}</h3>
+                  <p className="text-sm" style={{color:`${s.color}cc`}}>{s.d}</p>
+                </div>
               </motion.div>
             ))}
           </div>
