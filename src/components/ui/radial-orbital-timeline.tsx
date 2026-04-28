@@ -77,7 +77,7 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
   useEffect(() => {
     if (!autoRotate) return;
     const id = setInterval(() => {
-      setRotationAngle((p) => Number(((p + 0.3) % 360).toFixed(3)));
+      setRotationAngle((p) => Number(((p + 1.2) % 360).toFixed(3)));
     }, 50);
     return () => clearInterval(id);
   }, [autoRotate]);
