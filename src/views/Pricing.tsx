@@ -533,7 +533,23 @@ export default function Pricing() {
               className="btn-glow btn-neon text-white px-12 py-5 rounded-full font-bold text-xl inline-flex items-center gap-3 group">
               Build My Free Demo <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <p className="text-gray-600 text-sm mt-6">No credit card · Ready in 48 hours · 100% free</p>
+            <motion.p
+              className="text-gray-200 text-sm mt-6 px-8 py-3 rounded-full inline-block"
+              style={{ border: '1.5px solid #3b82f6' }}
+              animate={{
+                borderColor: ['#3b82f6','#8b5cf6','#06b6d4','#22c55e','#ec4899','#3b82f6'],
+                boxShadow: [
+                  '0 0 14px rgba(59,130,246,0.55),  inset 0 0 14px rgba(59,130,246,0.08)',
+                  '0 0 14px rgba(139,92,246,0.55),  inset 0 0 14px rgba(139,92,246,0.08)',
+                  '0 0 14px rgba(6,182,212,0.55),   inset 0 0 14px rgba(6,182,212,0.08)',
+                  '0 0 14px rgba(34,197,94,0.55),   inset 0 0 14px rgba(34,197,94,0.08)',
+                  '0 0 14px rgba(236,72,153,0.55),  inset 0 0 14px rgba(236,72,153,0.08)',
+                  '0 0 14px rgba(59,130,246,0.55),  inset 0 0 14px rgba(59,130,246,0.08)',
+                ],
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}>
+              No credit card · Ready in 48 hours · 100% free
+            </motion.p>
           </motion.div>
         </div>
       </section>
