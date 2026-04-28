@@ -17,10 +17,9 @@ const Success          = lazy(() => import('./pages/Success'));
 const WebsiteOnboarding = lazy(() => import('./pages/WebsiteOnboarding'));
 const NotFound         = lazy(() => import('./pages/NotFound'));
 
+// Suspense fallback — dark screen with no flash while lazy chunk loads
 const PageLoader = () => (
-  <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#030712' }}>
-    <div style={{ width: 40, height: 40, border: '2px solid rgba(37,99,235,0.2)', borderTop: '2px solid #2563eb', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-  </div>
+  <div style={{ minHeight: '100vh', background: '#030712' }} />
 );
 
 /* ─── Custom Cursor ───────────────────────────────────────── */
