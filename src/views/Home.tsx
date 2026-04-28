@@ -425,10 +425,61 @@ const Hero = () => (
       <div className="grid lg:grid-cols-2 gap-12 items-center">
 
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
-          <div className="neon-badge mb-6">
-            <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse inline-block" />
+          <motion.div
+            className="mb-6 w-fit"
+            animate={{
+              background: [
+                'rgba(239,68,68,0.15)',
+                'rgba(249,115,22,0.15)',
+                'rgba(234,179,8,0.15)',
+                'rgba(34,197,94,0.15)',
+                'rgba(6,182,212,0.15)',
+                'rgba(99,102,241,0.15)',
+                'rgba(168,85,247,0.15)',
+                'rgba(236,72,153,0.15)',
+                'rgba(239,68,68,0.15)',
+              ],
+              borderColor: [
+                'rgba(239,68,68,0.6)',
+                'rgba(249,115,22,0.6)',
+                'rgba(234,179,8,0.6)',
+                'rgba(34,197,94,0.6)',
+                'rgba(6,182,212,0.6)',
+                'rgba(99,102,241,0.6)',
+                'rgba(168,85,247,0.6)',
+                'rgba(236,72,153,0.6)',
+                'rgba(239,68,68,0.6)',
+              ],
+              color: [
+                '#f87171','#fb923c','#fbbf24','#4ade80',
+                '#22d3ee','#818cf8','#c084fc','#f472b6','#f87171',
+              ],
+              scale: [1, 1.05, 1],
+              boxShadow: [
+                '0 0 12px rgba(239,68,68,0.4)',
+                '0 0 18px rgba(249,115,22,0.5)',
+                '0 0 12px rgba(234,179,8,0.4)',
+                '0 0 18px rgba(34,197,94,0.5)',
+                '0 0 12px rgba(6,182,212,0.4)',
+                '0 0 18px rgba(99,102,241,0.5)',
+                '0 0 12px rgba(168,85,247,0.4)',
+                '0 0 18px rgba(236,72,153,0.5)',
+                '0 0 12px rgba(239,68,68,0.4)',
+              ],
+            }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              borderRadius: 999, border: '1px solid', padding: '5px 14px',
+              fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em',
+            }}>
+            <motion.span
+              className="w-1.5 h-1.5 rounded-full inline-block"
+              animate={{ backgroundColor: ['#f87171','#fb923c','#fbbf24','#4ade80','#22d3ee','#818cf8','#c084fc','#f472b6','#f87171'], scale:[1,1.6,1] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            />
             Now taking new clients — Limited spots
-          </div>
+          </motion.div>
 
           <h1 className="font-display text-[5.5rem] md:text-[7.5rem] leading-none text-white mb-2 select-none">
             WE BUILD
