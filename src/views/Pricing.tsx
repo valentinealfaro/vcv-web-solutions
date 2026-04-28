@@ -140,11 +140,21 @@ const FAQ_DATA = [
 const FAQItem = ({ question, answer, isOpen, onToggle }: {
   question: string; answer: string; isOpen: boolean; onToggle: () => void;
 }) => (
-  <div className="border-b border-white/10">
-    <button onClick={onToggle} className="w-full py-6 flex justify-between items-center text-left gap-4">
-      <span className={cn('font-bold transition-colors', isOpen ? 'text-blue-400' : 'text-white')}>{question}</span>
-      <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
-        <HelpCircle className={cn('w-6 h-6 flex-shrink-0 transition-colors', isOpen ? 'text-blue-400' : 'text-blue-500')} />
+  <motion.div
+    className="rounded-2xl overflow-hidden"
+    animate={{
+      background:  isOpen ? 'rgba(37,99,235,0.07)'    : 'rgba(255,255,255,0.03)',
+      borderColor: isOpen ? 'rgba(37,99,235,0.4)'     : 'rgba(255,255,255,0.08)',
+      boxShadow:   isOpen ? '0 0 28px rgba(37,99,235,0.12)' : '0 0 0px rgba(0,0,0,0)',
+    }}
+    style={{ border: '1.5px solid rgba(255,255,255,0.08)' }}
+    transition={{ duration: 0.3 }}>
+    <button onClick={onToggle} className="w-full px-6 py-5 flex justify-between items-center text-left gap-4">
+      <span className={cn('font-bold transition-colors text-base', isOpen ? 'text-blue-400' : 'text-white')}>
+        {question}
+      </span>
+      <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }} className="flex-shrink-0">
+        <HelpCircle className={cn('w-5 h-5 transition-colors', isOpen ? 'text-blue-400' : 'text-gray-500')} />
       </motion.div>
     </button>
     <AnimatePresence initial={false}>
@@ -156,11 +166,12 @@ const FAQItem = ({ question, answer, isOpen, onToggle }: {
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.35, ease: 'easeInOut' }}
           className="overflow-hidden">
-          <p className="pb-6 text-gray-400 leading-relaxed">{answer}</p>
+          <div className="h-px mx-6 bg-blue-500/20" />
+          <p className="px-6 py-5 text-gray-400 leading-relaxed text-sm">{answer}</p>
         </motion.div>
       )}
     </AnimatePresence>
-  </div>
+  </motion.div>
 );
 
 const packages = [
@@ -475,9 +486,10 @@ export default function Pricing() {
 
       {/* FAQ */}
       <section className="py-20 bg-[#040a16] relative overflow-hidden">
-        <DottedSurface colorful className="opacity-30" />
+        <DottedSurface colorful className="opacity-45" />
         <div className="max-w-3xl mx-auto px-4 relative z-10">
           <h2 className="font-display text-5xl text-white mb-10 text-center">FAQ</h2>
+          <div className="space-y-3">
           {FAQ_DATA.map((item, i) => (
             <FAQItem
               key={i}
@@ -487,6 +499,7 @@ export default function Pricing() {
               onToggle={() => setOpenFaq(openFaq === i ? -1 : i)}
             />
           ))}
+          </div>
         </div>
       </section>
 

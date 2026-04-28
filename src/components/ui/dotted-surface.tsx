@@ -49,14 +49,20 @@ export function DottedSurface({ className, colorful = false, ...props }: DottedS
     const posArr    = new Float32Array(COUNT * 3);
     const colorArr  = new Float32Array(COUNT * 3);
 
-    // initialise to white
-    for (let i = 0; i < COUNT; i++) { colorArr[i * 3] = 0.75; colorArr[i * 3 + 1] = 0.75; colorArr[i * 3 + 2] = 0.75; }
+    // Each dot gets its own random hue so every dot is a distinct color
+    const dotHues = Array.from({ length: COUNT }, () => Math.random());
+
+    // Initialise colors from per-dot hues
+    for (let i = 0; i < COUNT; i++) {
+      const [r, g, b] = hslToRgb(dotHues[i], 0.88, 0.62);
+      colorArr[i * 3] = r; colorArr[i * 3 + 1] = g; colorArr[i * 3 + 2] = b;
+    }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(posArr,   3));
     geometry.setAttribute('color',    new THREE.BufferAttribute(colorArr, 3));
 
     const material = new THREE.PointsMaterial({
-      size: 4, vertexColors: true, transparent: true, opacity: 0.75, sizeAttenuation: false,
+      size: 9, vertexColors: true, transparent: true, opacity: 0.85, sizeAttenuation: false,
     });
 
     scene.add(new THREE.Points(geometry, material));
@@ -82,8 +88,9 @@ export function DottedSurface({ className, colorful = false, ...props }: DottedS
           posArr[idx + 2] = 0;
 
           if (colorful) {
-            const hue = ((col * 13 + row * 7 + count * 30) % 360) / 360;
-            const [r, g, b] = hslToRgb(hue, 0.9, 0.65);
+            // each dot slowly cycles its own unique hue — looks like static multicolor field
+            const hue = (dotHues[i] + count * 0.0015) % 1;
+            const [r, g, b] = hslToRgb(hue, 0.9, 0.62);
             colorArr[idx] = r; colorArr[idx + 1] = g; colorArr[idx + 2] = b;
           }
           i++;
