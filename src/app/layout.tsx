@@ -8,11 +8,40 @@ import { CustomCursor } from '@/components/CustomCursor';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Phone, MessageCircle } from 'lucide-react';
 
+const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const OG_DESC  = 'High-converting websites built in 3-7 days for local service businesses. SEO-optimized, mobile-ready, and engineered to generate leads — not just look pretty.';
+
 export const metadata: Metadata = {
-  title: 'VCV Web Solutions — High-Converting Websites for Local Businesses',
-  description: 'High-converting websites, SEO, and ad systems designed to grow your business fast. Built in 3–7 days, mobile-ready, SEO-optimized.',
+  metadataBase: new URL(SITE_URL),
+  title: 'VCV Web Solutions — Websites That Generate Leads',
+  description: OG_DESC,
   icons: {
     icon: 'https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FVCV%20Websolutions%20Logo.png?alt=media&token=aed21397-69ca-4846-a45d-267482b81acf',
+  },
+  openGraph: {
+    type:        'website',
+    url:         SITE_URL,
+    siteName:    'VCV Web Solutions',
+    title:       'VCV Web Solutions — Websites That Generate Leads',
+    description: OG_DESC,
+    images: [
+      {
+        url:    '/og-image.png',
+        width:  1200,
+        height: 630,
+        alt:    'VCV Web Solutions — We build websites that generate leads',
+      },
+    ],
+  },
+  twitter: {
+    card:        'summary_large_image',
+    site:        '@vcvwebsolutions',
+    title:       'VCV Web Solutions — Websites That Generate Leads',
+    description: OG_DESC,
+    images:      ['/og-image.png'],
+  },
+  alternates: {
+    canonical: SITE_URL,
   },
 };
 
