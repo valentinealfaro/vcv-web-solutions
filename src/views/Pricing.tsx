@@ -62,6 +62,74 @@ const RiskParticlesCanvas = () => {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-55" />;
 };
 
+const RainbowWavesCanvas = () => {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = ref.current; if (!canvas) return;
+    const ctx = canvas.getContext('2d'); if (!ctx) return;
+    let animId: number;
+
+    const PALETTE = [
+      '#ef4444','#f97316','#eab308','#22c55e',
+      '#06b6d4','#3b82f6','#8b5cf6','#ec4899',
+      '#ef4444','#f97316','#eab308','#22c55e',
+    ];
+    const N = 12;
+
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+
+    let t = 0;
+    const draw = () => {
+      animId = requestAnimationFrame(draw);
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      for (let i = 0; i < N; i++) {
+        const baseY  = (h / (N + 1)) * (i + 1);
+        const freq   = 0.0048 + i * 0.00055;
+        const amp    = 28  + i * 3.5;
+        const speed  = 0.011 + i * 0.0028;
+        const phase  = i * ((Math.PI * 2) / N);
+        const drift  = Math.sin(t * 0.007 + i * 0.8) * 18;
+        const color  = PALETTE[i % PALETTE.length];
+
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += 2) {
+          const y = baseY + drift + amp * Math.sin(x * freq + t * speed + phase);
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+
+        // thick glow pass
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = 3;
+        ctx.globalAlpha = 0.55;
+        ctx.shadowColor = color;
+        ctx.shadowBlur  = 22;
+        ctx.stroke();
+
+        // thin bright core
+        ctx.lineWidth   = 1.2;
+        ctx.globalAlpha = 0.85;
+        ctx.shadowBlur  = 8;
+        ctx.stroke();
+
+        ctx.shadowBlur  = 0;
+        ctx.globalAlpha = 1;
+      }
+      t++;
+    };
+
+    resize();
+    draw();
+    window.addEventListener('resize', resize);
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+  }, []);
+  return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none" />;
+};
+
 const FAQ_DATA = [
   { q:'Do I have to pay upfront?',   a:'No. We build your website demo first so you can see exactly what you are getting before you pay anything.' },
   { q:'How long does it take?',      a:'Most websites are built and launched in 3 to 7 days.' },
@@ -424,9 +492,9 @@ export default function Pricing() {
 
       {/* Final CTA */}
       <section className="py-24 bg-[#030712] relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
-        <div className="absolute top-[-10%] left-[10%] w-[500px] h-[500px] rounded-full blur-[130px] pointer-events-none animate-orb bg-blue-600/10" />
-        <div className="absolute bottom-[-10%] right-[10%] w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none animate-orb-delay bg-purple-600/8" />
+        <RainbowWavesCanvas />
+        {/* dark overlay so text stays readable over the waves */}
+        <div className="absolute inset-0 bg-[#030712]/55 pointer-events-none" />
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{ opacity:0,y:30 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }}>
             <p className="neon-badge mb-5 mx-auto w-fit">Ready to Start?</p>
