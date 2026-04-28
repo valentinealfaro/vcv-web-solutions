@@ -6,7 +6,11 @@ import { cn } from '../lib/utils';
 import { useRouter } from 'next/navigation';
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+// Lazy init so missing key never crashes on module load
+const getAI = () => {
+  try { return new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" }); }
+  catch { return null; }
+};
 
 const steps = [
   { id: 'contact', title: 'Contact Info', icon: <Phone className="w-5 h-5" /> },
@@ -51,14 +55,15 @@ export default function WebsiteOnboarding() {
     if (!formData.businessDescription) return;
     setIsGenerating(true);
     try {
+      const ai = getAI();
+      if (!ai) throw new Error("AI not configured");
       const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-1.5-flash",
         contents: `Write a professional business description for: ${formData.businessDescription}`,
       });
       setFormData({ ...formData, businessDescription: response.text });
     } catch (error) {
       console.error("Error generating description:", error);
-      alert("Failed to generate description.");
     } finally {
       setIsGenerating(false);
     }

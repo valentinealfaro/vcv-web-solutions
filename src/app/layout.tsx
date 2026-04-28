@@ -5,6 +5,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { FloatingCTA } from '@/components/FloatingCTA';
 import { CustomCursor } from '@/components/CustomCursor';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Phone, MessageCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -32,7 +33,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <CustomCursor />
         <Navbar />
-        <main>{children}</main>
+        <ErrorBoundary>
+          <main>{children}</main>
+        </ErrorBoundary>
         <Footer />
         <FloatingCTA />
 
