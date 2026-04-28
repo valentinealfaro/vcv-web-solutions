@@ -932,10 +932,22 @@ const PerfectFor = () => {
       {/* ══ MOBILE: 3-col scrollable grid ══ */}
       <div className="md:hidden px-3 pb-6 relative z-10">
         <div className="grid grid-cols-3 gap-2.5">
-          {BUSINESSES.map(biz => (
-            <button
+          {BUSINESSES.map((biz, idx) => (
+            <motion.button
               key={biz.id}
               onClick={() => setMobilePopup(biz)}
+              initial={{ opacity: 0, scale: 0.7 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ delay: (idx % 9) * 0.045, type: 'spring', stiffness: 260, damping: 18 }}
+              whileTap={{ scale: 0.92 }}
+              animate={{
+                boxShadow: [
+                  `0 0 8px ${biz.color}25`,
+                  `0 0 22px ${biz.color}70`,
+                  `0 0 8px ${biz.color}25`,
+                ],
+              }}
               style={{
                 background: `${biz.color}18`,
                 border: `1.5px solid ${biz.color}55`,
@@ -943,68 +955,79 @@ const PerfectFor = () => {
                 padding: '14px 8px 12px',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7,
                 cursor: 'pointer',
-                boxShadow: `0 0 14px ${biz.color}20`,
-                transition: 'transform 0.15s, box-shadow 0.15s',
-              }}
-              onTouchStart={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(0.95)'; }}
-              onTouchEnd={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'; }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%',
-                background: `radial-gradient(circle at 35% 30%, ${biz.color}cc, ${biz.color}44)`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: `0 0 12px ${biz.color}55` }}>
-                <biz.Icon size={16} style={{ color: 'white' }} />
-              </div>
+              }}>
+              <motion.div
+                animate={{ scale: [1, 1.12, 1] }}
+                transition={{ duration: 2 + (idx % 5) * 0.4, repeat: Infinity, ease: 'easeInOut', delay: idx * 0.15 }}
+                style={{ width: 38, height: 38, borderRadius: '50%',
+                  background: `radial-gradient(circle at 35% 30%, ${biz.color}ee, ${biz.color}44)`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: `0 0 14px ${biz.color}70` }}>
+                <biz.Icon size={17} style={{ color: 'white' }} />
+              </motion.div>
               <span style={{ color: '#f1f5f9', fontSize: 9.5, fontWeight: 800,
                 textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center',
                 lineHeight: 1.25, textShadow: `0 0 8px ${biz.color}60` }}>
                 {biz.name}
               </span>
-            </button>
+            </motion.button>
           ))}
         </div>
 
-        {/* Mobile card popup — centered fixed overlay */}
+        {/* Mobile popup — fixed, perfectly centered on screen */}
         <AnimatePresence>
           {mobilePopup && (
             <motion.div
-              initial={{ opacity:0, y:50 }} animate={{ opacity:1, y:0 }}
-              exit={{ opacity:0, y:50 }} transition={{ type:'spring', stiffness:280, damping:22 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setMobilePopup(null)}
               style={{ position:'fixed', inset:0, zIndex:300, display:'flex',
-                alignItems:'flex-end', justifyContent:'center',
-                padding: '0 12px 24px', background:'rgba(0,0,0,0.7)',
-                backdropFilter:'blur(6px)' }}>
-              <div onClick={e => e.stopPropagation()}
-                style={{ width:'100%', maxWidth:400, background:'rgba(6,10,22,0.98)',
-                  border:`1.5px solid ${mobilePopup.color}60`, borderRadius:20,
-                  padding:24, boxShadow:`0 0 60px ${mobilePopup.color}30, 0 -24px 64px rgba(0,0,0,0.8)` }}>
-                <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:16 }}>
-                  <div style={{ width:52, height:52, borderRadius:14,
-                    background:`radial-gradient(circle at 35% 30%, ${mobilePopup.color}cc, ${mobilePopup.color}33)`,
-                    display:'flex', alignItems:'center', justifyContent:'center',
-                    boxShadow:`0 0 20px ${mobilePopup.color}55`, flexShrink:0 }}>
-                    <mobilePopup.Icon size={24} style={{ color:'white' }} />
-                  </div>
+                alignItems:'center', justifyContent:'center',
+                padding: '20px 16px', background:'rgba(0,0,0,0.75)',
+                backdropFilter:'blur(8px)' }}>
+              <motion.div
+                initial={{ scale: 0.8, y: -20, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                exit={{ scale: 0.8, y: -20, opacity: 0 }}
+                transition={{ type:'spring', stiffness:300, damping:22 }}
+                onClick={e => e.stopPropagation()}
+                style={{ width:'100%', maxWidth:380, background:'rgba(6,10,22,0.98)',
+                  border:`2px solid ${mobilePopup.color}70`, borderRadius:22,
+                  padding:26, boxShadow:`0 0 80px ${mobilePopup.color}40, 0 0 0 1px ${mobilePopup.color}20` }}>
+
+                {/* Header */}
+                <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:18 }}>
+                  <motion.div
+                    animate={{ boxShadow: [`0 0 14px ${mobilePopup.color}60`, `0 0 30px ${mobilePopup.color}cc`, `0 0 14px ${mobilePopup.color}60`] }}
+                    transition={{ duration:1.8, repeat:Infinity }}
+                    style={{ width:56, height:56, borderRadius:16,
+                      background:`radial-gradient(circle at 35% 30%, ${mobilePopup.color}ee, ${mobilePopup.color}44)`,
+                      display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <mobilePopup.Icon size={26} style={{ color:'white' }} />
+                  </motion.div>
                   <div>
-                    <p style={{ color:'#f8fafc', fontWeight:800, fontSize:18, margin:'0 0 4px' }}>{mobilePopup.name}</p>
+                    <p style={{ color:'#f8fafc', fontWeight:800, fontSize:20, margin:'0 0 4px' }}>{mobilePopup.name}</p>
                     <p style={{ color:mobilePopup.color, fontSize:11, fontWeight:700,
-                      textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>Industry Insight</p>
+                      textTransform:'uppercase', letterSpacing:'0.12em', margin:0 }}>Industry Insight</p>
                   </div>
                 </div>
-                <div style={{ background:`${mobilePopup.color}18`, border:`1px solid ${mobilePopup.color}40`,
-                  borderRadius:12, padding:'10px 14px', marginBottom:14,
+
+                {/* Stat */}
+                <div style={{ background:`${mobilePopup.color}18`, border:`1.5px solid ${mobilePopup.color}50`,
+                  borderRadius:12, padding:'12px 16px', marginBottom:16,
                   display:'flex', alignItems:'center', gap:10 }}>
-                  <TrendingUp size={14} style={{ color:mobilePopup.color, flexShrink:0 }} />
-                  <span style={{ color:'#e2e8f0', fontWeight:700, fontSize:13 }}>{mobilePopup.stat}</span>
+                  <TrendingUp size={15} style={{ color:mobilePopup.color, flexShrink:0 }} />
+                  <span style={{ color:'#e2e8f0', fontWeight:700, fontSize:14 }}>{mobilePopup.stat}</span>
                 </div>
-                <p style={{ color:'#94a3b8', fontSize:13, lineHeight:1.7, marginBottom:18 }}>{mobilePopup.detail}</p>
+
+                <p style={{ color:'#94a3b8', fontSize:14, lineHeight:1.75, marginBottom:20 }}>{mobilePopup.detail}</p>
+
                 <button onClick={() => setMobilePopup(null)}
-                  style={{ width:'100%', padding:'12px', borderRadius:12, border:'none', cursor:'pointer',
-                    background:`${mobilePopup.color}25`, color:mobilePopup.color,
-                    fontWeight:700, fontSize:13, letterSpacing:'0.05em' }}>
+                  style={{ width:'100%', padding:'14px', borderRadius:14, border:`1.5px solid ${mobilePopup.color}50`,
+                    cursor:'pointer', background:`${mobilePopup.color}20`, color:'white',
+                    fontWeight:800, fontSize:14, letterSpacing:'0.06em' }}>
                   Close ✕
                 </button>
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
