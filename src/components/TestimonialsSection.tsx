@@ -31,7 +31,7 @@ const TESTIMONIALS: VCVTestimonial[] = [
 ];
 
 /* ─── Emoji / money background canvas ────────────────────── */
-const SYMBOLS = ['💰','💵','💸','🤑','📈','⭐','🏆','💎','🔥','✅','📞','🌟','💥','🚀','💲','🎯','💼','🏅','🤝','📊'];
+const SYMBOLS = ['💰','💵','💸','🤑','📈','⭐','🏆','💎','🔥','✅','📞','🌟','💥','🚀','💲','🎯','💼','🏅','🤝','📊','💯','🎉','💪','🏠','🔑','📱','🎯','💫','✨','🌈'];
 
 const EmojiBackground = () => {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -40,32 +40,51 @@ const EmojiBackground = () => {
     const ctx = canvas.getContext('2d'); if (!ctx) return;
     let animId: number;
 
-    interface S { x:number; y:number; vx:number; vy:number; size:number; emoji:string; opacity:number; rot:number; rs:number }
+    interface S { x:number; y:number; vx:number; vy:number; size:number; emoji:string; opacity:number; rot:number; rs:number; glow:string }
     let syms: S[] = [];
+
+    const GLOWS = ['rgba(255,215,0,0.6)','rgba(0,212,255,0.6)','rgba(255,100,100,0.5)','rgba(100,255,100,0.5)','rgba(200,100,255,0.6)','rgba(255,165,0,0.6)'];
 
     const resize = () => {
       canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
-      syms = Array.from({length: 35}, () => ({
-        x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-        vx: (Math.random()-.5)*0.55, vy: (Math.random()-.5)*0.55,
-        size: 14 + Math.random()*22,
-        emoji: SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)],
-        opacity: 0.1 + Math.random()*0.22,
-        rot: Math.random()*Math.PI*2, rs: (Math.random()-.5)*0.018,
-      }));
+      // Two tiers: 35 slow+medium, 25 fast+small = 60 total
+      syms = [
+        ...Array.from({length: 35}, () => ({
+          x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+          vx: (Math.random()-.5)*0.55, vy: (Math.random()-.5)*0.55,
+          size: 18 + Math.random()*28,
+          emoji: SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)],
+          opacity: 0.14 + Math.random()*0.26,
+          rot: Math.random()*Math.PI*2, rs: (Math.random()-.5)*0.018,
+          glow: GLOWS[Math.floor(Math.random()*GLOWS.length)],
+        })),
+        // Fast small tier
+        ...Array.from({length: 25}, () => ({
+          x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+          vx: (Math.random()-.5)*1.4, vy: (Math.random()-.5)*1.4,
+          size: 10 + Math.random()*14,
+          emoji: SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)],
+          opacity: 0.08 + Math.random()*0.14,
+          rot: Math.random()*Math.PI*2, rs: (Math.random()-.5)*0.04,
+          glow: GLOWS[Math.floor(Math.random()*GLOWS.length)],
+        })),
+      ];
     };
 
     const draw = () => {
       ctx.clearRect(0,0,canvas.width,canvas.height);
       for (const s of syms) {
         s.x += s.vx; s.y += s.vy; s.rot += s.rs;
-        if (s.x < -40) s.x = canvas.width+40;
-        if (s.x > canvas.width+40) s.x = -40;
-        if (s.y < -40) s.y = canvas.height+40;
-        if (s.y > canvas.height+40) s.y = -40;
+        if (s.x < -50) s.x = canvas.width+50;
+        if (s.x > canvas.width+50) s.x = -50;
+        if (s.y < -50) s.y = canvas.height+50;
+        if (s.y > canvas.height+50) s.y = -50;
         ctx.save();
         ctx.globalAlpha = s.opacity;
         ctx.translate(s.x, s.y); ctx.rotate(s.rot);
+        // Neon glow behind each symbol
+        ctx.shadowColor = s.glow;
+        ctx.shadowBlur = 12;
         ctx.font = `${s.size}px serif`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(s.emoji, 0, 0);
@@ -79,7 +98,7 @@ const EmojiBackground = () => {
     draw();
     return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
   }, []);
-  return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.9 }} />;
+  return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.95 }} />;
 };
 
 /* ─── Perimeter path helper ───────────────────────────────── */
@@ -224,7 +243,7 @@ export const TestimonialsSection = () => {
       {/* Full-section emoji/money background */}
       <div className="absolute inset-0 overflow-hidden">
         <EmojiBackground />
-        <div className="absolute inset-0 bg-[#040a16]/55 pointer-events-none" />
+        <div className="absolute inset-0 bg-[#040a16]/42 pointer-events-none" />
         <div className="absolute inset-0 bg-dot opacity-20 pointer-events-none" />
       </div>
 
@@ -265,16 +284,43 @@ export const TestimonialsSection = () => {
                   <p className="neon-badge mx-auto w-fit">Social Proof</p>
                 </motion.div>
 
-                <h2 className="font-display text-6xl md:text-7xl text-white mb-4 leading-none">
-                  <motion.span initial={{ opacity:0, x:-70 }} whileInView={{ opacity:1, x:0 }}
-                    transition={{ delay:0.1 }} viewport={{ once:true }} style={{ display:'inline-block' }}>
-                    CLIENT
-                  </motion.span>{' '}
-                  <motion.span initial={{ opacity:0, x:70 }} whileInView={{ opacity:1, x:0 }}
-                    transition={{ delay:0.2 }} viewport={{ once:true }} style={{ display:'inline-block' }}>
-                    <MarkerHighlight highlight="WINS" markerColor="rgba(6,182,212,0.82)" textColor="white" delay={0.45} />
-                  </motion.span>
-                </h2>
+                {/* Pulsing headline with glare sweep */}
+                <div className="relative inline-block mb-4" style={{ overflow: 'hidden', borderRadius: 8 }}>
+                  {/* Glare sweep — diagonal white streak every 5s */}
+                  <motion.div
+                    aria-hidden
+                    style={{
+                      position: 'absolute', top: '-20%', width: '40%', height: '140%',
+                      background: 'linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.18) 50%, transparent 80%)',
+                      zIndex: 10, pointerEvents: 'none', skewX: '-15deg',
+                    }}
+                    animate={{ left: ['-50%', '160%'] }}
+                    transition={{ duration: 1.0, repeat: Infinity, repeatDelay: 4.5, ease: 'easeInOut' }}
+                  />
+                  <motion.h2
+                    className="font-display text-6xl md:text-7xl leading-none relative z-0"
+                    animate={{
+                      scale: [1, 1.04, 1],
+                      filter: [
+                        'drop-shadow(0 0 10px rgba(6,182,212,0.5))',
+                        'drop-shadow(0 0 28px rgba(6,182,212,0.9)) drop-shadow(0 0 50px rgba(124,58,237,0.6))',
+                        'drop-shadow(0 0 18px rgba(255,255,255,0.4)) drop-shadow(0 0 40px rgba(6,182,212,0.7))',
+                        'drop-shadow(0 0 28px rgba(6,182,212,0.9)) drop-shadow(0 0 50px rgba(124,58,237,0.6))',
+                        'drop-shadow(0 0 10px rgba(6,182,212,0.5))',
+                      ],
+                    }}
+                    transition={{ duration: 3.0, repeat: Infinity, ease: 'easeInOut' }}>
+                    <motion.span initial={{ opacity:0, x:-70 }} whileInView={{ opacity:1, x:0 }}
+                      transition={{ delay:0.1 }} viewport={{ once:true }}
+                      style={{ display:'inline-block', color: 'white' }}>
+                      CLIENT
+                    </motion.span>{' '}
+                    <motion.span initial={{ opacity:0, x:70 }} whileInView={{ opacity:1, x:0 }}
+                      transition={{ delay:0.2 }} viewport={{ once:true }} style={{ display:'inline-block' }}>
+                      <MarkerHighlight highlight="WINS" markerColor="rgba(6,182,212,0.85)" textColor="white" delay={0.45} />
+                    </motion.span>
+                  </motion.h2>
+                </div>
 
                 <motion.p initial={{ opacity:0, x:50 }} whileInView={{ opacity:1, x:0 }}
                   transition={{ delay:0.28 }} viewport={{ once:true }}
@@ -316,13 +362,14 @@ export const TestimonialsSection = () => {
                 ))}
               </div>
 
+              {/* Hint — inside the card */}
+              <p className="text-center text-gray-600 text-xs mt-4">
+                Click any orbiting avatar to read their story · Auto-advances every 3 seconds
+              </p>
+
             </div>
           </div>
         </div>
-
-        <p className="text-center text-gray-600 text-xs mt-6">
-          Click any orbiting avatar to read their story · Auto-advances every 3 seconds
-        </p>
       </div>
     </section>
   );
