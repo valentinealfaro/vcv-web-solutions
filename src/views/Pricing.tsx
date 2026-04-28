@@ -100,33 +100,52 @@ export default function Pricing() {
   ];
 
   return (
-    <div className="bg-black pt-32 pb-24">
-      {/* Hero */}
-      <div className="max-w-4xl mx-auto px-4 text-center mb-16">
-        <span className="text-blue-500 font-bold tracking-wider uppercase text-sm">Pricing</span>
-        <h1 className="text-5xl md:text-6xl font-extrabold text-white mt-4 mb-6 leading-[1.1]">
-          Simple Pricing That Gets You More Calls
-        </h1>
-        <p className="text-xl text-gray-400 mb-6">
-          We build your website before you pay anything. No risk. No surprises.
-        </p>
-        {/* Limited-time banner */}
-        <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-full px-5 py-2 mb-8">
-          <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse inline-block" />
-          <span className="text-red-400 font-bold text-sm tracking-wide">LIMITED TIME — 50% OFF ALL PLANS</span>
-          <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse inline-block" />
+    <div className="bg-[#030712] min-h-screen">
+
+      {/* ── Animated hero ── */}
+      <section className="relative pt-28 pb-16 overflow-hidden">
+        {/* Orbs */}
+        <div className="absolute top-[-5%] left-[5%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[130px] pointer-events-none animate-orb" />
+        <div className="absolute bottom-[-10%] right-[5%] w-[450px] h-[450px] bg-purple-600/10 rounded-full blur-[130px] pointer-events-none animate-orb-delay" />
+        <div className="absolute top-[40%] left-[40%] w-[300px] h-[300px] bg-cyan-500/6 rounded-full blur-[100px] pointer-events-none animate-orb-slow" />
+        <div className="absolute inset-0 bg-grid opacity-[0.35] pointer-events-none" />
+        <div className="absolute inset-0 bg-dot  opacity-[0.15] pointer-events-none" />
+
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+          <motion.div initial={{ opacity:0,y:30 }} animate={{ opacity:1,y:0 }} transition={{ duration:.7 }}>
+            <p className="neon-badge mb-5 mx-auto w-fit">Simple Pricing</p>
+            <h1 className="font-display leading-none text-white mb-5"
+              style={{ fontSize:'clamp(3.5rem,9vw,7rem)',
+                textShadow:'0 0 60px rgba(37,99,235,0.5), 0 0 120px rgba(124,58,237,0.25)' }}>
+              PRICING THAT<br /><span className="gradient-text">PAYS FOR ITSELF</span>
+            </h1>
+            <p className="text-gray-400 text-xl mb-6 max-w-2xl mx-auto">
+              We build your website before you pay anything. No risk. No surprises.
+            </p>
+
+            {/* Limited-time banner */}
+            <motion.div
+              animate={{ scale:[1,1.03,1] }} transition={{ duration:2.2,repeat:Infinity,ease:'easeInOut' }}
+              className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-full px-5 py-2 mb-8">
+              <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse inline-block" />
+              <span className="text-red-400 font-bold text-sm tracking-wide">LIMITED TIME — 50% OFF ALL PLANS</span>
+              <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse inline-block" />
+            </motion.div>
+          </motion.div>
+
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-6">
+              <Link href="/free-demo" className="btn-neon btn-glow text-white px-8 py-4 rounded-full font-bold text-base flex items-center justify-center gap-2 group">
+                Get My Free Demo <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
+              <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> No upfront cost</span>
+              <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Built in 3–7 days</span>
+              <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Designed for leads</span>
+            </div>
+          </div>
         </div>
-        <div className="flex justify-center gap-4 mb-8">
-          <Link href="/free-demo" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg shadow-blue-600/20">
-            Get My Free Demo
-          </Link>
-        </div>
-        <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
-          <span className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-blue-500" /> No upfront cost options</span>
-          <span className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-blue-500" /> Built in 3–7 days</span>
-          <span className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-blue-500" /> Designed for leads</span>
-        </div>
-      </div>
+      </section>
 
       {/* Pricing Cards — 2 columns */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-24 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
@@ -207,26 +226,32 @@ export default function Pricing() {
       </section>
 
       {/* No Risk */}
-      <section className="py-24">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="premium-card p-12 text-center">
-            <ShieldCheck className="w-12 h-12 text-blue-500 mx-auto mb-6" />
-            <h2 className="text-3xl font-bold text-white mb-6">Try It Risk-Free</h2>
-            <ul className="grid md:grid-cols-2 gap-4 text-gray-400 text-left">
-              <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-blue-500" /> We build your demo before you pay</li>
-              <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-blue-500" /> No long-term contracts</li>
-              <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-blue-500" /> No upfront cost options</li>
-              <li className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-blue-500" /> You only move forward if you like it</li>
+      <section className="py-20 relative overflow-hidden bg-[#030712]">
+        <div className="absolute inset-0 bg-grid opacity-25 pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] bg-blue-600/6 rounded-full blur-[100px] pointer-events-none" />
+        <div className="max-w-4xl mx-auto px-4 relative z-10">
+          <div className="neon-card p-10 md:p-12 text-center" style={{ borderColor:’rgba(37,99,235,0.3)’, boxShadow:’0 0 60px rgba(37,99,235,0.08)’ }}>
+            <div className="w-14 h-14 btn-neon rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShieldCheck className="w-7 h-7 text-white" />
+            </div>
+            <h2 className="font-display text-5xl text-white mb-8">TRY IT RISK-FREE</h2>
+            <ul className="grid md:grid-cols-2 gap-4 text-left max-w-xl mx-auto">
+              {[‘We build your demo before you pay’,’No long-term contracts’,’No upfront cost options’,’You only move forward if you love it’].map((t,i) => (
+                <li key={i} className="flex items-center gap-3 text-gray-300 text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" /> {t}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="py-24 bg-gray-950">
-        <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-white mb-12 text-center">Frequently Asked Questions</h2>
-          <FAQItem question="Do I have to pay upfront?" answer="No. We build your website demo first, so you can see exactly what you're getting before you pay anything." />
+      <section className="py-20 bg-[#040a16] relative overflow-hidden">
+        <div className="absolute inset-0 bg-dot opacity-15 pointer-events-none" />
+        <div className="max-w-3xl mx-auto px-4 relative z-10">
+          <h2 className="font-display text-5xl text-white mb-10 text-center">FAQ</h2>
+          <FAQItem question="Do I have to pay upfront?" answer="No. We build your website demo first, so you can see exactly what you’re getting before you pay anything." />
           <FAQItem question="How long does it take?" answer="Most websites are built and launched in 3–7 days." />
           <FAQItem question="Can I cancel?" answer="Yes, we offer flexible options with no long-term contracts." />
           <FAQItem question="Do you handle everything?" answer="Yes, we handle design, development, hosting, and ongoing support." />
@@ -234,19 +259,23 @@ export default function Pricing() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 bg-blue-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-400/20 to-transparent" />
+      <section className="py-24 bg-[#030712] relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
+        <div className="absolute top-[-10%] left-[10%] w-[500px] h-[500px] rounded-full blur-[130px] pointer-events-none animate-orb" style={{ background:’rgba(37,99,235,0.12)’ }} />
+        <div className="absolute bottom-[-10%] right-[10%] w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none animate-orb-delay" style={{ background:’rgba(124,58,237,0.10)’ }} />
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-          <h2 className="text-5xl font-bold text-white mb-8">Get Your Free Website Demo</h2>
-          <p className="text-blue-100 text-xl mb-10">
-            We’ll build your site before you pay anything.
-          </p>
-          <Link
-            href="/free-demo"
-            className="inline-flex items-center gap-3 bg-white text-blue-600 px-10 py-5 rounded-full font-bold text-xl hover:bg-gray-100 transition-all shadow-2xl"
-          >
-            Get My Free Demo <ArrowRight className="w-6 h-6" />
-          </Link>
+          <motion.div initial={{ opacity:0,y:30 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }}>
+            <p className="neon-badge mb-5 mx-auto w-fit">Ready to Start?</p>
+            <h2 className="font-display text-6xl md:text-8xl text-white mb-6 leading-none">
+              GET YOUR<br /><span className="gradient-text">FREE DEMO</span>
+            </h2>
+            <p className="text-gray-400 text-xl mb-10">We’ll build your site before you pay anything.</p>
+            <Link href="/free-demo"
+              className="btn-glow btn-neon text-white px-12 py-5 rounded-full font-bold text-xl inline-flex items-center gap-3 group">
+              Build My Free Demo <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <p className="text-gray-600 text-sm mt-6">No credit card · Ready in 48 hours · 100% free</p>
+          </motion.div>
         </div>
       </section>
     </div>
