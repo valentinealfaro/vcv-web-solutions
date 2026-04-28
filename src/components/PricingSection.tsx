@@ -149,13 +149,32 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
       <motion.button
         onClick={handleCheckout}
         disabled={loading}
-        whileHover={{ scale: loading ? 1 : 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 group transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
-          plan.popular
-            ? 'btn-neon btn-glow text-white'
-            : 'glass-card text-gray-300 hover:text-white hover:border-blue-500/30'
-        }`}>
+        className="w-full py-3.5 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed"
+        animate={{
+          backgroundImage:[
+            'linear-gradient(135deg,#ef4444,#f97316)',
+            'linear-gradient(135deg,#f97316,#eab308)',
+            'linear-gradient(135deg,#eab308,#22c55e)',
+            'linear-gradient(135deg,#22c55e,#06b6d4)',
+            'linear-gradient(135deg,#06b6d4,#3b82f6)',
+            'linear-gradient(135deg,#3b82f6,#8b5cf6)',
+            'linear-gradient(135deg,#8b5cf6,#ec4899)',
+            'linear-gradient(135deg,#ec4899,#ef4444)',
+          ],
+          boxShadow:[
+            '0 0 18px rgba(239,68,68,0.55)',
+            '0 0 18px rgba(249,115,22,0.55)',
+            '0 0 18px rgba(234,179,8,0.55)',
+            '0 0 18px rgba(34,197,94,0.55)',
+            '0 0 18px rgba(6,182,212,0.55)',
+            '0 0 18px rgba(59,130,246,0.55)',
+            '0 0 18px rgba(139,92,246,0.55)',
+            '0 0 18px rgba(236,72,153,0.55)',
+          ],
+        }}
+        transition={{ duration: plan.popular ? 3.5 : 4.5, repeat: Infinity, ease:'linear' }}
+        whileHover={{ scale: loading ? 1 : 1.03 }}
+        whileTap={{ scale: 0.97 }}>
         {loading
           ? <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting...</>
           : <>{plan.cta} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>

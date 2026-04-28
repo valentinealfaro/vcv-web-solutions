@@ -185,19 +185,39 @@ export default function Pricing() {
               ))}
             </ul>
 
-            <button
+            <motion.button
               onClick={() => handleBuy(pkg, idx)}
               disabled={loadingIdx === idx}
-              className={cn(
-                "w-full py-4 rounded-xl font-bold text-center transition-all flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed",
-                pkg.isPopular
-                  ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-blue-500/20"
-                  : "bg-gray-800 hover:bg-gray-700 text-white"
-              )}>
+              className="w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed mt-auto"
+              style={{ backgroundSize:'300% 100%' }}
+              animate={{
+                backgroundImage:[
+                  'linear-gradient(135deg,#ef4444,#f97316)',
+                  'linear-gradient(135deg,#f97316,#eab308)',
+                  'linear-gradient(135deg,#eab308,#22c55e)',
+                  'linear-gradient(135deg,#22c55e,#06b6d4)',
+                  'linear-gradient(135deg,#06b6d4,#3b82f6)',
+                  'linear-gradient(135deg,#3b82f6,#8b5cf6)',
+                  'linear-gradient(135deg,#8b5cf6,#ec4899)',
+                  'linear-gradient(135deg,#ec4899,#ef4444)',
+                ],
+                boxShadow:[
+                  '0 0 20px rgba(239,68,68,0.6)',
+                  '0 0 20px rgba(249,115,22,0.6)',
+                  '0 0 20px rgba(234,179,8,0.6)',
+                  '0 0 20px rgba(34,197,94,0.6)',
+                  '0 0 20px rgba(6,182,212,0.6)',
+                  '0 0 20px rgba(59,130,246,0.6)',
+                  '0 0 20px rgba(139,92,246,0.6)',
+                  '0 0 20px rgba(236,72,153,0.6)',
+                ],
+              }}
+              transition={{ duration: idx === 0 ? 3 : 4, repeat: Infinity, ease:'linear' }}
+              whileHover={{ scale:1.03 }} whileTap={{ scale:0.97 }}>
               {loadingIdx === idx
                 ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
                 : <>Buy Now <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/></>}
-            </button>
+            </motion.button>
             <p className="text-center text-gray-600 text-xs mt-3">Secure checkout · Powered by Stripe</p>
           </div>
         ))}
