@@ -962,6 +962,123 @@ const ServicesOverview = () => {
   );
 };
 
+/* ─── Before / After animated mockup ─────────────────────── */
+type ShowPhase = 'before' | 'after';
+type FlipPhase = 'idle' | 'flipOut' | 'flipIn';
+
+const OldSite = () => (
+  <div className="h-full overflow-hidden relative" style={{ background: '#f5f5f0', fontFamily: 'Georgia, serif' }}>
+    <div style={{ background: '#1a365d', padding: '6px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <span style={{ color: 'white', fontSize: 11, fontWeight: 700 }}>🏠 Your Business</span>
+      <div style={{ display: 'flex', gap: 8 }}>
+        {['Home','About','Contact'].map(t => <span key={t} style={{ color: 'rgba(255,255,255,0.7)', fontSize: 9 }}>{t}</span>)}
+      </div>
+    </div>
+    <div style={{ background: 'linear-gradient(#1a365d,#2c5282)', padding: '14px 12px', textAlign: 'center', color: 'white' }}>
+      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Welcome to My Website!!</div>
+      <div style={{ fontSize: 8, opacity: 0.7, marginBottom: 8 }}>We offer many services. Call for info about pricing.</div>
+      <div style={{ display: 'inline-block', background: '#e2a000', color: 'white', padding: '4px 10px', fontSize: 8, fontWeight: 700, borderRadius: 2 }}>Click Here</div>
+    </div>
+    <div style={{ padding: '10px 12px' }}>
+      <div style={{ fontSize: 8, color: '#555', fontFamily: 'Arial', marginBottom: 8 }}>We have been in business for many years and offer the best services in town at competitive prices.</div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+        {['❌ Slow — 8s load', '❌ Zero SEO', '❌ No Call-to-Action', '❌ Not Mobile Friendly', '❌ Zero Leads'].map(b => (
+          <span key={b} style={{ background: 'rgba(239,68,68,0.1)', color: '#dc2626', border: '1px solid rgba(239,68,68,0.3)', padding: '3px 7px', borderRadius: 5, fontSize: 8, fontWeight: 700 }}>{b}</span>
+        ))}
+      </div>
+    </div>
+    <div style={{ position: 'absolute', top: 6, right: 6, background: 'rgba(239,68,68,0.92)', color: 'white', padding: '2px 8px', borderRadius: 999, fontSize: 8, fontWeight: 800 }}>BEFORE</div>
+  </div>
+);
+
+const NewSite = () => (
+  <div className="h-full overflow-hidden relative bg-[#080e1c]">
+    <div style={{ background: 'rgba(8,14,28,0.98)', padding: '6px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+      <span style={{ color: 'white', fontSize: 11, fontWeight: 800 }}>Your <span style={{ color: '#60a5fa' }}>Business Pro</span></span>
+      <div style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)', color: 'white', padding: '3px 9px', borderRadius: 5, fontSize: 8, fontWeight: 700, boxShadow: '0 0 10px rgba(37,99,235,0.5)' }}>📞 Free Quote</div>
+    </div>
+    <div style={{ padding: '12px', background: 'linear-gradient(135deg,#080e1c,#0d1120)', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: -20, left: -20, width: 80, height: 80, background: 'radial-gradient(circle,rgba(37,99,235,0.2),transparent 70%)', borderRadius: '50%' }} />
+      <div style={{ display: 'inline-block', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80', padding: '2px 8px', borderRadius: 999, fontSize: 7, fontWeight: 700, marginBottom: 6 }}>⚡ #1 Ranked · 24/7 Emergency Service</div>
+      <div style={{ height: 9, background: 'rgba(255,255,255,0.8)', borderRadius: 3, width: '62%', marginBottom: 5 }} />
+      <div style={{ height: 9, background: 'linear-gradient(90deg,#2563eb,#7c3aed)', borderRadius: 3, width: '46%', marginBottom: 8, opacity: 0.85 }} />
+      <div style={{ display: 'flex', gap: 5, marginBottom: 8 }}>
+        <div style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)', color: 'white', padding: '5px 10px', borderRadius: 5, fontSize: 8, fontWeight: 700, boxShadow: '0 0 12px rgba(37,99,235,0.5)' }}>📞 Call Now</div>
+        <div style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.5)', padding: '5px 8px', borderRadius: 5, fontSize: 8 }}>See Portfolio →</div>
+      </div>
+    </div>
+    <div style={{ padding: '6px 12px', display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+      {['✅ SEO Optimized', '✅ Lead Generation', '✅ Mobile First', '✅ High Converting', '✅ Sub-2s Load'].map(b => (
+        <span key={b} style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.25)', padding: '3px 7px', borderRadius: 5, fontSize: 8, fontWeight: 700 }}>{b}</span>
+      ))}
+    </div>
+    <div style={{ padding: '0 12px', display: 'flex', gap: 5, marginTop: 6 }}>
+      {['📈 +145% Leads', '💰 Pays for Itself', '⚡ Live in 5 Days'].map(s => (
+        <div key={s} style={{ flex: 1, background: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.18)', borderRadius: 6, padding: '5px 4px', textAlign: 'center', fontSize: 7, color: '#93c5fd', fontWeight: 700 }}>{s}</div>
+      ))}
+    </div>
+    <div style={{ position: 'absolute', top: 6, right: 6, background: 'rgba(34,197,94,0.92)', color: 'white', padding: '2px 8px', borderRadius: 999, fontSize: 8, fontWeight: 800 }}>AFTER VCV</div>
+  </div>
+);
+
+const BeforeAfterMockup = () => {
+  const [show,  setShow]  = useState<ShowPhase>('before');
+  const [flip,  setFlip]  = useState<FlipPhase>('idle');
+  const [cycle, setCycle] = useState(0);
+
+  useEffect(() => {
+    const ids: ReturnType<typeof setTimeout>[] = [];
+    const q = (fn: () => void, ms: number) => ids.push(setTimeout(fn, ms));
+    q(() => setFlip('flipOut'),                                     3400);
+    q(() => { setShow(s => s === 'before' ? 'after' : 'before'); setFlip('flipIn'); }, 3700);
+    q(() => setFlip('idle'),                                         4000);
+    q(() => setCycle(c => c + 1),                                    7800);
+    return () => ids.forEach(clearTimeout);
+  }, [cycle]);
+
+  const flipVariants = {
+    idle:    { scaleX: 1 },
+    flipOut: { scaleX: 0, transition: { duration: 0.26, ease: 'easeIn'  as const } },
+    flipIn:  { scaleX: 1, transition: { duration: 0.26, ease: 'easeOut' as const } },
+  };
+
+  return (
+    <div style={{ perspective: '1000px' }}>
+      <motion.div variants={flipVariants} animate={flip}
+        className="browser-mockup flex flex-col overflow-hidden" style={{ aspectRatio: '4/3' }}>
+        <div className="browser-top flex-shrink-0">
+          <span /><span /><span />
+          <div className="ml-3 flex-1 h-5 bg-white/5 rounded-full text-[10px] text-gray-500 flex items-center px-3">
+            {show === 'before' ? 'oldbusiness.com — Not Secure' : '🔒 yournewsite.com'}
+          </div>
+          {show === 'after' && (
+            <div className="mr-2 flex items-center gap-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-[9px] text-green-400 font-bold">LIVE</span>
+            </div>
+          )}
+        </div>
+        <div className="flex-1 relative" style={{ minHeight: 0 }}>
+          {show === 'before' ? <OldSite /> : <NewSite />}
+        </div>
+      </motion.div>
+
+      {/* Phase label below mockup */}
+      <div className="text-center mt-3">
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em',
+          color: show === 'before' ? '#f87171' : '#4ade80',
+          transition: 'color 0.3s',
+        }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }} />
+          {show === 'before' ? 'Before — killing your business' : 'After VCV — paying for itself daily'}
+        </span>
+      </div>
+    </div>
+  );
+};
+
 /* ─── Why Choose Us ───────────────────────────────────────── */
 const WhyChooseUs = () => {
   const features = [
@@ -987,7 +1104,8 @@ const WhyChooseUs = () => {
               We don't just build websites — we build{' '}
               <MarkerHighlight
                 highlight="growth engines"
-                markerColor="rgba(124, 58, 237, 0.82)"
+                markerColor="rgba(124, 58, 237, 0.88)"
+                textColor="white"
                 delay={0.15}
               />{' '}
               tuned to your market. Our focus is always on one metric: your return on investment.
@@ -1011,28 +1129,8 @@ const WhyChooseUs = () => {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }} viewport={{ once: true }} className="relative mockup-box">
-            <div className="browser-mockup aspect-video flex flex-col">
-              <div className="browser-top"><span /><span /><span /></div>
-              <div className="flex-1 p-6 bg-[#080e1c] flex flex-col gap-3">
-                <div className="h-4 bg-white/5 rounded w-1/3 mb-3" />
-                <div className="grid grid-cols-3 gap-3 flex-1">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="bg-white/[0.03] rounded-xl border border-white/5 p-3 flex flex-col justify-end">
-                      <div className="flex-1 flex items-end gap-1">
-                        {[40, 65, 50, 80, 70, 90].map((h, j) => (
-                          <div key={j} className="flex-1 rounded-sm" style={{
-                            height: `${h}%`,
-                            background: `rgba(37,99,235,${0.3 + j * 0.08})`
-                          }} />
-                        ))}
-                      </div>
-                      <div className="h-2 bg-white/10 rounded mt-2 w-3/4" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            transition={{ delay: 0.2 }} viewport={{ once: true }}>
+            <BeforeAfterMockup />
           </motion.div>
         </div>
       </div>
