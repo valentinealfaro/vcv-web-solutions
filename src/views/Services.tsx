@@ -217,7 +217,7 @@ export default function Services() {
                 VCV Web Solutions
               </h3>
               <ul className="space-y-4">
-                {['Built to generate calls and leads','Full SEO structure from day one','3-7 day launch, not months','You see the site before you pay','No lock-in — you own everything'].map((t,i)=>(
+                {['Built to generate calls and leads','Full SEO structure from day one','3-7 day launch, not months','Custom design preview before you commit','No lock-in — you own everything'].map((t,i)=>(
                   <li key={i} className="flex items-start gap-3 text-gray-200 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5"/>{t}</li>
                 ))}
               </ul>
@@ -347,11 +347,11 @@ export default function Services() {
             <h2 className="font-display text-6xl md:text-8xl text-white mb-6 leading-none">
               GET YOUR<br/><span className="gradient-text">FREE DEMO</span><br/>TODAY
             </h2>
-            <p className="text-gray-400 text-xl mb-10 max-w-xl mx-auto">We build your site before you pay anything. No risk. No commitment.</p>
+            <p className="text-gray-400 text-xl mb-10 max-w-xl mx-auto">Professional websites starting at $97/mo — see your custom design first, then we launch it.</p>
             <Link href="/free-demo" className="btn-glow btn-neon text-white px-12 py-5 rounded-full font-bold text-xl inline-flex items-center gap-3 group">
               Build My Free Demo <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform"/>
             </Link>
-            <p className="text-gray-600 text-sm mt-6">No credit card required · Ready in 48 hours · 100% free</p>
+            <p className="text-gray-600 text-sm mt-6">Starts at $97/mo · 30-day results guarantee · Cancel anytime</p>
           </motion.div>
         </div>
       </section>

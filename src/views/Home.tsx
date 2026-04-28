@@ -510,7 +510,7 @@ const Hero = () => (
           </div>
 
           <div className="flex flex-wrap gap-6 text-sm text-gray-400">
-            {['No upfront cost options', '3–7 day launch', '100% money-back guarantee'].map((t, i) => (
+            {['Starts at $97/mo', '3-7 day launch', '30-day results guarantee'].map((t, i) => (
               <span key={i} className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" /> {t}
               </span>
@@ -1652,7 +1652,7 @@ const WhyChooseUs = () => {
 /* ─── Process Section ─────────────────────────────────────── */
 const ProcessSection = () => {
   const steps = [
-    { n: '01', title: 'Request Free Demo', desc: 'Tell us about your business and we build you a free custom preview.' },
+    { n: '01', title: 'Request Design Preview', desc: 'Tell us about your business and we build a custom website preview tailored to your market.' },
     { n: '02', title: 'We Design It', desc: 'Our team creates a conversion-focused layout for your niche in 48 hours.' },
     { n: '03', title: 'You Review & Approve', desc: 'Give feedback, request changes — we iterate until it\'s perfect.' },
     { n: '04', title: 'We Launch', desc: 'Full technical setup, domain, hosting, and go-live in 3–7 days.' },
@@ -1728,7 +1728,7 @@ const CTASection = () => (
           Build My Free Demo
           <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
         </Link>
-        <p className="text-gray-500 text-sm mt-6">No credit card required · Ready in 48 hours · 100% free</p>
+        <p className="text-gray-500 text-sm mt-6">Starts at $97/mo · 30-day results guarantee · Cancel anytime</p>
       </motion.div>
     </div>
   </section>

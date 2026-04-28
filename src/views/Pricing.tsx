@@ -8,10 +8,10 @@ import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverla
 import { DottedSurface } from '@/components/ui/dotted-surface';
 
 const RISK_ITEMS = [
-  { id:'ri-a', icon:'🚀', title:'Free Demo First',  body:'We build your site before you pay a single dollar.',  color:'#3b82f6', bg:'rgba(59,130,246,0.09)'  },
-  { id:'ri-b', icon:'🔓', title:'No Contracts',     body:'Month-to-month. Cancel anytime. Zero lock-in.',       color:'#8b5cf6', bg:'rgba(139,92,246,0.09)'  },
-  { id:'ri-c', icon:'💸', title:'No Upfront Cost',  body:'Flexible payment options with zero down payment.',    color:'#06b6d4', bg:'rgba(6,182,212,0.09)'   },
-  { id:'ri-d', icon:'💯', title:'Love It or Leave', body:'Move forward only when you are 100% satisfied.',      color:'#ec4899', bg:'rgba(236,72,153,0.09)'  },
+  { id:'ri-a', icon:'🎯', title:'See It Before You Commit',  body:'We build a custom design preview of your site. You approve it, then we launch it.',     color:'#3b82f6', bg:'rgba(59,130,246,0.09)'  },
+  { id:'ri-b', icon:'📈', title:'30-Day Lead Guarantee',     body:'If your site is not generating leads in 30 days, we optimize it at no extra charge.',    color:'#8b5cf6', bg:'rgba(139,92,246,0.09)'  },
+  { id:'ri-c', icon:'🔒', title:'You Own Everything',        body:'Your domain, your code, your content. No platform lock-in, ever.',                        color:'#06b6d4', bg:'rgba(6,182,212,0.09)'   },
+  { id:'ri-d', icon:'⚡', title:'Live in 3-7 Days',          body:'From first conversation to a live site generating real leads — in under a week.',          color:'#ec4899', bg:'rgba(236,72,153,0.09)'  },
 ];
 
 const RiskParticlesCanvas = () => {
@@ -204,7 +204,7 @@ export default function Pricing() {
               PRICING THAT<br /><span className="gradient-text">PAYS FOR ITSELF</span>
             </h1>
             <p className="text-gray-400 text-xl mb-6 max-w-2xl mx-auto">
-              We build your website before you pay anything. No risk. No surprises.
+              Professional lead-generating websites starting at $97/mo — backed by our 30-day results guarantee.
             </p>
 
             {/* Limited-time banner */}
@@ -235,9 +235,9 @@ export default function Pricing() {
                 ],
               }}
               transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}>
-              <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> No upfront cost</span>
+              <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Starts at $97/mo</span>
               <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Built in 3-7 days</span>
-              <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Designed for leads</span>
+              <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> 30-day results guarantee</span>
             </motion.div>
           </motion.div>
         </div>
@@ -417,11 +417,11 @@ export default function Pricing() {
                 '0 0 28px rgba(239,68,68,0.95),   0 0 65px rgba(239,68,68,0.4)',
               ]}}
               transition={{ duration:4.5, repeat:Infinity, ease:'linear' }}>
-              TRY IT RISK-FREE
+              OUR RESULTS GUARANTEE
             </motion.h2>
 
             <p className="text-gray-400 text-base mb-10 relative z-10">
-              Everything you need to feel 100% confident before spending a dime.
+              We put our reputation behind every site we build. Here is exactly what you get.
             </p>
 
             {/* Shuffling + shape-morphing guarantee cards */}
@@ -493,7 +493,7 @@ export default function Pricing() {
             <h2 className="font-display text-6xl md:text-8xl text-white mb-6 leading-none">
               GET YOUR<br /><span className="gradient-text">FREE DEMO</span>
             </h2>
-            <p className="text-gray-400 text-xl mb-10">We build your site before you pay anything.</p>
+            <p className="text-gray-400 text-xl mb-10">See your custom design first. If you love it, we launch it — fast.</p>
             <Link href="/free-demo"
               className="btn-glow btn-neon text-white px-12 py-5 rounded-full font-bold text-xl inline-flex items-center gap-3 group">
               Build My Free Demo <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
@@ -513,7 +513,7 @@ export default function Pricing() {
                 ],
               }}
               transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}>
-              No credit card · Ready in 48 hours · 100% free
+              Starts at $97/mo · 30-day guarantee · Cancel anytime
             </motion.p>
           </motion.div>
         </div>

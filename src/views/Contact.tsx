@@ -89,7 +89,7 @@ export default function Contact() {
                   <Zap className="w-5 h-5 text-white"/>
                 </div>
                 <h4 className="text-white font-bold text-lg mb-2">Want to See Results First?</h4>
-                <p className="text-gray-400 text-sm mb-5 leading-relaxed">Get a free custom demo website built for your business before you commit.</p>
+                <p className="text-gray-400 text-sm mb-5 leading-relaxed">See your custom website design before you subscribe. Approve it, then we launch it fast.</p>
                 <Link href="/free-demo" className="btn-neon btn-glow block w-full text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 group">
                   Build My Free Demo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
                 </Link>

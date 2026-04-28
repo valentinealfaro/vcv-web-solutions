@@ -149,7 +149,7 @@ interface Step {
   n: number; emoji: string; label: string; sub: string; color: string;
 }
 const STEPS: Step[] = [
-  { n: 1, emoji: '📞', label: 'Request your free demo',  sub: 'Free · Zero commitment',    color: '#3b82f6' },
+  { n: 1, emoji: '📞', label: 'Request a design preview', sub: 'Custom-built for your business', color: '#3b82f6' },
   { n: 2, emoji: '⚡', label: 'We build your preview',    sub: 'Done within 48 hours',      color: '#818cf8' },
   { n: 3, emoji: '✅', label: 'You approve or revise',    sub: 'Unlimited revisions',        color: '#06b6d4' },
   { n: 4, emoji: '🚀', label: 'We launch your site',      sub: '3–7 days total',             color: '#a855f7' },
@@ -508,7 +508,7 @@ export const WhatHappensNextSection = () => {
             Start Step 1 — It's Free
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
-          <p className="text-gray-600 text-xs mt-3">No credit card · Ready in 48 hours · 100% free</p>
+          <p className="text-gray-600 text-xs mt-3">Starts at $97/mo · 30-day results guarantee · Cancel anytime</p>
         </motion.div>
 
       </div>

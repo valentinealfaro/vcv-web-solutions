@@ -37,9 +37,9 @@ export const UrgencySection = () => (
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 max-w-2xl mx-auto">
             {[
-              { icon: <CheckCircle2 className="w-4 h-4" />, text: 'Free custom demo website' },
-              { icon: <CheckCircle2 className="w-4 h-4" />, text: 'Free SEO audit & setup' },
-              { icon: <CheckCircle2 className="w-4 h-4" />, text: 'Free Google optimization' },
+              { icon: <CheckCircle2 className="w-4 h-4" />, text: 'Custom design preview' },
+              { icon: <CheckCircle2 className="w-4 h-4" />, text: 'SEO setup included' },
+              { icon: <CheckCircle2 className="w-4 h-4" />, text: '30-day results guarantee' },
             ].map((item, i) => (
               <div key={i} className="glass-card px-4 py-3 flex items-center gap-2 text-sm text-gray-300 justify-center">
                 <span className="text-blue-400">{item.icon}</span>
@@ -56,7 +56,7 @@ export const UrgencySection = () => (
 
           <div className="flex items-center justify-center gap-2 mt-5 text-gray-500 text-sm">
             <Clock className="w-4 h-4" />
-            <span>Free demos are first come, first served</span>
+            <span>Design previews are first come, first served — limited spots</span>
           </div>
         </div>
       </motion.div>

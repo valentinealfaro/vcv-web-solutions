@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     q: 'What if I don\'t like the design?',
-    a: 'We offer unlimited revisions until you\'re happy. Our free demo process means you see the direction before committing — so surprises are rare.',
+    a: 'We offer unlimited revisions until you are happy. Our design preview process means you see and approve the site direction before we go live — so there are no surprises.',
   },
   {
     q: 'Do you offer monthly plans?',
@@ -29,8 +29,8 @@ const faqs = [
     a: 'We specialize in contractors, home service businesses, roofers, plumbers, landscapers, HVAC, restaurants, and professional services. We\'ve built sites across dozens of niches.',
   },
   {
-    q: 'Is the free demo really free?',
-    a: 'Yes — no credit card, no strings attached. We build you a full custom preview of your website at zero cost so you can see exactly what you\'re getting before you invest.',
+    q: 'How does the design preview work?',
+    a: 'We build a custom mockup of your website before you subscribe — so you see exactly what you are getting before committing. Once you approve the design, you choose your plan and we launch it, usually within 3-7 days.',
   },
 ];
 
