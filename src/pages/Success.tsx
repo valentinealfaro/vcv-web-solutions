@@ -19,7 +19,7 @@ export default function Success() {
           Thank you for your purchase. Let's get your website started.
         </p>
         <Link
-          to="/website-onboarding"
+          href="/website-onboarding"
           className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20"
         >
           Start Onboarding

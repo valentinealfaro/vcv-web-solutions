@@ -83,7 +83,7 @@ export default function Contact() {
                 See exactly what we can build for your business before you commit.
               </p>
               <Link
-                to="/free-demo"
+                href="/free-demo"
                 className="inline-block w-full bg-white text-blue-600 py-4 rounded-xl font-bold hover:bg-blue-50 transition-all shadow-xl"
               >
                 Request Free Demo

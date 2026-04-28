@@ -192,7 +192,7 @@ export default function Portfolio() {
             We're ready to build your next growth engine. Get a free demo of what we can do for you.
           </p>
           <Link
-            to="/free-demo"
+            href="/free-demo"
             className="inline-flex items-center space-x-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-2xl"
           >
             <span>Request Your Free Demo</span>

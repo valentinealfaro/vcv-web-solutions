@@ -187,7 +187,7 @@ export default function Blog() {
                   </p>
                   <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
                     <Link
-                      to={`/blog/${post.slug}`}
+                      href={`/blog/${post.slug}`}
                       className="text-blue-500 font-bold text-sm flex items-center space-x-2 group/link"
                     >
                       <span>Read More</span>

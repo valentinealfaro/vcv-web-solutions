@@ -36,7 +36,7 @@ const PricingCard = ({ name, description, price, setup, features, isPopular }: a
       ))}
     </ul>
     <Link
-      to="/free-demo"
+      href="/free-demo"
       className={cn(
         "block w-full py-4 rounded-full font-bold text-center transition-all",
         isPopular ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-gray-800 hover:bg-gray-700 text-white"
@@ -163,7 +163,7 @@ export default function Pricing() {
             We’ll build your site before you pay anything.
           </p>
           <Link
-            to="/free-demo"
+            href="/free-demo"
             className="inline-flex items-center gap-3 bg-white text-blue-600 px-10 py-5 rounded-full font-bold text-xl hover:bg-gray-100 transition-all shadow-2xl"
           >
             Get My Free Demo <ArrowRight className="w-6 h-6" />

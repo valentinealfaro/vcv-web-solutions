@@ -24,7 +24,7 @@ const ServiceCard = ({ icon, title, benefit, features }: any) => (
       ))}
     </ul>
     <Link
-      to="/free-demo"
+      href="/free-demo"
       className="text-blue-500 font-bold hover:text-blue-400 transition-colors flex items-center gap-2"
     >
       Get Demo <ArrowRight className="w-4 h-4" />
@@ -195,7 +195,7 @@ export default function Services() {
             We’ll build a live preview before you pay anything.
           </p>
           <Link
-            to="/free-demo"
+            href="/free-demo"
             className="inline-flex items-center gap-3 bg-white text-blue-600 px-10 py-5 rounded-full font-bold text-xl hover:bg-gray-100 transition-all shadow-2xl"
           >
             Get My Free Demo <ArrowRight className="w-6 h-6" />

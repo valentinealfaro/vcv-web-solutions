@@ -45,7 +45,7 @@ export default function BlogPost() {
     <div className="bg-black pt-32 pb-24 min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
-          to="/blog"
+          href="/blog"
           className="inline-flex items-center space-x-2 text-gray-500 hover:text-white mb-12 transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -126,7 +126,7 @@ export default function BlogPost() {
             We've helped hundreds of businesses scale their online presence. Let's see what we can do for you.
           </p>
           <Link
-            to="/free-demo"
+            href="/free-demo"
             className="inline-flex items-center space-x-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-2xl"
           >
             <span>Request Your Free Demo</span>
