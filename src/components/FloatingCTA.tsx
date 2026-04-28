@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Rocket, MessageCircle, X, ChevronUp } from 'lucide-react';
+import { FreeDemoButton } from '@/components/FreeDemoButton';
 
 export const FloatingCTA = () => {
   const [visible,  setVisible]  = useState(false);
@@ -52,10 +53,7 @@ export const FloatingCTA = () => {
             exit={{ opacity: 0, x: 60 }}
             transition={{ delay: 0.3 }}
             className="fixed bottom-6 right-6 z-40 hidden sm:block">
-            <Link href="/free-demo" className="btn-neon btn-glow text-white px-5 py-3.5 rounded-full font-bold text-sm shadow-2xl flex items-center gap-2 group">
-              Get Free Demo
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            <FreeDemoButton size="sm" label="Get Free Demo" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -87,10 +85,7 @@ export const FloatingCTA = () => {
               </div>
             </div>
             <p className="text-gray-400 text-sm mb-4">👋 Hey! Ready to get more leads from your website?</p>
-            <Link href="/free-demo" onClick={() => setChatOpen(false)}
-              className="block btn-neon text-white px-4 py-2.5 rounded-xl text-center text-sm font-bold">
-              Get My Free Demo →
-            </Link>
+            <FreeDemoButton size="xs" label="Get My Free Demo" fullWidth rounded="xl" onClick={() => setChatOpen(false)} />
             <a href="tel:+15809191386" className="block mt-2 text-center text-gray-500 hover:text-gray-300 text-xs transition-colors">
               Or call (580) 919-1386
             </a>
@@ -120,10 +115,7 @@ export const FloatingCTA = () => {
                   Before you go — see what your business could look like with a{' '}
                   <span className="text-blue-400 font-bold">professional high-converting website</span>. It's completely free.
                 </p>
-                <Link href="/free-demo" onClick={() => setShowExit(false)}
-                  className="block w-full btn-neon text-white py-3.5 rounded-xl font-bold mb-3">
-                  Build My Free Demo
-                </Link>
+                <FreeDemoButton size="sm" label="Build My Free Demo" fullWidth rounded="xl" onClick={() => setShowExit(false)} className="mb-3" />
                 <button onClick={() => setShowExit(false)} className="text-gray-500 hover:text-gray-300 text-xs transition-colors">
                   No thanks, I don't want more leads
                 </button>

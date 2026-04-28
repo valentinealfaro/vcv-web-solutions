@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, Mail, Phone, Globe, ArrowRight, Loader2, Clock, Zap, MessageSquare } from 'lucide-react';
+import { FreeDemoButton } from '@/components/FreeDemoButton';
 import Link from 'next/link';
 import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay } from '@/components/PageEffects';
 
@@ -90,9 +91,7 @@ export default function Contact() {
                 </div>
                 <h4 className="text-white font-bold text-lg mb-2">Want to See Results First?</h4>
                 <p className="text-gray-400 text-sm mb-5 leading-relaxed">See your custom website design before you subscribe. Approve it, then we launch it fast.</p>
-                <Link href="/free-demo" className="btn-neon btn-glow block w-full text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 group">
-                  Build My Free Demo <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
-                </Link>
+                <FreeDemoButton size="sm" label="Build My Free Demo" fullWidth rounded="xl" />
               </motion.div>
             </div>
 

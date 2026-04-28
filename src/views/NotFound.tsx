@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { ArrowRight, Home, Search } from 'lucide-react';
+import { FreeDemoButton } from '@/components/FreeDemoButton';
 
 const GLITCH_CHARS = '!@#$%^&*ABCDEFxyz0123456789';
 
@@ -85,11 +86,7 @@ export default function NotFound() {
             <Home className="w-5 h-5" />
             Back to Home
           </Link>
-          <Link href="/free-demo"
-            className="glass-card text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 group hover:border-blue-500/40 transition-all">
-            Get Free Demo
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          <FreeDemoButton size="md" label="Get Free Demo" />
         </div>
 
         {/* Retro terminal-style box */}

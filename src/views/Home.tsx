@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, useInView, AnimatePresence, LayoutGroup } from 'motion/react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award, Hammer, Wrench, Thermometer, Leaf, Sparkles, UtensilsCrossed, Store, Paintbrush, Car, Building2, Scissors, Dumbbell, GraduationCap, Truck, Bug, Sun, Stethoscope, Scale, PawPrint, HardHat, TreePine, Phone } from 'lucide-react';
 import { Boxes } from '@/components/ui/background-boxes';
 import { MarkerHighlight } from '@/components/ui/marker-highlight';
@@ -497,11 +498,7 @@ const Hero = () => (
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-10">
-            <Link href="/free-demo"
-              className="btn-glow btn-neon text-white px-8 py-4 rounded-full font-bold text-base flex items-center justify-center gap-2 group">
-              Get My Free Demo
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            <FreeDemoButton size="md" label="Get My Free Demo" />
             <a href="tel:+15809191386"
               className="glass-card text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 hover:border-green-500/40 hover:text-green-300 transition-all">
               <Phone className="w-4 h-4 text-green-400" />
@@ -1723,11 +1720,7 @@ const CTASection = () => (
         <p className="text-gray-400 text-xl mb-10 max-w-xl mx-auto">
           No risk. No commitment. Just a professional preview of your business's future — built for free.
         </p>
-        <Link href="/free-demo"
-          className="btn-glow btn-neon text-white px-12 py-5 rounded-full font-bold text-xl inline-flex items-center gap-3 group">
-          Build My Free Demo
-          <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-        </Link>
+        <FreeDemoButton size="xl" label="Build My Free Demo" />
         <p className="text-gray-500 text-sm mt-6">Starts at $97/mo · 30-day results guarantee · Cancel anytime</p>
       </motion.div>
     </div>

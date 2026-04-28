@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { useInView } from 'motion/react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { FreeDemoButton } from '@/components/FreeDemoButton';
 
 /* ─── Checkerboard background ─────────────────────────────── */
 const CELL = 50;
@@ -503,11 +504,7 @@ export const WhatHappensNextSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           viewport={{ once: true }}>
-          <Link href="/free-demo"
-            className="btn-neon btn-glow text-white px-10 py-4 rounded-full font-bold text-base inline-flex items-center gap-2 group">
-            Start Step 1 — It's Free
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          <FreeDemoButton size="lg" label="Start Step 1 — Request Preview" />
           <p className="text-gray-600 text-xs mt-3">Starts at $97/mo · 30-day results guarantee · Cancel anytime</p>
         </motion.div>
 

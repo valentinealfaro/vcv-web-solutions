@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { cn } from '../lib/utils';
 import { useState, useEffect, useRef } from 'react';
 import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay, RainbowWavesCanvas } from '@/components/PageEffects';
+import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { DottedSurface } from '@/components/ui/dotted-surface';
 
 const RISK_ITEMS = [
@@ -216,9 +217,7 @@ export default function Pricing() {
               <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse inline-block" />
             </motion.div>
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-6">
-              <Link href="/free-demo" className="btn-neon btn-glow text-white px-8 py-4 rounded-full font-bold text-base flex items-center justify-center gap-2 group">
-                Get My Free Demo <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              <FreeDemoButton size="md" label="Get My Free Demo" />
             </div>
             <motion.div
               className="inline-flex flex-wrap justify-center gap-6 text-sm px-8 py-3 rounded-full"
@@ -502,10 +501,7 @@ export default function Pricing() {
               GET YOUR<br /><span className="gradient-text">FREE DEMO</span>
             </h2>
             <p className="text-gray-400 text-xl mb-10">See your custom design first. If you love it, we launch it — fast.</p>
-            <Link href="/free-demo"
-              className="btn-glow btn-neon text-white px-12 py-5 rounded-full font-bold text-xl inline-flex items-center gap-3 group">
-              Build My Free Demo <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            <FreeDemoButton size="xl" label="Build My Free Demo" />
             <motion.p
               className="mt-6 px-8 py-3.5 rounded-full inline-block font-semibold text-base tracking-wide"
               style={{

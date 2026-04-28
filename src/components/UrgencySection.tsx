@@ -2,6 +2,7 @@
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { ArrowRight, Flame, Clock, CheckCircle2 } from 'lucide-react';
+import { FreeDemoButton } from '@/components/FreeDemoButton';
 
 export const UrgencySection = () => (
   <section className="py-20 bg-[#030712] relative overflow-hidden">
@@ -48,11 +49,7 @@ export const UrgencySection = () => (
             ))}
           </div>
 
-          <Link href="/free-demo"
-            className="btn-neon btn-glow text-white px-10 py-5 rounded-full font-bold text-lg inline-flex items-center gap-3 group">
-            Claim Your Free Spot
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          <FreeDemoButton size="lg" label="Claim Your Spot" />
 
           <div className="flex items-center justify-center gap-2 mt-5 text-gray-500 text-sm">
             <Clock className="w-4 h-4" />

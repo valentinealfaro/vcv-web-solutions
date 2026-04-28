@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Mail, Phone, MapPin, ArrowRight, Star, Zap, CheckCircle2 } from 'lucide-react';
+import { FreeDemoButton } from '@/components/FreeDemoButton';
 
 const SERVICES = [
   { label:'Website Design',       path:'/services' },
@@ -48,10 +49,7 @@ export const Footer = () => (
             </h3>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-            <Link href="/free-demo"
-              className="btn-neon btn-glow text-white px-8 py-3.5 rounded-full font-bold text-sm flex items-center justify-center gap-2 group">
-              Request Preview <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
-            </Link>
+            <FreeDemoButton size="sm" label="Request Preview" />
             <a href="tel:+15809191386"
               className="glass-card text-white px-8 py-3.5 rounded-full font-semibold text-sm flex items-center justify-center gap-2 hover:border-blue-500/40 transition-all">
               <Phone className="w-4 h-4 text-blue-400"/> (580) 919-1386
