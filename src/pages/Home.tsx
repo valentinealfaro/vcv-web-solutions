@@ -118,23 +118,26 @@ const Counter = ({ target, suffix = '', prefix = '' }: { target: number; suffix?
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    const start = () => {
+      if (triggered.current) return;
+      triggered.current = true;
+      const dur = 1600;
+      const t0 = performance.now();
+      const tick = (now: number) => {
+        const t = Math.min((now - t0) / dur, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        setCount(Math.floor(ease * target));
+        if (t < 1) requestAnimationFrame(tick);
+        else setCount(target);
+      };
+      requestAnimationFrame(tick);
+    };
     const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !triggered.current) {
-        triggered.current = true;
-        const dur = 1800;
-        const start = performance.now();
-        const tick = (now: number) => {
-          const t = Math.min((now - start) / dur, 1);
-          const ease = 1 - Math.pow(1 - t, 3);
-          setCount(Math.floor(ease * target));
-          if (t < 1) requestAnimationFrame(tick);
-          else setCount(target);
-        };
-        requestAnimationFrame(tick);
-        obs.disconnect();
-      }
-    }, { threshold: 0.6 });
+      if (entry.isIntersecting) { start(); obs.disconnect(); }
+    }, { threshold: 0.1 });
     obs.observe(el);
+    // Fire immediately if already in viewport
+    if (el.getBoundingClientRect().top < window.innerHeight) start();
     return () => obs.disconnect();
   }, [target]);
 
@@ -728,187 +731,173 @@ const BUSINESSES: Biz[] = [
   { id: 21, name: 'Home Services',    Icon: Store,           color: '#1e90ff', stat: 'Repeat customers = 5× value',      detail: 'Any home service business with a professional website earns 47% more per customer because trust is already established before the first conversation.' },
 ];
 
-/* Sub-components defined outside to prevent recreation on render */
-const BizCard = ({ biz, onEnter, onLeave }: {
-  biz: Biz;
-  onEnter: (biz: Biz, e: React.MouseEvent<HTMLButtonElement>) => void;
-  onLeave: () => void;
-}) => (
-  <button
-    onMouseEnter={(e) => onEnter(biz, e)}
-    onMouseLeave={onLeave}
-    style={{
-      display: 'flex', alignItems: 'center', gap: 10,
-      padding: '11px 16px', marginBottom: 8, width: '100%',
-      background: 'rgba(8,12,28,0.72)',
-      border: `1px solid ${biz.color}30`,
-      borderRadius: 12,
-      cursor: 'pointer',
-      backdropFilter: 'blur(8px)',
-      transition: 'border-color 0.2s, background 0.2s, box-shadow 0.2s',
-      textAlign: 'left',
-    }}
-    onFocus={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = `${biz.color}70`; }}
-    onBlur={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = `${biz.color}30`; }}
-  >
-    <biz.Icon size={15} style={{ color: biz.color, flexShrink: 0 }} />
-    <span style={{
-      color: biz.color,
-      fontWeight: 700, fontSize: '12px',
-      textTransform: 'uppercase', letterSpacing: '0.07em',
-      textShadow: `0 0 14px ${biz.color}70`,
-      whiteSpace: 'nowrap',
-    }}>
-      {biz.name}
-    </span>
-  </button>
-);
-
-interface ColumnProps {
-  items: Biz[];
-  direction: 'up' | 'down';
-  duration: number;
-  paused: boolean;
-  onEnter: (biz: Biz, e: React.MouseEvent<HTMLButtonElement>) => void;
-  onLeave: () => void;
-}
-const BizColumn = ({ items, direction, duration, paused, onEnter, onLeave }: ColumnProps) => {
-  const doubled = [...items, ...items];
+/* ─── Bubble popup (detail card) ─────────────────────────── */
+const BubblePopup = ({ biz, rect }: { biz: Biz; rect: DOMRect }) => {
+  const PW = 300;
+  const left = Math.max(12, Math.min((typeof window !== 'undefined' ? window.innerWidth : 1200) - PW - 12, rect.left + rect.width / 2 - PW / 2));
+  const above = rect.top > 240;
   return (
-    <div style={{ overflow: 'hidden', height: '100%' }}>
-      <div style={{
-        animation: `${direction === 'up' ? 'scrollUp' : 'scrollDown'} ${duration}s linear infinite`,
-        animationPlayState: paused ? 'paused' : 'running',
+    <motion.div
+      initial={{ opacity: 0, scale: 0.88, y: above ? 10 : -10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.88 }}
+      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+      style={{
+        position: 'fixed', zIndex: 9000, width: PW, pointerEvents: 'none',
+        left, top: above ? rect.top - 16 : rect.bottom + 16,
+        transform: above ? 'translateY(-100%)' : 'none',
       }}>
-        {doubled.map((biz, i) => (
-          <BizCard key={`${biz.id}-${i}`} biz={biz} onEnter={onEnter} onLeave={onLeave} />
-        ))}
+      <div style={{ background:'rgba(6,10,22,0.98)', border:`1px solid ${biz.color}45`,
+        borderRadius:16, padding:20, boxShadow:`0 0 50px ${biz.color}18, 0 24px 64px rgba(0,0,0,0.8)`,
+        backdropFilter:'blur(28px)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:12 }}>
+          <div style={{ width:40,height:40,borderRadius:10,background:`${biz.color}1a`,border:`1px solid ${biz.color}40`,
+            display:'flex',alignItems:'center',justifyContent:'center',color:biz.color,flexShrink:0 }}>
+            <biz.Icon size={18} />
+          </div>
+          <div>
+            <p style={{ color:'#f1f5f9',fontWeight:800,fontSize:15,margin:'0 0 3px' }}>{biz.name}</p>
+            <p style={{ color:biz.color,fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',margin:0 }}>Industry insight</p>
+          </div>
+        </div>
+        <div style={{ background:`${biz.color}18`,border:`1px solid ${biz.color}35`,borderRadius:10,padding:'8px 12px',marginBottom:12,
+          display:'flex',alignItems:'center',gap:8 }}>
+          <TrendingUp size={12} style={{ color:biz.color,flexShrink:0 }} />
+          <span style={{ color:'#e2e8f0',fontWeight:700,fontSize:12 }}>{biz.stat}</span>
+        </div>
+        <p style={{ color:'#94a3b8',fontSize:12,lineHeight:1.65,margin:0 }}>{biz.detail}</p>
       </div>
-    </div>
+      {above ? (
+        <div style={{ position:'absolute',bottom:-7,left:Math.max(16,Math.min(PW-24,rect.left+rect.width/2-left)),
+          width:14,height:14,background:'rgba(6,10,22,0.98)',border:`1px solid ${biz.color}45`,
+          borderTop:'none',borderLeft:'none',transform:'rotate(45deg)' }} />
+      ) : (
+        <div style={{ position:'absolute',top:-7,left:Math.max(16,Math.min(PW-24,rect.left+rect.width/2-left)),
+          width:14,height:14,background:'rgba(6,10,22,0.98)',border:`1px solid ${biz.color}45`,
+          borderBottom:'none',borderRight:'none',transform:'rotate(45deg)' }} />
+      )}
+    </motion.div>
   );
 };
 
+/* ─── Single floating bubble ──────────────────────────────── */
+interface BubbleItem { id: number; biz: Biz; x: number; y: number; size: number }
+
+const FloatingBubble = ({ b, onPopup, clearPopup }: {
+  b: BubbleItem;
+  onPopup: (biz: Biz, rect: DOMRect) => void;
+  clearPopup: () => void;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  return (
+    <motion.div
+      ref={ref}
+      style={{ position:'absolute', left:`${b.x}%`, top:`${b.y}%`,
+        transform:'translate(-50%,-50%)', zIndex:10, cursor:'pointer' }}
+      initial={{ scale:0, opacity:0 }}
+      animate={{ scale:[0,1.3,0.85,1.05,1], opacity:[0,1,1,1,1] }}
+      exit={{ scale:[1,1.2,0], opacity:[1,0.8,0], transition:{ duration:0.4 } }}
+      transition={{ duration:0.55, times:[0,0.3,0.55,0.75,1], ease:'easeOut' }}
+      onHoverStart={() => { if (ref.current) onPopup(b.biz, ref.current.getBoundingClientRect()); }}
+      onHoverEnd={clearPopup}>
+      <div style={{
+        width:b.size, height:b.size, borderRadius:'50%',
+        background:`radial-gradient(circle at 35% 28%, ${b.biz.color}ee, ${b.biz.color}44)`,
+        border:`1.5px solid ${b.biz.color}88`,
+        boxShadow:`0 0 22px ${b.biz.color}50, 0 0 50px ${b.biz.color}20, inset 0 1px 0 rgba(255,255,255,0.25)`,
+        display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+        gap:4, padding:'0 8px',
+      }}>
+        {/* Shine */}
+        <div style={{ position:'absolute', top:'10%', left:'18%', width:'40%', height:'28%',
+          background:'rgba(255,255,255,0.22)', borderRadius:'50%', filter:'blur(3px)' }} />
+        <b.biz.Icon size={b.size * 0.22} style={{ color:'white', filter:`drop-shadow(0 0 4px ${b.biz.color})`, flexShrink:0 }} />
+        <span style={{ color:'white', fontSize:b.size * 0.1, fontWeight:800,
+          textTransform:'uppercase', letterSpacing:'0.04em', textAlign:'center',
+          lineHeight:1.15, textShadow:`0 0 10px ${b.biz.color}`,
+          maxWidth:'85%', wordBreak:'break-word' }}>
+          {b.biz.name}
+        </span>
+      </div>
+    </motion.div>
+  );
+};
+
+/* ─── Bubble PerfectFor ───────────────────────────────────── */
 const PerfectFor = () => {
+  const [bubbles, setBubbles] = useState<BubbleItem[]>([]);
   const [popup, setPopup] = useState<{ biz: Biz; rect: DOMRect } | null>(null);
-  const [paused, setPaused] = useState(false);
+  const idRef = useRef(0);
+  const MAX = 14;
 
-  const handleEnter = (biz: Biz, e: React.MouseEvent<HTMLButtonElement>) => {
-    setPopup({ biz, rect: e.currentTarget.getBoundingClientRect() });
-    setPaused(true);
-  };
-  const handleLeave = () => { setPopup(null); setPaused(false); };
+  useEffect(() => {
+    const spawn = () => {
+      setBubbles(prev => {
+        if (prev.length >= MAX) return prev;
+        const biz = BUSINESSES[Math.floor(Math.random() * BUSINESSES.length)];
+        const id = idRef.current++;
+        const newB: BubbleItem = {
+          id, biz,
+          x: 4 + Math.random() * 92,
+          y: 8 + Math.random() * 78,
+          size: 82 + Math.random() * 54,
+        };
+        setTimeout(() => setBubbles(p => p.filter(b => b.id !== id)), 3600);
+        return [...prev, newB];
+      });
+    };
 
-  const col1 = BUSINESSES.slice(0, 8);
-  const col2 = BUSINESSES.slice(8, 15);
-  const col3 = BUSINESSES.slice(15, 22);
-
-  const popupWidth = 320;
-  const popupLeft = popup
-    ? Math.max(12, Math.min(
-        (typeof window !== 'undefined' ? window.innerWidth : 1280) - popupWidth - 12,
-        popup.rect.left + popup.rect.width / 2 - popupWidth / 2,
-      ))
-    : 0;
-  const popupAbove = popup ? popup.rect.top > 260 : true;
+    for (let i = 0; i < 10; i++) setTimeout(spawn, i * 220);
+    const iv = setInterval(spawn, 520);
+    return () => clearInterval(iv);
+  }, []);
 
   return (
-    <section className="py-16 relative overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #030712 0%, #050c1a 60%, #030712 100%)', borderTop: '1px solid rgba(37,99,235,0.12)', borderBottom: '1px solid rgba(37,99,235,0.12)' }}>
+    <section className="relative overflow-hidden"
+      style={{ height: 560, background: '#030712', borderTop: '1px solid rgba(37,99,235,0.12)', borderBottom: '1px solid rgba(37,99,235,0.12)' }}>
 
-      {/* Heading */}
-      <div className="text-center mb-10">
+      {/* Animated background orbs */}
+      <div className="absolute top-[-10%] left-[5%] w-[420px] h-[420px] rounded-full blur-[120px] pointer-events-none animate-orb"
+        style={{ background: 'rgba(37,99,235,0.10)' }} />
+      <div className="absolute bottom-[-5%] right-[8%] w-[360px] h-[360px] rounded-full blur-[110px] pointer-events-none animate-orb-delay"
+        style={{ background: 'rgba(124,58,237,0.09)' }} />
+      <div className="absolute top-[30%] right-[20%] w-[280px] h-[280px] rounded-full blur-[90px] pointer-events-none animate-orb-slow"
+        style={{ background: 'rgba(6,182,212,0.07)' }} />
+      <div className="absolute top-[50%] left-[40%] w-[320px] h-[320px] rounded-full blur-[100px] pointer-events-none animate-orb"
+        style={{ background: 'rgba(168,85,247,0.07)', animationDelay: '3s' }} />
+
+      {/* Grid overlay */}
+      <div className="absolute inset-0 bg-grid opacity-[0.30] pointer-events-none" />
+      <div className="absolute inset-0 bg-dot  opacity-[0.15] pointer-events-none" />
+
+      {/* Edge fades */}
+      <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none z-20"
+        style={{ background: 'linear-gradient(to bottom, #030712 0%, transparent 100%)' }} />
+      <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none z-20"
+        style={{ background: 'linear-gradient(to top, #030712 0%, transparent 100%)' }} />
+
+      {/* Section heading — centred overlay */}
+      <div className="absolute top-0 left-0 right-0 z-30 text-center pt-10 pointer-events-none">
         <p className="neon-badge mx-auto w-fit mb-3">Who We Help</p>
-        <h2 className="font-display text-5xl md:text-6xl text-white mb-2">PERFECT FOR</h2>
-        <p className="text-gray-400 text-base">Hover any industry to see how a website grows that business</p>
+        <h2 className="font-display text-5xl md:text-6xl text-white mb-1">PERFECT FOR</h2>
+        <p className="text-gray-500 text-sm">Hover any bubble to see how a website grows that business</p>
       </div>
 
-      {/* 3-column vertical scroll */}
-      <div className="relative max-w-3xl mx-auto px-4 sm:px-6" style={{ height: 440 }}>
-        {/* Top + bottom fade masks */}
-        <div className="absolute top-0 left-0 right-0 h-20 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, #050c1a 0%, transparent 100%)' }} />
-        <div className="absolute bottom-0 left-0 right-0 h-20 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(to top, #050c1a 0%, transparent 100%)' }} />
-
-        <div className="grid grid-cols-3 gap-4 h-full">
-          <BizColumn items={col1} direction="up"   duration={20} paused={paused} onEnter={handleEnter} onLeave={handleLeave} />
-          <BizColumn items={col2} direction="down" duration={26} paused={paused} onEnter={handleEnter} onLeave={handleLeave} />
-          <BizColumn items={col3} direction="up"   duration={17} paused={paused} onEnter={handleEnter} onLeave={handleLeave} />
-        </div>
-      </div>
-
-      {/* Popup — position:fixed escapes overflow:hidden */}
+      {/* Bubbles */}
       <AnimatePresence>
-        {popup && (
-          <motion.div
-            key={popup.biz.id}
-            initial={{ opacity: 0, scale: 0.92, y: popupAbove ? 10 : -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              position: 'fixed',
-              left: popupLeft,
-              top: popupAbove ? popup.rect.top - 16 : popup.rect.bottom + 16,
-              transform: popupAbove ? 'translateY(-100%)' : 'translateY(0)',
-              width: popupWidth,
-              zIndex: 9000,
-              pointerEvents: 'none',
-            }}
-          >
-            <div style={{
-              background: 'rgba(6,10,22,0.98)',
-              border: `1px solid ${popup.biz.color}45`,
-              borderRadius: 16, padding: 20,
-              boxShadow: `0 0 0 1px ${popup.biz.color}12, 0 24px 64px rgba(0,0,0,0.8), 0 0 50px ${popup.biz.color}18`,
-              backdropFilter: 'blur(28px)',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
-                <div style={{
-                  width: 46, height: 46, borderRadius: 13, flexShrink: 0,
-                  background: `${popup.biz.color}1a`, border: `1px solid ${popup.biz.color}40`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', color: popup.biz.color,
-                }}>
-                  <popup.biz.Icon size={21} />
-                </div>
-                <div>
-                  <p style={{ color: '#f1f5f9', fontWeight: 800, fontSize: 17, lineHeight: 1.2, margin: '0 0 4px' }}>
-                    {popup.biz.name}
-                  </p>
-                  <p style={{ color: popup.biz.color, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>
-                    Why you need a website
-                  </p>
-                </div>
-              </div>
-              <div style={{
-                background: `${popup.biz.color}18`, border: `1px solid ${popup.biz.color}35`,
-                borderRadius: 10, padding: '9px 14px', marginBottom: 13,
-                display: 'flex', alignItems: 'center', gap: 8,
-              }}>
-                <TrendingUp size={13} style={{ color: popup.biz.color, flexShrink: 0 }} />
-                <span style={{ color: '#e2e8f0', fontWeight: 700, fontSize: 13 }}>{popup.biz.stat}</span>
-              </div>
-              <p style={{ color: '#94a3b8', fontSize: 13, lineHeight: 1.7, margin: 0 }}>{popup.biz.detail}</p>
-            </div>
-            {popupAbove ? (
-              <div style={{
-                position: 'absolute', bottom: -7,
-                left: Math.max(18, Math.min(popupWidth - 26, popup.rect.left + popup.rect.width / 2 - popupLeft)),
-                width: 14, height: 14, background: 'rgba(6,10,22,0.98)',
-                border: `1px solid ${popup.biz.color}45`, borderTop: 'none', borderLeft: 'none',
-                transform: 'rotate(45deg)',
-              }} />
-            ) : (
-              <div style={{
-                position: 'absolute', top: -7,
-                left: Math.max(18, Math.min(popupWidth - 26, popup.rect.left + popup.rect.width / 2 - popupLeft)),
-                width: 14, height: 14, background: 'rgba(6,10,22,0.98)',
-                border: `1px solid ${popup.biz.color}45`, borderBottom: 'none', borderRight: 'none',
-                transform: 'rotate(45deg)',
-              }} />
-            )}
-          </motion.div>
-        )}
+        {bubbles.map(b => (
+          <FloatingBubble
+            key={b.id}
+            b={b}
+            onPopup={(biz, rect) => setPopup({ biz, rect })}
+            clearPopup={() => setPopup(null)}
+          />
+        ))}
+      </AnimatePresence>
+
+      {/* Hover popup */}
+      <AnimatePresence>
+        {popup && <BubblePopup key={popup.biz.id} biz={popup.biz} rect={popup.rect} />}
       </AnimatePresence>
     </section>
   );

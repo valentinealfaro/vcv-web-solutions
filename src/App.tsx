@@ -1,21 +1,27 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, ArrowRight, Phone, Mail, Globe, Rocket, MessageCircle, ChevronUp } from 'lucide-react';
 import { cn } from './lib/utils';
 
-// Pages
-import Home from './pages/Home';
-import Services from './pages/Services';
-import Pricing from './pages/Pricing';
-import Landing from './pages/Landing';
-import Portfolio from './pages/Portfolio';
-import Contact from './pages/Contact';
-import Blog from './pages/Blog';
-import BlogPost from './pages/BlogPost';
-import Success from './pages/Success';
-import WebsiteOnboarding from './pages/WebsiteOnboarding';
-import NotFound from './pages/NotFound';
+// Pages — lazy loaded so each route is a separate chunk
+const Home             = lazy(() => import('./pages/Home'));
+const Services         = lazy(() => import('./pages/Services'));
+const Pricing          = lazy(() => import('./pages/Pricing'));
+const Landing          = lazy(() => import('./pages/Landing'));
+const Portfolio        = lazy(() => import('./pages/Portfolio'));
+const Contact          = lazy(() => import('./pages/Contact'));
+const Blog             = lazy(() => import('./pages/Blog'));
+const BlogPost         = lazy(() => import('./pages/BlogPost'));
+const Success          = lazy(() => import('./pages/Success'));
+const WebsiteOnboarding = lazy(() => import('./pages/WebsiteOnboarding'));
+const NotFound         = lazy(() => import('./pages/NotFound'));
+
+const PageLoader = () => (
+  <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#030712' }}>
+    <div style={{ width: 40, height: 40, border: '2px solid rgba(37,99,235,0.2)', borderTop: '2px solid #2563eb', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+  </div>
+);
 
 /* ─── Custom Cursor ───────────────────────────────────────── */
 const CustomCursor = () => {
@@ -419,19 +425,21 @@ export default function App() {
         <CustomCursor />
         <Navbar />
         <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/success" element={<Success />} />
-            <Route path="/website-onboarding" element={<WebsiteOnboarding />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/free-demo" element={<Landing />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/success" element={<Success />} />
+              <Route path="/website-onboarding" element={<WebsiteOnboarding />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/free-demo" element={<Landing />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </main>
         <Footer />
         <FloatingCTA />

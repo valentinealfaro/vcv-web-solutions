@@ -3,12 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#030712" />
     <title>VCV Web Solutions</title>
+
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FVCV%20Websolutions%20Logo.png?alt=media&token=aed21397-69ca-4846-a45d-267482b81acf" />
+
+    <!-- Preconnect to font origins so the browser starts the TCP handshake early -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- DNS prefetch for Firebase (images, storage) -->
+    <link rel="dns-prefetch" href="https://firebasestorage.googleapis.com" />
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
+
+    <!-- Load fonts directly from <head> instead of a CSS @import so they
+         are discovered earlier in the waterfall. display=swap prevents FOIT. -->
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" />
+
+    <!-- Inline critical CSS: dark background + spinner so there's no white flash -->
+    <style>
+      html, body { margin: 0; padding: 0; background: #030712; }
+      #root-loader {
+        position: fixed; inset: 0; display: flex;
+        align-items: center; justify-content: center;
+        background: #030712; z-index: 9999;
+        transition: opacity 0.3s ease;
+      }
+      #root-loader .ring {
+        width: 44px; height: 44px;
+        border: 2px solid rgba(37,99,235,0.18);
+        border-top-color: #2563eb;
+        border-radius: 50%;
+        animation: _spin 0.7s linear infinite;
+      }
+      @keyframes _spin { to { transform: rotate(360deg); } }
+      @keyframes spin   { to { transform: rotate(360deg); } }
+    </style>
   </head>
   <body>
+    <!-- Visible instantly — React removes it once the app mounts -->
+    <div id="root-loader"><div class="ring"></div></div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Hide the loader as soon as React renders anything -->
+    <script>
+      document.getElementById('root').addEventListener('DOMSubtreeModified', function hide() {
+        var el = document.getElementById('root-loader');
+        if (el && document.getElementById('root').children.length) {
+          el.style.opacity = '0';
+          setTimeout(function() { el && el.remove(); }, 320);
+          document.getElementById('root').removeEventListener('DOMSubtreeModified', hide);
+        }
+      }, { once: false });
+    </script>
   </body>
 </html>
-
