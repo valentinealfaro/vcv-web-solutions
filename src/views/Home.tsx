@@ -783,7 +783,7 @@ const BG_BLOBS = [
   { color:'rgba(20,184,166,0.22)',  w:200, h:180, l:'75%', t:'38%', dur:10 },
 ];
 const TRAVEL_MS  = 2000;
-const POPUP_MS   = 3000;
+const POPUP_MS   = 5000;
 
 const PerfectFor = () => {
   const containerRef  = useRef<HTMLDivElement>(null);
@@ -1136,9 +1136,9 @@ const PerfectFor = () => {
             exit={{ opacity:0, scale:0.82, y:8 }}
             transition={{ duration:0.22, ease:[0.16,1,0.3,1] }}
             onClick={closePopup}
-            style={{ position:'absolute', zIndex:200, cursor:'pointer', width:310,
-              left: Math.max(12, Math.min(W - 322, popup.cx - 155)),
-              top:  Math.max(170, Math.min(540 - 215, popup.cy - 108)) }}>
+            style={{ position:'absolute', zIndex:200, cursor:'pointer', width:320,
+              left: Math.max(12, (W - 320) / 2),
+              top: 12 }}>
             <div style={{ background:'rgba(6,10,22,0.97)', border:`1.5px solid ${popup.biz.color}60`,
               borderRadius:18, padding:20,
               boxShadow:`0 0 0 1px ${popup.biz.color}20, 0 0 70px ${popup.biz.color}30, 0 24px 64px rgba(0,0,0,0.9)`,
