@@ -234,11 +234,10 @@ export default function Pricing() {
             </div>
             <h2 className="font-display text-5xl text-white mb-8">TRY IT RISK-FREE</h2>
             <ul className="grid md:grid-cols-2 gap-4 text-left max-w-xl mx-auto">
-              {[‘We build your demo before you pay’,’No long-term contracts’,’No upfront cost options’,’You only move forward if you love it’].map((t,i) => (
-                <li key={i} className="flex items-center gap-3 text-gray-300 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" /> {t}
-                </li>
-              ))}
+              <li className="flex items-center gap-3 text-gray-300 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" /> We build your demo before you pay</li>
+              <li className="flex items-center gap-3 text-gray-300 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" /> No long-term contracts</li>
+              <li className="flex items-center gap-3 text-gray-300 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" /> No upfront cost options</li>
+              <li className="flex items-center gap-3 text-gray-300 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" /> You only move forward if you love it</li>
             </ul>
           </div>
         </div>
@@ -249,8 +248,8 @@ export default function Pricing() {
         <div className="absolute inset-0 bg-dot opacity-15 pointer-events-none" />
         <div className="max-w-3xl mx-auto px-4 relative z-10">
           <h2 className="font-display text-5xl text-white mb-10 text-center">FAQ</h2>
-          <FAQItem question="Do I have to pay upfront?" answer="No. We build your website demo first, so you can see exactly what you’re getting before you pay anything." />
-          <FAQItem question="How long does it take?" answer="Most websites are built and launched in 3–7 days." />
+          <FAQItem question="Do I have to pay upfront?" answer="No. We build your website demo first so you can see exactly what you are getting before you pay anything." />
+          <FAQItem question="How long does it take?" answer="Most websites are built and launched in 3 to 7 days." />
           <FAQItem question="Can I cancel?" answer="Yes, we offer flexible options with no long-term contracts." />
           <FAQItem question="Do you handle everything?" answer="Yes, we handle design, development, hosting, and ongoing support." />
         </div>
@@ -267,7 +266,7 @@ export default function Pricing() {
             <h2 className="font-display text-6xl md:text-8xl text-white mb-6 leading-none">
               GET YOUR<br /><span className="gradient-text">FREE DEMO</span>
             </h2>
-            <p className="text-gray-400 text-xl mb-10">We’ll build your site before you pay anything.</p>
+            <p className="text-gray-400 text-xl mb-10">We build your site before you pay anything.</p>
             <Link href="/free-demo"
               className="btn-glow btn-neon text-white px-12 py-5 rounded-full font-bold text-xl inline-flex items-center gap-3 group">
               Build My Free Demo <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
