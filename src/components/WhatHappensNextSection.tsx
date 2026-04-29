@@ -69,53 +69,58 @@ const WordSpeller = ({
   const clearAll = () => { timers.current.forEach(clearTimeout); timers.current = []; };
   const q = (fn: () => void, ms: number) => { timers.current.push(setTimeout(fn, ms)); };
 
-  // Unmount-only cleanup — never cancel in-flight sequence
+  // Unmount cleanup
   useEffect(() => () => clearAll(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Safety: hide words the instant the staircase starts rebuilding ──────
   useEffect(() => {
+    if (!fading) { clearAll(); setEntries([]); }
+  }, [fading]);
+
+  useEffect(() => {
+    // Rising-edge only
     if (!fading || prevFading.current) { prevFading.current = fading; return; }
     prevFading.current = fading;
-    clearAll();
 
-    // ── Individual word sizes ──────────────────────────────────────
-    const ws  = calcWS(cW, 0.88);      // fits FREE/DEMO in 88% of width
-    const wh  = wordHeight(ws);
-    // Centre each word vertically in the staircase band (below heading)
-    // heading ≈ top 28%, CTA ≈ bottom 8% → centre of remaining band
-    const bandTop = cH * 0.30;
-    const bandBot = cH * 0.90;
-    const cy  = bandTop + (bandBot - bandTop - wh) / 2;
+    // ── Sizes ────────────────────────────────────────────────────────────
+    const ws       = calcWS(cW, 0.88);
+    const wh       = wordHeight(ws);
+    const bandTop  = cH * 0.30;
+    const bandBot  = cH * 0.90;
+    const cy       = bandTop + (bandBot - bandTop - wh) / 2;
 
-    // ── Final stacked sizes ──────────────────────────────────────
-    const sws  = calcWS(cW, 0.78);     // slightly smaller to show all three
-    const swh  = wordHeight(sws);
-    const gap  = Math.round(sws * 0.55);
-    const totalStackH = 3 * swh + 2 * gap;
-    // Centre the stack in the same band
-    const sy   = bandTop + (bandBot - bandTop - totalStackH) / 2;
+    // Stacked sizes (used on cycle % 4 === 3)
+    const sws      = calcWS(cW, 0.78);
+    const swh      = wordHeight(sws);
+    const gap      = Math.round(sws * 0.55);
+    const stackH   = 3 * swh + 2 * gap;
+    const sy       = Math.max(cH * 0.28, (cH - stackH) / 2);
 
-    // Phase 1 — GET centered (staircase fading out)
-    q(() => setEntries([{ word:'GET',  tiltDeg:0,  opacity:0.92, yPx:cy, ws }]), 0);
-    q(() => setEntries([]),                                                        1800);
+    // ── One word per fade window — rotate through GET → FREE → DEMO → ALL ─
+    const phase = cycle % 4;
 
-    // Phase 2 — FREE centered (staircase rebuilding)
-    q(() => setEntries([{ word:'FREE', tiltDeg:-5, opacity:0.92, yPx:cy, ws }]), 2200);
-    q(() => setEntries([]),                                                        4200);
+    if (phase === 3) {
+      // Every 4th fade: show all three stacked simultaneously
+      q(() => setEntries([
+        { word:'GET',  tiltDeg:0, opacity:0.94, yPx:sy,               ws:sws },
+        { word:'FREE', tiltDeg:0, opacity:0.94, yPx:sy + swh + gap,   ws:sws },
+        { word:'DEMO', tiltDeg:0, opacity:0.94, yPx:sy + 2*(swh+gap), ws:sws },
+      ]), 0);
+    } else {
+      const WORDS  = ['GET', 'FREE', 'DEMO'] as const;
+      const TILTS  = [0, -5, 5];
+      q(() => setEntries([{
+        word: WORDS[phase], tiltDeg: TILTS[phase],
+        opacity: 0.92, yPx: cy, ws,
+      }]), 0);
+    }
 
-    // Phase 3 — DEMO centered
-    q(() => setEntries([{ word:'DEMO', tiltDeg:5,  opacity:0.92, yPx:cy, ws }]), 4600);
-    q(() => setEntries([]),                                                        6600);
+    // Auto-clear ~200 ms before the staircase starts rebuilding (~1100 ms window)
+    q(() => setEntries([]), 880);
 
-    // Phase 4 — ALL THREE stacked, perfectly centred, no tilt
-    q(() => setEntries([
-      { word:'GET',  tiltDeg:0, opacity:0.94, yPx:sy,                   ws:sws },
-      { word:'FREE', tiltDeg:0, opacity:0.94, yPx:sy + swh + gap,       ws:sws },
-      { word:'DEMO', tiltDeg:0, opacity:0.94, yPx:sy + 2*(swh + gap),   ws:sws },
-    ]), 7100);
-    q(() => setEntries([]),                                                         10000);
-
-    // no `return clearAll` — let the sequence run to completion across cycle boundaries
-  }, [fading]); // cycle intentionally excluded — cycle change must NOT cancel in-flight timers
+    // `cycle` is safe in deps now — the safety effect above handles clearing
+    // when fading→false, so no in-flight timers survive past the staircase fade
+  }, [fading, cycle]);
 
   if (!cW || entries.length === 0) return null;
 
