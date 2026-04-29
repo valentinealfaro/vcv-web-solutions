@@ -4,7 +4,7 @@ import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck, Loader2 
 import Link from 'next/link';
 import { cn } from '../lib/utils';
 import { useState, useEffect, useRef } from 'react';
-import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay, PricingBgCanvas } from '@/components/PageEffects';
+import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay, PricingBgCanvas, RainbowWavesCanvas } from '@/components/PageEffects';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { DottedSurface } from '@/components/ui/dotted-surface';
 
