@@ -72,10 +72,9 @@ const WordSpeller = ({
   // Unmount cleanup
   useEffect(() => () => clearAll(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // When fading goes false, cancel any pending timers but let currently-visible
-  // words stay on screen for their full duration (handled by the q(…,5000) below)
+  // Safety: as soon as the staircase starts rebuilding (fading→false), wipe words instantly
   useEffect(() => {
-    if (!fading) clearAll();
+    if (!fading) { clearAll(); setEntries([]); }
   }, [fading]);
 
   useEffect(() => {
@@ -378,7 +377,7 @@ const T_BALL_START = 500;   // first ball delay after phase starts
 const T_BALL_GAP   = 400;   // stagger between balls
 const T_HOLD       = 8000;  // 8 s hold — gives users time to read each layout
 const T_FADE       = 700;   // fade-out duration
-const T_GAP        = 400;   // black gap before next cycle
+const T_GAP        = 6000;  // gap before next cycle — long enough for word speller (5 s)
 
 export const WhatHappensNextSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
