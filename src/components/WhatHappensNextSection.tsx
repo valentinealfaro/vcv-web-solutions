@@ -72,9 +72,10 @@ const WordSpeller = ({
   // Unmount cleanup
   useEffect(() => () => clearAll(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Safety: hide words the instant the staircase starts rebuilding ──────
+  // When fading goes false, cancel any pending timers but let currently-visible
+  // words stay on screen for their full duration (handled by the q(…,5000) below)
   useEffect(() => {
-    if (!fading) { clearAll(); setEntries([]); }
+    if (!fading) clearAll();
   }, [fading]);
 
   useEffect(() => {
@@ -115,8 +116,8 @@ const WordSpeller = ({
       }]), 0);
     }
 
-    // Auto-clear ~200 ms before the staircase starts rebuilding (~1100 ms window)
-    q(() => setEntries([]), 880);
+    // Hold for 5 seconds, then clear before the next fade window
+    q(() => setEntries([]), 5000);
 
     // `cycle` is safe in deps now — the safety effect above handles clearing
     // when fading→false, so no in-flight timers survive past the staircase fade
