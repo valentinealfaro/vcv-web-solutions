@@ -252,9 +252,19 @@ export default function Pricing() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch relative z-10">
         {packages.map((pkg, idx) => (
           <div key={idx} className={cn(
-            "premium-card p-8 flex flex-col relative transition-all duration-300 h-full",
-            pkg.isPopular ? "border-2 border-blue-500 shadow-2xl shadow-blue-500/10" : "border border-white/10"
-          )}>
+            "p-8 flex flex-col relative transition-all duration-300 h-full rounded-[20px]",
+          )} style={{
+            background: pkg.isPopular
+              ? 'linear-gradient(145deg,rgba(10,20,60,0.97),rgba(22,10,48,0.97))'
+              : 'rgba(6,10,22,0.96)',
+            border: pkg.isPopular
+              ? '1.5px solid rgba(37,99,235,0.65)'
+              : '1px solid rgba(255,255,255,0.14)',
+            boxShadow: pkg.isPopular
+              ? '0 0 80px rgba(37,99,235,0.25),inset 0 1px 0 rgba(255,255,255,0.08)'
+              : '0 0 40px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.05)',
+            backdropFilter: 'blur(32px)',
+          }}>
             {pkg.isPopular && (
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap shadow-lg">
                 Best Value - Save $667

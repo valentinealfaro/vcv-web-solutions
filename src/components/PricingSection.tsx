@@ -23,7 +23,7 @@ const plans = [
       'Monthly updates',
       'Email support',
     ],
-    cta: 'Get Started',
+    cta: 'Buy Now',
     popular: false,
   },
   {
@@ -84,14 +84,15 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
       className="relative p-8 rounded-[20px]"
       style={{
         background: plan.popular
-          ? 'linear-gradient(145deg, rgba(17,30,80,0.9), rgba(30,15,60,0.85))'
-          : 'rgba(10,15,30,0.7)',
+          ? 'linear-gradient(145deg, rgba(10,20,60,0.97), rgba(22,10,48,0.97))'
+          : 'rgba(6,10,22,0.96)',
         border: plan.popular
-          ? '1.5px solid rgba(37,99,235,0.45)'
-          : '1px solid rgba(255,255,255,0.07)',
+          ? '1.5px solid rgba(37,99,235,0.65)'
+          : '1px solid rgba(255,255,255,0.14)',
         boxShadow: plan.popular
-          ? '0 0 60px rgba(37,99,235,0.15), 0 0 0 1px rgba(37,99,235,0.08)'
-          : 'none',
+          ? '0 0 80px rgba(37,99,235,0.25), 0 0 0 1px rgba(37,99,235,0.12), inset 0 1px 0 rgba(255,255,255,0.08)'
+          : '0 0 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.05)',
+        backdropFilter: 'blur(32px)',
       }}>
 
       {/* Best Value badge */}
@@ -114,7 +115,7 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
       </div>
 
       {/* Plan name */}
-      <p className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-3">{plan.name}</p>
+      <p className="text-gray-300 text-sm font-semibold uppercase tracking-wider mb-3">{plan.name}</p>
 
       {/* Strikethrough original */}
       <div className="flex items-center gap-2 mb-1">
@@ -135,14 +136,14 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
         <span className="text-green-400 text-xs font-bold">You save ${plan.origPrice - plan.price}{plan.period}</span>
       </div>
 
-      <p className="text-gray-400 text-sm leading-relaxed mb-6">{plan.description}</p>
+      <p className="text-gray-300 text-sm leading-relaxed mb-6">{plan.description}</p>
 
       {/* Features */}
       <div className="space-y-3 mb-8">
         {plan.features.map((f, j) => (
           <div key={j} className="flex items-center gap-3 text-sm">
-            <CheckCircle2 className={`w-4 h-4 flex-shrink-0 ${plan.popular ? 'text-blue-400' : 'text-gray-500'}`} />
-            <span className={plan.popular ? 'text-gray-200' : 'text-gray-400'}>{f}</span>
+            <CheckCircle2 className={`w-4 h-4 flex-shrink-0 ${plan.popular ? 'text-blue-400' : 'text-blue-500/70'}`} />
+            <span className={plan.popular ? 'text-gray-100' : 'text-gray-300'}>{f}</span>
           </div>
         ))}
       </div>
