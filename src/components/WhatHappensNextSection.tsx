@@ -59,11 +59,12 @@ const getWordCellsZoned = (word: string, cW: number, cH: number, zone: Zone) => 
   const totalH = 7 * WS - WG;
   const palette = WORD_COLORS[word] || ['#3b82f6'];
 
-  // Zone-based vertical offset (staircase occupies ~30-80% of section height)
+  // Zone-based vertical offset
+  // Staircase SVG sits from ~32% to ~90% of section height on desktop
   const oy =
-    zone === 'top-angled'    ? cH * 0.04 :     // top 4% — well above staircase
-    zone === 'bottom-angled' ? cH * 0.74 :     // bottom 26% — below staircase
-    (cH - totalH) / 2;                         // centered (during fade, staircase gone)
+    zone === 'top-angled'    ? cH * 0.08 :     // 8% — sits just below the heading
+    zone === 'bottom-angled' ? cH * 0.78 :     // 78% — below staircase path, above CTA
+    (cH - totalH) / 2;                         // centered (staircase faded out)
 
   const ox = (cW - totalW) / 2;
   const cells: { x:number; y:number; color:string; k:string }[] = [];
@@ -92,27 +93,31 @@ const WordSpeller = ({
   const clearAll = () => { timers.current.forEach(clearTimeout); timers.current = []; };
   const q = (fn: () => void, ms: number) => timers.current.push(setTimeout(fn, ms));
 
+  // Unmount-only cleanup so in-flight timers are never cancelled mid-sequence
+  useEffect(() => () => clearAll(), []); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
+    // Detect rising edge of `fading` — only start a new sequence when it flips true
     if (!fading || prevFading.current) { prevFading.current = fading; return; }
     prevFading.current = fading;
 
     clearAll();
 
-    // ── Sequence triggered on each staircase fade ──
-    // Phase 1: GET — centered & upright while staircase fades out
+    // Phase 1: GET — centered, staircase fading out
     q(() => setEntry({ word:'GET',  zone:'center',       tiltDeg:0,   opacity:0.85 }), 0);
     q(() => setEntry(null), 1800);
 
-    // Phase 2: FREE — top of section, angled (staircase rebuilding below)
-    q(() => setEntry({ word:'FREE', zone:'top-angled',   tiltDeg:-18, opacity:0.70 }), 2100);
-    q(() => setEntry(null), 4000);
+    // Phase 2: FREE — top zone, staircase just rebuilt
+    q(() => setEntry({ word:'FREE', zone:'top-angled',   tiltDeg:-18, opacity:0.82 }), 2200);
+    q(() => setEntry(null), 4200);
 
-    // Phase 3: DEMO — bottom of section, angled opposite way
-    q(() => setEntry({ word:'DEMO', zone:'bottom-angled',tiltDeg:15,  opacity:0.70 }), 4300);
-    q(() => setEntry(null), 6200);
+    // Phase 3: DEMO — bottom zone
+    q(() => setEntry({ word:'DEMO', zone:'bottom-angled',tiltDeg:15,  opacity:0.82 }), 4600);
+    q(() => setEntry(null), 6600);
 
-    return clearAll;
-  }, [fading, cycle]);  // re-arm on every cycle
+    // No `return clearAll` — we intentionally let this sequence run to completion
+    // even after the staircase cycle resets.  Cleanup only happens on unmount above.
+  }, [fading]); // `cycle` removed from deps — cycle changes must NOT cancel in-flight timers
 
   if (!cW || !entry) return null;
   const cells = getWordCellsZoned(entry.word, cW, cH, entry.zone);

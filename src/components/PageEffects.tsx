@@ -103,18 +103,12 @@ export const PricingBgCanvas = () => {
           ctx.globalAlpha = pass===0 ? 0.60 : 0.90;
           ctx.shadowBlur  = pass===0 ? 26   : 10;
 
-          let drawing = false;
           ctx.beginPath();
           for (let x = 0; x <= w; x += 3) {
-            const wy  = waveY(x, i, w, h, t);
-            const gap = balls.some(b => Math.hypot(b.x-x, b.y-wy) < b.r+20);
-            if (!gap) {
-              if (!drawing) { ctx.moveTo(x,wy); drawing=true; } else ctx.lineTo(x,wy);
-            } else {
-              if (drawing) { ctx.stroke(); ctx.beginPath(); drawing=false; }
-            }
+            const wy = waveY(x, i, w, h, t);
+            if (x === 0) ctx.moveTo(x, wy); else ctx.lineTo(x, wy);
           }
-          if (drawing) ctx.stroke();
+          ctx.stroke();
         }
         ctx.shadowBlur=0; ctx.globalAlpha=1;
       }
