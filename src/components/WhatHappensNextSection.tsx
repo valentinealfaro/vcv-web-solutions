@@ -1,10 +1,13 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { motion } from 'motion/react';
 import { useInView } from 'motion/react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
+
+// Lazy-load Spline so it never blocks SSR or initial paint
+const SplineScene = lazy(() => import('@splinetool/react-spline'));
 
 /* ─── Checkerboard background ─────────────────────────────── */
 const CELL = 50;
@@ -270,22 +273,46 @@ export const WhatHappensNextSection = () => {
 
   return (
     <section ref={sectionRef} className="py-16 relative overflow-hidden bg-[#040a16]">
-      {/* Animated checkerboard — lights up, then clears when layout switches */}
-      <CheckerBG cycle={cycle} ballPositions={layout.positions} clearing={fading} />
 
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse 80% 70% at 50% 50%, rgba(37,99,235,0.06) 0%, transparent 70%)' }} />
+      {/* ── Layer 1: Spline 3D scene (deepest) ── */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Suspense fallback={<div className="absolute inset-0 bg-[#040a16]" />}>
+          <SplineScene
+            scene="https://prod.spline.design/Slk6b8kz3LRlKiyk/scene.splinecode"
+            className="w-full h-full"
+            style={{ opacity: 0.45 }}
+          />
+        </Suspense>
+        {/* VCV-tinted overlay keeps Spline from washing out the blue scheme */}
+        <div className="absolute inset-0"
+          style={{ background:'linear-gradient(135deg,rgba(3,7,18,0.72),rgba(4,10,22,0.55),rgba(3,7,18,0.70))' }}/>
+        {/* Blue ambient tint to match VCV palette */}
+        <div className="absolute inset-0"
+          style={{ background:'radial-gradient(ellipse 90% 60% at 50% 50%,rgba(37,99,235,0.08),transparent 70%)' }}/>
+      </div>
+
+      {/* ── Layer 2: Animated checkerboard blocks ── */}
+      <CheckerBG cycle={cycle} ballPositions={layout.positions} clearing={fading} />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* Heading */}
         <motion.div className="text-center mb-10"
-          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          initial={{ opacity:0, y:24, filter:'blur(6px)' }}
+          whileInView={{ opacity:1, y:0, filter:'blur(0px)' }}
+          transition={{ duration:0.7, ease:[0.16,1,0.3,1] }}
+          viewport={{ once:true }}>
           <p className="neon-badge mb-4 mx-auto w-fit">The Journey</p>
-          <h2 className="font-display text-6xl md:text-7xl text-white mb-3">WHAT HAPPENS NEXT</h2>
-          <p className="text-gray-400 text-base max-w-lg mx-auto">
+          <h2 className="font-display text-6xl md:text-7xl text-white mb-3"
+            style={{ textShadow:'0 0 40px rgba(37,99,235,0.5), 0 0 80px rgba(139,92,246,0.25)' }}>
+            WHAT HAPPENS <span className="gradient-text">NEXT</span>
+          </h2>
+          <motion.p className="text-gray-400 text-base max-w-lg mx-auto"
+            initial={{ opacity:0, y:12 }} whileInView={{ opacity:1, y:0 }}
+            transition={{ duration:0.6, delay:0.2, ease:[0.16,1,0.3,1] }}
+            viewport={{ once:true }}>
             From first call to paying customers — the exact path every time.
-          </p>
+          </motion.p>
         </motion.div>
 
         {/* ─── Desktop animated staircase ─────────────────────── */}
