@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, MutableRefObject } from 'react';
 import { motion, useInView, AnimatePresence, LayoutGroup } from 'motion/react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -704,7 +704,13 @@ const MarqueeBand = () => (
 );
 
 /* ─── Static Electricity Canvas ───────────────────────────── */
-const StaticElectricity = () => {
+const StaticElectricity = ({
+  hitRectsRef,
+  onHit,
+}: {
+  hitRectsRef?: MutableRefObject<(DOMRect | null)[]>;
+  onHit?: (pos: number) => void;
+} = {}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -715,6 +721,7 @@ const StaticElectricity = () => {
 
     let animId: number;
     const COLORS = ['#2563eb','#7c3aed','#06b6d4','#a855f7','#93c5fd','#c4b5fd','#e0e7ff'];
+    const hitCooldowns: number[] = [];
 
     const resize = () => {
       canvas.width  = canvas.offsetWidth;
@@ -771,7 +778,23 @@ const StaticElectricity = () => {
         const x2      = x1 + Math.cos(angle) * reach;
         const y2      = y1 + Math.sin(angle) * reach;
 
-        drawArc(x1, y1, x2, y2, isBolt ? 7 : 3, alpha, color, isBolt ? 1.4 : 0.6);
+        drawArc(x1, y1, x2, y2, isBolt ? 7 : 3, alpha, color, isBolt ? 5 : 2);
+
+        // Check if bolt endpoint hits a card
+        if (hitRectsRef?.current && onHit) {
+          const now = performance.now();
+          const canvasBR = canvas.getBoundingClientRect();
+          hitRectsRef.current.forEach((rect, idx) => {
+            if (!rect) return;
+            if (now - (hitCooldowns[idx] || 0) < 1000) return; // 1s cooldown per card
+            const lx = rect.left - canvasBR.left;
+            const ly = rect.top  - canvasBR.top;
+            if (x2 >= lx && x2 <= lx + rect.width && y2 >= ly && y2 <= ly + rect.height) {
+              hitCooldowns[idx] = now;
+              onHit(idx);
+            }
+          });
+        }
 
         // Random branch off the midpoint of bolts
         if (isBolt && Math.random() < 0.65) {
@@ -779,13 +802,13 @@ const StaticElectricity = () => {
           const my  = (y1 + y2) / 2 + (Math.random() - 0.5) * 20;
           const bx  = mx + (Math.random() - 0.5) * 100;
           const by  = my + (Math.random() - 0.5) * 100;
-          drawArc(mx, my, bx, by, 4, alpha * 0.55, color, 0.55);
+          drawArc(mx, my, bx, by, 4, alpha * 0.55, color, 2);
 
           // Occasional second branch
           if (Math.random() < 0.3) {
             const bx2 = mx + (Math.random() - 0.5) * 70;
             const by2 = my + (Math.random() - 0.5) * 70;
-            drawArc(mx, my, bx2, by2, 3, alpha * 0.35, color, 0.4);
+            drawArc(mx, my, bx2, by2, 3, alpha * 0.35, color, 1.2);
           }
         }
       }
@@ -895,6 +918,8 @@ const StatCard = ({ id, icon, val, suf = '', pre = '', label, rotDelay, isSquare
 const StatsSection = () => {
   const [order,  setOrder]  = useState([0, 1, 2, 3]);
   const [shapes, setShapes] = useState<boolean[]>([false, false, false, false]);
+  const wrapperRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
+  const hitRectsRef = useRef<(DOMRect | null)[]>([null, null, null, null]);
 
   useEffect(() => {
     // Swap two random cards every 2.5 s
@@ -914,13 +939,38 @@ const StatsSection = () => {
       setShapes(STAT_CARDS.map(() => Math.random() < 0.45));
     }, 3000);
 
-    return () => { clearInterval(shuffleId); clearInterval(shapeId); };
+    // Keep hitRectsRef updated every frame
+    let rafId: number;
+    const updateRects = () => {
+      wrapperRefs.current.forEach((el, i) => {
+        hitRectsRef.current[i] = el ? el.getBoundingClientRect() : null;
+      });
+      rafId = requestAnimationFrame(updateRects);
+    };
+    rafId = requestAnimationFrame(updateRects);
+
+    return () => { clearInterval(shuffleId); clearInterval(shapeId); cancelAnimationFrame(rafId); };
+  }, []);
+
+  const handleHit = useCallback((pos: number) => {
+    // Toggle shape on hit
+    setShapes(prev => { const n = [...prev]; n[pos] = !n[pos]; return n; });
+    // Shuffle card to new position after a brief pause
+    setTimeout(() => {
+      setOrder(prev => {
+        const next = [...prev];
+        let j = Math.floor(Math.random() * next.length);
+        while (j === pos) j = Math.floor(Math.random() * next.length);
+        [next[pos], next[j]] = [next[j], next[pos]];
+        return next;
+      });
+    }, 220);
   }, []);
 
   return (
     <section className="py-20 relative overflow-hidden bg-[#030712]">
       {/* Static electricity fills the entire section behind cards */}
-      <StaticElectricity />
+      <StaticElectricity hitRectsRef={hitRectsRef} onHit={handleHit} />
       <div className="absolute inset-0 bg-dot opacity-25 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -933,6 +983,7 @@ const StatsSection = () => {
                   key={card.id}
                   layout
                   layoutId={`stat-${card.id}`}
+                  ref={(el: HTMLDivElement | null) => { wrapperRefs.current[pos] = el; }}
                   transition={{ layout: { duration: 0.75, ease: [0.16, 1, 0.3, 1] } }}>
                   <StatCard {...card} isSquare={shapes[pos]} />
                 </motion.div>
@@ -1089,7 +1140,7 @@ const PerfectFor = () => {
 
   useEffect(() => {
     const W = containerRef.current?.offsetWidth || 1200;
-    const H = 400;
+    const H = containerRef.current?.offsetHeight || 700;
     const CEIL = 0;
 
     ballsRef.current = BUSINESSES.map((biz, i) => {
@@ -1111,6 +1162,7 @@ const PerfectFor = () => {
 
     const tick = () => {
       const W2 = containerRef.current?.offsetWidth || 1200;
+      const H2 = containerRef.current?.offsetHeight || 700;
       const balls = ballsRef.current;
       for (const b of balls) {
         if (!b.alive) continue;
@@ -1118,7 +1170,7 @@ const PerfectFor = () => {
         if (b.x - b.r < 0)    { b.x = b.r;       b.vx =  Math.abs(b.vx); }
         if (b.x + b.r > W2)   { b.x = W2 - b.r;  b.vx = -Math.abs(b.vx); }
         if (b.y - b.r < 0) { b.y = b.r;      b.vy =  Math.abs(b.vy); }
-        if (b.y + b.r > H) { b.y = H - b.r;  b.vy = -Math.abs(b.vy); }
+        if (b.y + b.r > H2) { b.y = H2 - b.r;  b.vy = -Math.abs(b.vy); }
       }
       for (let i = 0; i < balls.length; i++) {
         if (!balls[i].alive) continue;
@@ -1372,7 +1424,7 @@ const PerfectFor = () => {
 
       {/* ══ DESKTOP: physics bubbles (unchanged) ══ */}
       <div ref={containerRef} className="relative overflow-hidden hidden md:block"
-        style={{ height: 400, background: 'transparent' }}>
+        style={{ height: 700, background: 'transparent' }}>
 
       {/* Colorful bokeh blobs */}
       {BG_BLOBS.map((b, i) => (

@@ -50,52 +50,98 @@ const getWordCells = (word: string, cW: number, cH: number) => {
   return cells;
 };
 
-const WORDS = ['GET','FREE','DEMO'] as const;
+type Zone = 'center' | 'top-angled' | 'bottom-angled';
 
-const WordSpeller = ({ cW, cH }: { cW: number; cH: number }) => {
-  const [wi,      setWi]      = useState(0);
-  const [visible, setVisible] = useState(false);
+const getWordCellsZoned = (word: string, cW: number, cH: number, zone: Zone) => {
+  const chars  = word.split('');
+  const charPx = 5 * WS - WG;
+  const totalW = chars.length * charPx + (chars.length - 1) * 2 * WS;
+  const totalH = 7 * WS - WG;
+  const palette = WORD_COLORS[word] || ['#3b82f6'];
+
+  // Zone-based vertical offset (staircase occupies ~30-80% of section height)
+  const oy =
+    zone === 'top-angled'    ? cH * 0.04 :     // top 4% — well above staircase
+    zone === 'bottom-angled' ? cH * 0.74 :     // bottom 26% — below staircase
+    (cH - totalH) / 2;                         // centered (during fade, staircase gone)
+
+  const ox = (cW - totalW) / 2;
+  const cells: { x:number; y:number; color:string; k:string }[] = [];
+  chars.forEach((ch, ci) => {
+    const pattern = FONT[ch] || [];
+    const cx = ox + ci * (charPx + 2 * WS);
+    const color = palette[ci % palette.length];
+    pattern.forEach((row, ri) =>
+      row.forEach((on, col) => {
+        if (on) cells.push({ x: cx + col*WS, y: oy + ri*WS, color, k:`${ch}${ci}r${ri}c${col}` });
+      })
+    );
+  });
+  return cells;
+};
+
+interface WordEntry { word: string; zone: Zone; tiltDeg: number; opacity: number }
+
+const WordSpeller = ({
+  cW, cH, fading, cycle,
+}: { cW: number; cH: number; fading: boolean; cycle: number }) => {
+  const [entry,   setEntry]   = useState<WordEntry | null>(null);
+  const prevFading = useRef(false);
+  const timers     = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const clearAll = () => { timers.current.forEach(clearTimeout); timers.current = []; };
+  const q = (fn: () => void, ms: number) => timers.current.push(setTimeout(fn, ms));
 
   useEffect(() => {
-    if (!cW || !cH) return;
-    let cancel = false;
-    const run = (idx: number) => {
-      if (cancel) return;
-      setWi(idx); setVisible(true);
-      setTimeout(() => {
-        if (cancel) return;
-        setVisible(false);
-        setTimeout(() => { if (!cancel) run((idx + 1) % WORDS.length); }, 1400);
-      }, 4000);
-    };
-    const t = setTimeout(() => run(0), 600);
-    return () => { cancel = true; clearTimeout(t); };
-  }, [cW, cH]);
+    if (!fading || prevFading.current) { prevFading.current = fading; return; }
+    prevFading.current = fading;
 
-  if (!cW) return null;
-  const word  = WORDS[wi];
-  const cells = getWordCells(word, cW, cH);
+    clearAll();
+
+    // ── Sequence triggered on each staircase fade ──
+    // Phase 1: GET — centered & upright while staircase fades out
+    q(() => setEntry({ word:'GET',  zone:'center',       tiltDeg:0,   opacity:0.85 }), 0);
+    q(() => setEntry(null), 1800);
+
+    // Phase 2: FREE — top of section, angled (staircase rebuilding below)
+    q(() => setEntry({ word:'FREE', zone:'top-angled',   tiltDeg:-18, opacity:0.70 }), 2100);
+    q(() => setEntry(null), 4000);
+
+    // Phase 3: DEMO — bottom of section, angled opposite way
+    q(() => setEntry({ word:'DEMO', zone:'bottom-angled',tiltDeg:15,  opacity:0.70 }), 4300);
+    q(() => setEntry(null), 6200);
+
+    return clearAll;
+  }, [fading, cycle]);  // re-arm on every cycle
+
+  if (!cW || !entry) return null;
+  const cells = getWordCellsZoned(entry.word, cW, cH, entry.zone);
 
   return (
     <div className="absolute inset-0 pointer-events-none hidden md:block" style={{ zIndex:2, overflow:'hidden' }}>
       <AnimatePresence mode="wait">
-        {visible && (
-          <motion.div key={`${word}-${wi}`} className="absolute inset-0">
-            {cells.map((c, i) => (
-              <motion.div key={c.k}
-                style={{ position:'absolute', width:WC, height:WC, borderRadius:5,
-                  background:c.color, border:`1.5px solid ${c.color}`,
-                  boxShadow:`0 0 10px ${c.color}90, 0 0 22px ${c.color}40` }}
-                initial={{ x: (Math.random()-0.5)*cW, y: (Math.random()-0.5)*cH,
-                           scale:0, opacity:0, rotate:(Math.random()-0.5)*180 }}
-                animate={{ x:c.x, y:c.y, scale:1, opacity:0.72, rotate:0 }}
-                exit={{ x: (Math.random()-0.5)*cW*1.2, y: (Math.random()-0.5)*cH*1.2,
-                        scale:0, opacity:0, rotate:(Math.random()-0.5)*120 }}
-                transition={{ type:'spring', stiffness:75, damping:14, delay: i * 0.007 }}
-              />
-            ))}
-          </motion.div>
-        )}
+        <motion.div
+          key={`${entry.word}-${cycle}`}
+          className="absolute inset-0"
+          style={{ transformOrigin:'center center' }}
+          initial={{ rotate: entry.tiltDeg * 0.5 }}
+          animate={{ rotate: entry.tiltDeg }}
+          exit={{ rotate: entry.tiltDeg * 0.5 }}
+          transition={{ duration:0.6, ease:'easeOut' }}>
+          {cells.map((c, i) => (
+            <motion.div key={c.k}
+              style={{ position:'absolute', width:WC, height:WC, borderRadius:5,
+                background:c.color, border:`1.5px solid ${c.color}`,
+                boxShadow:`0 0 12px ${c.color}90, 0 0 26px ${c.color}45` }}
+              initial={{ x:(Math.random()-0.5)*cW, y:(Math.random()-0.5)*cH,
+                         scale:0, opacity:0, rotate:(Math.random()-0.5)*200 }}
+              animate={{ x:c.x, y:c.y, scale:1, opacity:entry.opacity, rotate:0 }}
+              exit={{ x:(Math.random()-0.5)*cW, y:(Math.random()-0.5)*cH,
+                      scale:0, opacity:0 }}
+              transition={{ type:'spring', stiffness:80, damping:13, delay: i * 0.006 }}
+            />
+          ))}
+        </motion.div>
       </AnimatePresence>
     </div>
   );
@@ -389,8 +435,8 @@ export const WhatHappensNextSection = () => {
       {/* Animated checkerboard blocks */}
       <CheckerBG cycle={cycle} ballPositions={layout.positions} clearing={fading} />
 
-      {/* Word speller — squares form GET → FREE → DEMO → loop */}
-      <WordSpeller cW={dims.w} cH={dims.h} />
+      {/* Word speller — synced to staircase fade cycle */}
+      <WordSpeller cW={dims.w} cH={dims.h} fading={fading} cycle={cycle} />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
