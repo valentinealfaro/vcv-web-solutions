@@ -46,7 +46,7 @@ const plans = [
       'Google My Business setup',
       'Setup fee waived ($297 value)',
     ],
-    cta: 'Get Started',
+    cta: 'Buy Now',
     popular: true,
   },
 ];
