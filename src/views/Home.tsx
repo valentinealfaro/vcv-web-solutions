@@ -786,7 +786,7 @@ const StaticElectricity = ({
           const canvasBR = canvas.getBoundingClientRect();
           hitRectsRef.current.forEach((rect, idx) => {
             if (!rect) return;
-            if (now - (hitCooldowns[idx] || 0) < 1000) return; // 1s cooldown per card
+            if (now - (hitCooldowns[idx] || 0) < 12000) return; // 12s cooldown per card
             const lx = rect.left - canvasBR.left;
             const ly = rect.top  - canvasBR.top;
             if (x2 >= lx && x2 <= lx + rect.width && y2 >= ly && y2 <= ly + rect.height) {
@@ -922,7 +922,7 @@ const StatsSection = () => {
   const hitRectsRef = useRef<(DOMRect | null)[]>([null, null, null, null]);
 
   useEffect(() => {
-    // Swap two random cards every 7 s
+    // Swap two random cards every 18 s
     const shuffleId = setInterval(() => {
       setOrder(prev => {
         const next = [...prev];
@@ -932,12 +932,12 @@ const StatsSection = () => {
         [next[i], next[j]] = [next[j], next[i]];
         return next;
       });
-    }, 7000);
+    }, 18000);
 
-    // Randomly toggle some cards to square every 8 s
+    // Randomly toggle some cards to square every 20 s
     const shapeId = setInterval(() => {
       setShapes(STAT_CARDS.map(() => Math.random() < 0.45));
-    }, 8000);
+    }, 20000);
 
     // Keep hitRectsRef updated every frame
     let rafId: number;
@@ -984,7 +984,7 @@ const StatsSection = () => {
                   layout
                   layoutId={`stat-${card.id}`}
                   ref={(el: HTMLDivElement | null) => { wrapperRefs.current[pos] = el; }}
-                  transition={{ layout: { duration: 1.4, ease: [0.16, 1, 0.3, 1] } }}>
+                  transition={{ layout: { duration: 2.2, ease: [0.16, 1, 0.3, 1] } }}>
                   <StatCard {...card} isSquare={shapes[pos]} />
                 </motion.div>
               );
