@@ -1,8 +1,50 @@
 'use client';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { Mail, Phone, MapPin, ArrowRight, Star, Zap, CheckCircle2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Star, Zap, CheckCircle2 } from 'lucide-react';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
+import { useEffect, useRef } from 'react';
+
+/* ─── HLS video background ─────────────────────────────────── */
+const HLS_SRC = 'https://stream.mux.com/Kec29dVyJgiPdtWaQtPuEiiGHkJIYQAVUJcNiIHUYeo.m3u8';
+
+const FooterVideo = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    let hlsInstance: import('hls.js').default | null = null;
+
+    import('hls.js').then(({ default: Hls }) => {
+      if (Hls.isSupported()) {
+        hlsInstance = new Hls({ lowLatencyMode: true, startLevel: -1 });
+        hlsInstance.loadSource(HLS_SRC);
+        hlsInstance.attachMedia(video);
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = HLS_SRC;
+        video.play().catch(() => {});
+      }
+    }).catch(() => {});
+
+    return () => { hlsInstance?.destroy(); };
+  }, []);
+
+  return (
+    <>
+      {/* video layer — mix-blend-screen so black areas disappear */}
+      <video
+        ref={videoRef}
+        muted autoPlay loop playsInline
+        className="absolute inset-0 w-full h-full pointer-events-none select-none"
+        style={{ objectFit: 'cover', mixBlendMode: 'screen', opacity: 0.28, zIndex: 0 }}
+      />
+      {/* dark scrim so text stays readable over the video */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'rgba(3,7,18,0.72)', zIndex: 1 }} />
+    </>
+  );
+};
 
 const SERVICES = [
   { label:'Website Design',       path:'/services' },
@@ -31,10 +73,13 @@ const STATS = [
 export const Footer = () => (
   <footer className="relative bg-[#030712] overflow-hidden">
 
+    {/* HLS video background */}
+    <FooterVideo />
+
     {/* Top gradient line */}
-    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
-    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />
-    <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-purple-600/5 blur-[100px] rounded-full pointer-events-none" />
+    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" style={{ zIndex: 2 }} />
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" style={{ zIndex: 2 }} />
+    <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-purple-600/5 blur-[100px] rounded-full pointer-events-none" style={{ zIndex: 2 }} />
 
     {/* ── CTA strip ── */}
     <div className="relative z-10 border-b border-white/[0.06]">
