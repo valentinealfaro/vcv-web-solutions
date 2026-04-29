@@ -412,6 +412,117 @@ const PopOut3DWord = ({ word, delay = 0.8 }: { word: string; delay?: number }) =
   );
 };
 
+/* ─── Robot overlaid on MockUp ───────────────────────────── */
+const RobotMockup = () => {
+  const [side,    setSide]    = useState<'left'|'right'>('left');
+  const [pressing,setPress]   = useState(false);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      // Press animation before switching
+      setPress(true);
+      setTimeout(() => {
+        setPress(false);
+        setSide(s => s === 'left' ? 'right' : 'left');
+      }, 500);
+    }, 3800);
+    return () => clearInterval(id);
+  }, []);
+
+  const onLeft  = side === 'left';
+  const robotX  = onLeft  ? '-30%' : '105%';
+  const flipX   = onLeft  ? 1      : -1;        // mirror when on right
+  const pressX  = pressing ? (onLeft ? 18 : -18) : 0;
+  const pressY  = pressing ? -6 : 0;
+
+  return (
+    <div className="relative select-none" style={{ width:'100%' }}>
+      <AnimatedMockup />
+
+      {/* Floating robot overlaid */}
+      <AnimatePresence mode="wait">
+        <motion.div key={side}
+          className="absolute pointer-events-none"
+          style={{ bottom:'-8%', width:220, zIndex:10,
+            left: onLeft ? '-18%' : 'auto',
+            right: onLeft ? 'auto' : '-18%',
+          }}
+          initial={{ opacity:0, x: onLeft ? -40 : 40 }}
+          animate={{ opacity:1, x:0 }}
+          exit={{ opacity:0, x: onLeft ? 40 : -40 }}
+          transition={{ duration:0.6, ease:'easeInOut' }}>
+
+          {/* Glow behind robot */}
+          <div className="absolute inset-0 pointer-events-none blur-[40px]"
+            style={{ background:`radial-gradient(circle at ${onLeft?'60%':'40%'} 50%,rgba(6,182,212,0.45),transparent 70%)` }}/>
+
+          {/* Robot floats + presses */}
+          <motion.div
+            animate={{ y:[0,-10,0], x: pressX, scaleY: pressing ? 0.97 : 1 }}
+            transition={{ y:{ duration:3.5, repeat:Infinity, ease:'easeInOut' },
+              x:{ duration:0.25, ease:'easeOut' },
+              scaleY:{ duration:0.2 } }}
+            style={{ transform:`scaleX(${flipX})` }}>
+
+            <motion.img src="/ai-robot.png" alt="AI building" className="w-full"
+              animate={{ filter:[
+                'drop-shadow(0 0 16px rgba(6,182,212,0.7)) brightness(1.05)',
+                'drop-shadow(0 0 28px rgba(59,130,246,0.9)) brightness(1.12)',
+                'drop-shadow(0 0 16px rgba(6,182,212,0.7)) brightness(1.05)',
+              ]}}
+              transition={{ duration:2.5, repeat:Infinity, ease:'easeInOut' }}
+            />
+
+            {/* Finger-tip press spark */}
+            <AnimatePresence>
+              {pressing && (
+                <motion.div
+                  className="absolute rounded-full"
+                  style={{ right: onLeft ? -8 : 'auto', left: onLeft ? 'auto' : -8,
+                    top:'46%', width:14, height:14,
+                    background:'white', boxShadow:'0 0 20px #06b6d4, 0 0 40px #3b82f6' }}
+                  initial={{ scale:0, opacity:1 }}
+                  animate={{ scale:[0,2.5,0], opacity:[1,0.8,0] }}
+                  exit={{ opacity:0 }}
+                  transition={{ duration:0.5 }}
+                />
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Streaming particles from fingertip to screen */}
+          {[0,1,2,3].map(i => (
+            <motion.div key={i}
+              className="absolute rounded-full pointer-events-none"
+              style={{
+                top:'47%', width:5, height:5,
+                background:'#06b6d4', boxShadow:'0 0 8px #06b6d4',
+                left: onLeft ? '75%' : 'auto', right: onLeft ? 'auto' : '75%',
+              }}
+              animate={{
+                x:  onLeft ? [0,35,70]  : [0,-35,-70],
+                opacity: [0,1,0], scale:[0.4,1.2,0.3],
+              }}
+              transition={{ duration:0.9, repeat:Infinity, ease:'easeOut', delay:i*0.22 }}
+            />
+          ))}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* "AI Building..." badge */}
+      <motion.div
+        className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold text-white z-20"
+        style={{ background:'rgba(6,182,212,0.15)', border:'1px solid rgba(6,182,212,0.5)', backdropFilter:'blur(8px)' }}
+        animate={{ boxShadow:['0 0 8px rgba(6,182,212,0.3)','0 0 22px rgba(6,182,212,0.7)','0 0 8px rgba(6,182,212,0.3)'] }}
+        transition={{ duration:2, repeat:Infinity }}>
+        <motion.span className="w-1.5 h-1.5 rounded-full bg-cyan-400"
+          animate={{ opacity:[1,0.2,1] }} transition={{ duration:0.7, repeat:Infinity }}/>
+        AI Building Your Site...
+      </motion.div>
+    </div>
+  );
+};
+
 /* ─── Hero ────────────────────────────────────────────────── */
 const Hero = () => (
   <section className="relative flex items-center pt-28 pb-6" style={{ overflowX: 'hidden', overflowY: 'hidden', minHeight: 'calc(100vh - 80px)', background:'#030712' }}>
@@ -532,71 +643,12 @@ const Hero = () => (
           </div>
         </motion.div>
 
-        {/* ── Robot + Mockup: robot building the site ── */}
+        {/* ── Robot overlaid on site mockup ── */}
         <motion.div
           initial={{ opacity:0, x:40 }} animate={{ opacity:1, x:0 }}
           transition={{ duration:0.9, delay:0.2 }}
-          className="relative hidden lg:flex items-center justify-end gap-0">
-
-          {/* ── Robot (left, pointing at the mockup) ── */}
-          <div className="relative flex-shrink-0 -mr-6" style={{ zIndex:2 }}>
-
-            {/* Glow behind robot */}
-            <div className="absolute inset-0 pointer-events-none blur-[50px]"
-              style={{ background:'radial-gradient(circle at 60% 55%,rgba(6,182,212,0.4),rgba(59,130,246,0.2),transparent 70%)' }}/>
-
-            {/* Floating robot */}
-            <motion.img
-              src="/ai-robot.png"
-              alt="AI building your website"
-              className="relative select-none"
-              style={{ width:240, filter:'drop-shadow(0 0 20px rgba(6,182,212,0.6)) drop-shadow(0 0 40px rgba(59,130,246,0.3))' }}
-              animate={{
-                y: [0,-10,0],
-                filter:[
-                  'drop-shadow(0 0 18px rgba(6,182,212,0.6)) drop-shadow(0 0 36px rgba(59,130,246,0.3)) brightness(1.05)',
-                  'drop-shadow(0 0 30px rgba(59,130,246,0.8)) drop-shadow(0 0 60px rgba(139,92,246,0.5)) brightness(1.12)',
-                  'drop-shadow(0 0 18px rgba(6,182,212,0.6)) drop-shadow(0 0 36px rgba(59,130,246,0.3)) brightness(1.05)',
-                ],
-              }}
-              transition={{ duration:4, repeat:Infinity, ease:'easeInOut' }}
-            />
-
-            {/* "AI Building..." badge above robot */}
-            <motion.div
-              className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold text-white"
-              style={{ background:'rgba(6,182,212,0.15)', border:'1px solid rgba(6,182,212,0.5)', backdropFilter:'blur(8px)' }}
-              animate={{ boxShadow:['0 0 8px rgba(6,182,212,0.3)','0 0 20px rgba(6,182,212,0.7)','0 0 8px rgba(6,182,212,0.3)'] }}
-              transition={{ duration:2, repeat:Infinity }}>
-              <motion.span className="w-1.5 h-1.5 rounded-full bg-cyan-400"
-                animate={{ opacity:[1,0.2,1] }} transition={{ duration:0.7, repeat:Infinity }}/>
-              AI Building Your Site
-            </motion.div>
-
-            {/* Particles flowing from robot finger toward mockup */}
-            {[0,1,2,3,4].map(i => (
-              <motion.div key={i}
-                className="absolute rounded-full pointer-events-none"
-                style={{ right:-4, top:'52%', width:5, height:5, background:'#06b6d4', boxShadow:'0 0 8px #06b6d4' }}
-                animate={{ x:[0,60,120], opacity:[0,1,0], scale:[0.5,1.2,0.3] }}
-                transition={{ duration:1.4, repeat:Infinity, ease:'easeOut', delay:i*0.28 }}
-              />
-            ))}
-          </div>
-
-          {/* Glowing beam from robot finger to mockup */}
-          <motion.div
-            className="flex-shrink-0 pointer-events-none"
-            style={{ width:30, height:2, background:'linear-gradient(90deg,rgba(6,182,212,0.8),rgba(59,130,246,0.6))', borderRadius:99, alignSelf:'center', marginTop:20, zIndex:1 }}
-            animate={{ opacity:[0.4,1,0.4], scaleX:[0.8,1.1,0.8], boxShadow:['0 0 6px #06b6d4','0 0 16px #3b82f6','0 0 6px #06b6d4'] }}
-            transition={{ duration:1.2, repeat:Infinity }}
-          />
-
-          {/* ── Browser Mockup (right) ── */}
-          <div className="flex-shrink-0" style={{ zIndex:2 }}>
-            <AnimatedMockup />
-          </div>
-
+          className="hidden lg:block">
+          <RobotMockup />
         </motion.div>
       </div>
     </div>
