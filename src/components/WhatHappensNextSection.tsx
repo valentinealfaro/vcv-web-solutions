@@ -1,10 +1,105 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useInView } from 'motion/react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
+
+/* ─── Pixel-font word speller ──────────────────────────────── */
+const WC = 30; // cell px
+const WG = 3;  // gap px
+const WS = WC + WG; // step
+
+const FONT: Record<string, number[][]> = {
+  G: [[0,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  E: [[1,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
+  T: [[1,1,1,1,1],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0]],
+  F: [[1,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0]],
+  R: [[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,1,0,0],[1,0,0,1,0],[1,0,0,0,1]],
+  D: [[1,1,1,0,0],[1,0,0,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,1,0],[1,1,1,0,0]],
+  M: [[1,0,0,0,1],[1,1,0,1,1],[1,0,1,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  O: [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+};
+
+const WORD_COLORS: Record<string, string[]> = {
+  GET:  ['#3b82f6','#8b5cf6','#06b6d4'],
+  FREE: ['#ef4444','#f97316','#eab308','#22c55e'],
+  DEMO: ['#06b6d4','#3b82f6','#8b5cf6','#ec4899'],
+};
+
+const getWordCells = (word: string, cW: number, cH: number) => {
+  const chars   = word.split('');
+  const charPx  = 5 * WS - WG;
+  const totalW  = chars.length * charPx + (chars.length - 1) * 2 * WS;
+  const totalH  = 7 * WS - WG;
+  const ox      = (cW - totalW) / 2;
+  const oy      = (cH - totalH) / 2;
+  const palette = WORD_COLORS[word] || ['#3b82f6'];
+  const cells: { x:number; y:number; color:string; k:string }[] = [];
+  chars.forEach((ch, ci) => {
+    const pattern = FONT[ch] || [];
+    const cx = ox + ci * (charPx + 2 * WS);
+    const color = palette[ci % palette.length];
+    pattern.forEach((row, ri) =>
+      row.forEach((on, col) => {
+        if (on) cells.push({ x: cx + col*WS, y: oy + ri*WS, color, k:`${ch}${ci}r${ri}c${col}` });
+      })
+    );
+  });
+  return cells;
+};
+
+const WORDS = ['GET','FREE','DEMO'] as const;
+
+const WordSpeller = ({ cW, cH }: { cW: number; cH: number }) => {
+  const [wi,      setWi]      = useState(0);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (!cW || !cH) return;
+    let cancel = false;
+    const run = (idx: number) => {
+      if (cancel) return;
+      setWi(idx); setVisible(true);
+      setTimeout(() => {
+        if (cancel) return;
+        setVisible(false);
+        setTimeout(() => { if (!cancel) run((idx + 1) % WORDS.length); }, 1400);
+      }, 4000);
+    };
+    const t = setTimeout(() => run(0), 600);
+    return () => { cancel = true; clearTimeout(t); };
+  }, [cW, cH]);
+
+  if (!cW) return null;
+  const word  = WORDS[wi];
+  const cells = getWordCells(word, cW, cH);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none hidden md:block" style={{ zIndex:2, overflow:'hidden' }}>
+      <AnimatePresence mode="wait">
+        {visible && (
+          <motion.div key={`${word}-${wi}`} className="absolute inset-0">
+            {cells.map((c, i) => (
+              <motion.div key={c.k}
+                style={{ position:'absolute', width:WC, height:WC, borderRadius:5,
+                  background:c.color, border:`1.5px solid ${c.color}`,
+                  boxShadow:`0 0 10px ${c.color}90, 0 0 22px ${c.color}40` }}
+                initial={{ x: (Math.random()-0.5)*cW, y: (Math.random()-0.5)*cH,
+                           scale:0, opacity:0, rotate:(Math.random()-0.5)*180 }}
+                animate={{ x:c.x, y:c.y, scale:1, opacity:0.72, rotate:0 }}
+                exit={{ x: (Math.random()-0.5)*cW*1.2, y: (Math.random()-0.5)*cH*1.2,
+                        scale:0, opacity:0, rotate:(Math.random()-0.5)*120 }}
+                transition={{ type:'spring', stiffness:75, damping:14, delay: i * 0.007 }}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 /* ─── Checkerboard background ─────────────────────────────── */
 const CELL = 50;
@@ -228,6 +323,16 @@ const T_GAP        = 400;   // black gap before next cycle
 export const WhatHappensNextSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const inView     = useInView(sectionRef, { once: true, amount: 0.2 });
+  const [dims, setDims] = useState({ w:0, h:0 });
+
+  useEffect(() => {
+    const el = sectionRef.current; if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setDims({ w: entry.contentRect.width, h: entry.contentRect.height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const [started,    setStarted]    = useState(false);
   const [cycle,      setCycle]      = useState(0);
@@ -283,6 +388,9 @@ export const WhatHappensNextSection = () => {
 
       {/* Animated checkerboard blocks */}
       <CheckerBG cycle={cycle} ballPositions={layout.positions} clearing={fading} />
+
+      {/* Word speller — squares form GET → FREE → DEMO → loop */}
+      <WordSpeller cW={dims.w} cH={dims.h} />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
