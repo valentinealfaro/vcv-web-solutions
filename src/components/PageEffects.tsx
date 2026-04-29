@@ -9,11 +9,11 @@ export const RainbowWavesCanvas = () => {
     const ctx = canvas.getContext('2d'); if (!ctx) return;
     let animId: number;
     const PALETTE = [
-      '#ef4444','#f97316','#eab308','#22c55e',
-      '#06b6d4','#3b82f6','#8b5cf6','#ec4899',
-      '#ef4444','#f97316','#eab308','#22c55e',
+      '#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899',
+      '#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899',
+      '#ef4444','#f97316',
     ];
-    const N = 12;
+    const N = 18; // more waves
     const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
     let t = 0;
     const draw = () => {
@@ -22,20 +22,21 @@ export const RainbowWavesCanvas = () => {
       ctx.clearRect(0, 0, w, h);
       for (let i = 0; i < N; i++) {
         const baseY = (h / (N + 1)) * (i + 1);
-        const freq  = 0.0048 + i * 0.00055;
-        const amp   = 28 + i * 3.5;
-        const speed = 0.011 + i * 0.0028;
+        const freq  = 0.0038 + i * 0.00045;          // lower freq = wider waves
+        const amp   = 35 + i * 4.5;                  // bigger amplitude
+        const speed = 0.013 + i * 0.0032;
         const phase = i * ((Math.PI * 2) / N);
-        const drift = Math.sin(t * 0.007 + i * 0.8) * 18;
+        const drift = Math.sin(t * 0.006 + i * 0.9) * 28; // bigger vertical drift
         const color = PALETTE[i % PALETTE.length];
         ctx.beginPath();
         for (let x = 0; x <= w; x += 2) {
-          const y = baseY + drift + amp * Math.sin(x * freq + t * speed + phase);
+          const y = baseY + drift + amp * Math.sin(x * freq + t * speed + phase)
+                  + (amp * 0.35) * Math.sin(x * freq * 1.7 + t * speed * 0.6 + phase); // second harmonic
           x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = color; ctx.lineWidth = 3;
-        ctx.globalAlpha = 0.55; ctx.shadowColor = color; ctx.shadowBlur = 22; ctx.stroke();
-        ctx.lineWidth = 1.2; ctx.globalAlpha = 0.85; ctx.shadowBlur = 8; ctx.stroke();
+        ctx.strokeStyle = color; ctx.lineWidth = 3.5;
+        ctx.globalAlpha = 0.60; ctx.shadowColor = color; ctx.shadowBlur = 26; ctx.stroke();
+        ctx.lineWidth = 1.4; ctx.globalAlpha = 0.90; ctx.shadowBlur = 10; ctx.stroke();
         ctx.shadowBlur = 0; ctx.globalAlpha = 1;
       }
       t++;
@@ -43,6 +44,99 @@ export const RainbowWavesCanvas = () => {
     resize(); draw();
     window.addEventListener('resize', resize);
     return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+  }, []);
+  return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none" />;
+};
+
+/* ─── Bouncing color-changing ball ─────────────────────────── */
+export const BouncingBall = () => {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = ref.current; if (!canvas) return;
+    const ctx = canvas.getContext('2d'); if (!ctx) return;
+    let animId: number;
+
+    const COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899'];
+    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
+    resize();
+
+    // Ball state
+    const ball = {
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 5.5,
+      vy: (Math.random() - 0.5) * 5.5,
+      r: 22,
+      colorIdx: 0,
+      hue: 0,
+    };
+
+    // Ensure meaningful velocity
+    if (Math.abs(ball.vx) < 2) ball.vx = ball.vx < 0 ? -2.5 : 2.5;
+    if (Math.abs(ball.vy) < 2) ball.vy = ball.vy < 0 ? -2.5 : 2.5;
+
+    let frame = 0;
+
+    const draw = () => {
+      animId = requestAnimationFrame(draw);
+      frame++;
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Move
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+
+      // Bounce off walls + change color on bounce
+      if (ball.x - ball.r <= 0)  { ball.vx = Math.abs(ball.vx);  ball.colorIdx = (ball.colorIdx + 1) % COLORS.length; }
+      if (ball.x + ball.r >= w)  { ball.vx = -Math.abs(ball.vx); ball.colorIdx = (ball.colorIdx + 1) % COLORS.length; }
+      if (ball.y - ball.r <= 0)  { ball.vy = Math.abs(ball.vy);  ball.colorIdx = (ball.colorIdx + 1) % COLORS.length; }
+      if (ball.y + ball.r >= h)  { ball.vy = -Math.abs(ball.vy); ball.colorIdx = (ball.colorIdx + 1) % COLORS.length; }
+
+      // Gradually shift hue between bounces too
+      ball.hue = (ball.hue + 0.8) % 360;
+
+      const col = COLORS[ball.colorIdx];
+
+      // Trail / shadow
+      ctx.shadowColor = col;
+      ctx.shadowBlur  = 40;
+
+      // Outer glow ring
+      const grad = ctx.createRadialGradient(ball.x, ball.y, ball.r * 0.1, ball.x, ball.y, ball.r * 2.8);
+      grad.addColorStop(0,   col + 'cc');
+      grad.addColorStop(0.4, col + '55');
+      grad.addColorStop(1,   col + '00');
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.r * 2.8, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.globalAlpha = 0.45;
+      ctx.fill();
+
+      // Ball core
+      ctx.globalAlpha = 0.92;
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+      ctx.fillStyle = col;
+      ctx.shadowBlur = 20;
+      ctx.fill();
+
+      // Bright specular highlight
+      ctx.globalAlpha = 0.55;
+      ctx.beginPath();
+      ctx.arc(ball.x - ball.r * 0.28, ball.y - ball.r * 0.28, ball.r * 0.38, 0, Math.PI * 2);
+      ctx.fillStyle = 'white';
+      ctx.shadowBlur = 0;
+      ctx.fill();
+
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur  = 0;
+    };
+
+    draw();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas.parentElement!);
+    return () => { cancelAnimationFrame(animId); ro.disconnect(); };
   }, []);
   return <canvas ref={ref} className="absolute inset-0 w-full h-full pointer-events-none" />;
 };
