@@ -414,13 +414,30 @@ const PopOut3DWord = ({ word, delay = 0.8 }: { word: string; delay?: number }) =
 
 /* ─── Hero ────────────────────────────────────────────────── */
 const Hero = () => (
-  <section className="relative flex items-center pt-28 pb-6 bg-hero-radial" style={{ overflowX: 'hidden', overflowY: 'hidden', minHeight: 'calc(100vh - 80px)' }}>
+  <section className="relative flex items-center pt-28 pb-6" style={{ overflowX: 'hidden', overflowY: 'hidden', minHeight: 'calc(100vh - 80px)', background:'#030712' }}>
+
+    {/* ── Background video ── */}
+    <video
+      autoPlay loop muted playsInline
+      className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+      style={{ zIndex:0, opacity:0.45 }}>
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260206_044704_dd33cb15-c23f-4cfc-aa09-a0465d4dcb54.mp4" type="video/mp4" />
+    </video>
+
+    {/* Dark gradient overlay — site color */}
+    <div className="absolute inset-0 pointer-events-none" style={{ zIndex:1,
+      background:'linear-gradient(135deg,rgba(3,7,18,0.82) 0%,rgba(17,24,39,0.65) 50%,rgba(3,7,18,0.80) 100%)' }} />
+
+    {/* Bottom fade to match next section */}
+    <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none" style={{ zIndex:1,
+      background:'linear-gradient(to bottom,transparent,#030712)' }} />
+
     <ParticleCanvas />
 
     {/* Glowing orbs */}
-    <div className="absolute top-[-5%] left-[-5%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none animate-orb" />
-    <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-purple-600/8 rounded-full blur-[140px] pointer-events-none animate-orb-delay" />
-    <div className="absolute top-[40%] left-[50%] w-[300px] h-[300px] bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none animate-orb-slow" />
+    <div className="absolute top-[-5%] left-[-5%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none animate-orb" style={{ zIndex:2 }} />
+    <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-purple-600/8 rounded-full blur-[140px] pointer-events-none animate-orb-delay" style={{ zIndex:2 }} />
+    <div className="absolute top-[40%] left-[50%] w-[300px] h-[300px] bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none animate-orb-slow" style={{ zIndex:2 }} />
 
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
       <div className="grid lg:grid-cols-2 gap-12 items-center">
