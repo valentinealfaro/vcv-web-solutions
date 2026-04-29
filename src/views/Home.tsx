@@ -1848,12 +1848,12 @@ const WhyChooseUs = () => {
     let t3: ReturnType<typeof setTimeout>;
     const run = () => {
       setPhase('enter');
-      t1 = setTimeout(() => setPhase('hold'), 650);
-      t2 = setTimeout(() => setPhase('exit'), 4000);
-      t3 = setTimeout(() => { setIdx(i => (i + 1) % WHY_FEATURES.length); }, 4700);
+      t1 = setTimeout(() => setPhase('hold'), 700);
+      t2 = setTimeout(() => setPhase('exit'), 7500);
+      t3 = setTimeout(() => { setIdx(i => (i + 1) % WHY_FEATURES.length); }, 8400);
     };
     run();
-    const id = setInterval(run, 4700);
+    const id = setInterval(run, 8400);
     return () => { clearInterval(id); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
@@ -1868,8 +1868,17 @@ const WhyChooseUs = () => {
       <div className="absolute inset-0 z-0">
         <img
           src="https://motionsites.ai/assets/hero-automation-machines-preview-DlTveRIN.gif"
-          alt="" className="w-full h-full object-cover pointer-events-none"
-          style={{ opacity:0.55 }}
+          alt="" className="pointer-events-none"
+          style={{
+            opacity: 0.32,
+            position: 'absolute',
+            right: '-2%',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '55%',
+            height: 'auto',
+            objectFit: 'contain',
+          }}
         />
         {/* Dark tint to match VCV palette */}
         <div className="absolute inset-0"
@@ -1983,7 +1992,7 @@ const WhyChooseUs = () => {
                       <motion.div className="h-full rounded-b-2xl"
                         style={{ background:f.color }}
                         initial={{ width:'0%' }} animate={{ width:'100%' }}
-                        transition={{ duration:3.35, ease:'linear' }}/>
+                        transition={{ duration:6.8, ease:'linear' }}/>
                     </motion.div>
                   )}
                 </div>
