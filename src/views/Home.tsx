@@ -413,111 +413,140 @@ const PopOut3DWord = ({ word, delay = 0.8 }: { word: string; delay?: number }) =
 };
 
 /* ─── Robot overlaid on MockUp ───────────────────────────── */
+
+// All spots the robot visits across the mockup
+const ROBOT_SPOTS = [
+  { id:'bl', style:{ left:'-14%', bottom:'-6%' },               scaleX: 1,  w:230 }, // bottom-left
+  { id:'br', style:{ right:'-14%', bottom:'-6%' },              scaleX:-1,  w:230 }, // bottom-right
+  { id:'tl', style:{ left:'-10%', top:'-6%' },                  scaleX: 1,  w:165 }, // top-left
+  { id:'tr', style:{ right:'-10%', top:'-6%' },                 scaleX:-1,  w:165 }, // top-right
+  { id:'tc', style:{ left:'calc(50% - 75px)', top:'-8%' },      scaleX: 1,  w:150 }, // top-center
+  { id:'ml', style:{ left:'-12%', top:'calc(50% - 90px)' },     scaleX: 1,  w:195 }, // mid-left
+  { id:'mr', style:{ right:'-12%', top:'calc(50% - 90px)' },    scaleX:-1,  w:195 }, // mid-right
+  { id:'bc', style:{ left:'calc(50% - 95px)', bottom:'-6%' },   scaleX: 1,  w:190 }, // bottom-center
+];
+
+const WORK_LABELS = [
+  'Adding nav bar...',
+  'Building hero...',
+  'Optimizing SEO...',
+  'Adding CTA button...',
+  'Writing copy...',
+  'Setting up forms...',
+  'Styling layout...',
+  'Launching site...',
+];
+
 const RobotMockup = () => {
-  const [side,    setSide]  = useState<'left'|'right'>('left');
-  const [press,   setPress] = useState(false);
+  const [spotIdx, setSpotIdx] = useState(0);
+  const [press,   setPress]   = useState(false);
+  const [label,   setLabel]   = useState(WORK_LABELS[0]);
 
   useEffect(() => {
     const id = setInterval(() => {
+      // Double-press before moving
       setPress(true);
-      setTimeout(() => { setPress(false); setSide(s => s === 'left' ? 'right' : 'left'); }, 520);
-    }, 4200);
+      setTimeout(() => setPress(false), 280);
+      setTimeout(() => setPress(true),  600);
+      setTimeout(() => {
+        setPress(false);
+        setSpotIdx(i => {
+          const next = (i + 1) % ROBOT_SPOTS.length;
+          setLabel(WORK_LABELS[next % WORK_LABELS.length]);
+          return next;
+        });
+      }, 900);
+    }, 3600);
     return () => clearInterval(id);
   }, []);
 
-  const onLeft = side === 'left';
-  // Robot image points RIGHT — flip to face the screen when on the right side
-  const facing = onLeft ? 1 : -1;
+  const spot = ROBOT_SPOTS[spotIdx];
 
   return (
     <div className="relative select-none" style={{ width:'100%' }}>
       <AnimatedMockup />
 
-      {/* Badge above mockup */}
+      {/* Work label badge */}
       <motion.div
-        className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold text-white z-20"
+        className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold text-white z-20"
         style={{ background:'rgba(6,182,212,0.15)', border:'1px solid rgba(6,182,212,0.5)', backdropFilter:'blur(8px)' }}
-        animate={{ boxShadow:['0 0 8px rgba(6,182,212,0.3)','0 0 22px rgba(6,182,212,0.7)','0 0 8px rgba(6,182,212,0.3)'] }}
-        transition={{ duration:2, repeat:Infinity }}>
+        animate={{ boxShadow:['0 0 8px rgba(6,182,212,0.3)','0 0 24px rgba(6,182,212,0.8)','0 0 8px rgba(6,182,212,0.3)'] }}
+        transition={{ duration:1.8, repeat:Infinity }}>
         <motion.span className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block"
-          animate={{ opacity:[1,0.2,1] }} transition={{ duration:0.7, repeat:Infinity }}/>
-        AI Building Your Site...
+          animate={{ opacity:[1,0.2,1] }} transition={{ duration:0.6, repeat:Infinity }}/>
+        <AnimatePresence mode="wait">
+          <motion.span key={label}
+            initial={{ opacity:0, y:-6 }} animate={{ opacity:1, y:0 }}
+            exit={{ opacity:0, y:6 }} transition={{ duration:0.25 }}>
+            {label}
+          </motion.span>
+        </AnimatePresence>
       </motion.div>
 
-      {/* Robot */}
+      {/* Robot — slides to each spot */}
       <AnimatePresence mode="wait">
-        <motion.div key={side}
+        <motion.div key={spot.id}
           className="absolute pointer-events-none"
-          style={{
-            bottom:'-6%', width:230, zIndex:10,
-            left:  onLeft ? '-15%' : 'auto',
-            right: onLeft ? 'auto' : '-15%',
-          }}
-          initial={{ opacity:0, x: onLeft ? -50 : 50 }}
-          animate={{ opacity:1, x:0 }}
-          exit={{ opacity:0, x: onLeft ? 50 : -50 }}
-          transition={{ duration:0.55, ease:'easeInOut' }}>
+          style={{ ...spot.style, width: spot.w, zIndex:10 }}
+          initial={{ opacity:0, scale:0.75 }}
+          animate={{ opacity:1, scale:1 }}
+          exit={{ opacity:0, scale:0.75 }}
+          transition={{ duration:0.5, ease:'backOut' }}>
 
-          {/* Cyan glow behind robot */}
-          <div className="absolute inset-0 blur-[45px] pointer-events-none"
-            style={{ background:`radial-gradient(ellipse at ${onLeft?'65%':'35%'} 55%, rgba(6,182,212,0.5), rgba(59,130,246,0.25), transparent 70%)` }}/>
+          {/* Glow */}
+          <div className="absolute inset-0 blur-[40px] pointer-events-none"
+            style={{ background:'radial-gradient(ellipse at 55% 55%, rgba(6,182,212,0.55), rgba(59,130,246,0.3), transparent 70%)' }}/>
 
-          {/* Robot body — floats, bobs, leans while building */}
+          {/* Robot body with full building motion */}
           <motion.div
-            style={{ scaleX: facing }}
+            style={{ scaleX: spot.scaleX }}
             animate={{
-              // Organic up/down float with irregular rhythm
-              y:       [0, -14, -6, -18, -10, -14, 0, 4, 0],
-              // Slight body lean while "working"
-              rotate:  [0, -1.5, 0.5, -2, -0.5, -1, 0, 0.5, 0],
-              // Lean forward toward screen when pressing
-              x:       press ? 14 : 0,
-              scaleY:  press ? 0.96 : 1,
+              y:      [0, -16, -5, -22, -12, -18, -4, 0, 6, 0],
+              rotate: [0, -2,   1,  -3,  0.5, -1.5, 0.5, 0, 1, 0],
+              x:      press ? 16 : [0, -2, 2, -1, 0],
+              scaleY: press ? 0.94 : 1,
             }}
             transition={{
-              y:      { duration:4.2, repeat:Infinity, ease:'easeInOut', times:[0,.15,.3,.45,.55,.7,.8,.9,1] },
-              rotate: { duration:4.2, repeat:Infinity, ease:'easeInOut', times:[0,.15,.3,.45,.55,.7,.8,.9,1] },
-              x:      { duration:0.22, ease:'easeOut' },
-              scaleY: { duration:0.18 },
+              y:      { duration:3.8, repeat:Infinity, ease:'easeInOut', times:[0,.1,.25,.4,.5,.65,.75,.85,.93,1] },
+              rotate: { duration:3.8, repeat:Infinity, ease:'easeInOut', times:[0,.1,.25,.4,.5,.65,.75,.85,.93,1] },
+              x:      press ? { duration:0.2, ease:'easeOut' } : { duration:4, repeat:Infinity, ease:'easeInOut', times:[0,.25,.5,.75,1] },
+              scaleY: { duration:0.16 },
             }}>
 
-            {/* Robot image with pulsing glow */}
-            <motion.img
-              src="/ai-robot.png"
-              alt="AI building"
-              className="w-full"
+            <motion.img src="/ai-robot.png" alt="AI building" className="w-full"
               animate={{ filter:[
-                'drop-shadow(0 0 14px rgba(6,182,212,0.8)) drop-shadow(0 0 28px rgba(59,130,246,0.4)) brightness(1.06)',
-                'drop-shadow(0 0 24px rgba(59,130,246,1))   drop-shadow(0 0 50px rgba(139,92,246,0.6)) brightness(1.14)',
-                'drop-shadow(0 0 18px rgba(6,182,212,0.9)) drop-shadow(0 0 35px rgba(59,130,246,0.5)) brightness(1.08)',
-                'drop-shadow(0 0 14px rgba(6,182,212,0.8)) drop-shadow(0 0 28px rgba(59,130,246,0.4)) brightness(1.06)',
+                'drop-shadow(0 0 12px rgba(6,182,212,0.9))  drop-shadow(0 0 24px rgba(59,130,246,0.5))  brightness(1.07)',
+                'drop-shadow(0 0 22px rgba(59,130,246,1.0)) drop-shadow(0 0 45px rgba(139,92,246,0.7))  brightness(1.16)',
+                'drop-shadow(0 0 18px rgba(6,182,212,1.0))  drop-shadow(0 0 36px rgba(59,130,246,0.6))  brightness(1.10)',
+                'drop-shadow(0 0 12px rgba(6,182,212,0.9))  drop-shadow(0 0 24px rgba(59,130,246,0.5))  brightness(1.07)',
               ]}}
-              transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
+              transition={{ duration:2.2, repeat:Infinity, ease:'easeInOut' }}
             />
 
-            {/* Press spark at fingertip */}
+            {/* Fingertip press burst */}
             <AnimatePresence>
               {press && (
                 <motion.div className="absolute rounded-full pointer-events-none"
-                  style={{ right:-6, top:'44%', width:16, height:16,
-                    background:'white', boxShadow:'0 0 24px #06b6d4, 0 0 48px #3b82f6, 0 0 80px #8b5cf6' }}
+                  style={{ right:-4, top:'43%', width:18, height:18,
+                    background:'white',
+                    boxShadow:'0 0 20px #06b6d4, 0 0 40px #3b82f6, 0 0 70px #8b5cf6' }}
                   initial={{ scale:0, opacity:1 }}
-                  animate={{ scale:[0,3,0], opacity:[1,0.9,0] }}
+                  animate={{ scale:[0,3.5,0], opacity:[1,0.85,0] }}
                   exit={{ opacity:0 }}
-                  transition={{ duration:0.55 }}
+                  transition={{ duration:0.5 }}
                 />
               )}
             </AnimatePresence>
 
-            {/* Continuous working particles from fingertip → screen */}
-            {[0,1,2,3,4].map(i => (
+            {/* Particle stream from fingertip */}
+            {[0,1,2,3,4,5].map(i => (
               <motion.div key={i}
                 className="absolute rounded-full pointer-events-none"
-                style={{ right:-2, top:'46%', width:5, height:5,
-                  background: i%2===0 ? '#06b6d4' : '#3b82f6',
-                  boxShadow: `0 0 8px ${i%2===0?'#06b6d4':'#3b82f6'}` }}
-                animate={{ x:[0,20,50,80], opacity:[0,0.9,0.7,0], scale:[0.3,1.3,0.8,0.2] }}
-                transition={{ duration:1.1, repeat:Infinity, ease:'easeOut', delay:i*0.22 }}
+                style={{ right:0, top:'45%', width:4+i%2, height:4+i%2,
+                  background:['#06b6d4','#3b82f6','#8b5cf6','#22c55e','#06b6d4','#ec4899'][i],
+                  boxShadow:`0 0 8px ${ ['#06b6d4','#3b82f6','#8b5cf6','#22c55e','#06b6d4','#ec4899'][i] }` }}
+                animate={{ x:[0,18,45,75,100], y:[0,-i*2,i,-i,0], opacity:[0,1,0.8,0.4,0], scale:[0.3,1.4,1,0.5,0.1] }}
+                transition={{ duration:1.0, repeat:Infinity, ease:'easeOut', delay:i*0.18 }}
               />
             ))}
           </motion.div>
