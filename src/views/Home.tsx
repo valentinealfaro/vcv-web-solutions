@@ -1830,66 +1830,176 @@ const FeatureCarousel = ({ features }: { features: Feature[] }) => {
 };
 
 /* ─── Why Choose Us ───────────────────────────────────────── */
+const WHY_FEATURES = [
+  { icon: <Rocket  className="w-10 h-10" />, color:'#3b82f6', title:'Lead Generation First',  desc:'Every design decision is made to generate calls, form fills, and booked jobs.',   stat:'+312%',    statLabel:'More Leads',         emoji:'📞' },
+  { icon: <Clock   className="w-10 h-10" />, color:'#8b5cf6', title:'3–7 Day Launch',          desc:'We move fast without sacrificing quality. See results in days, not months.',      stat:'3–7',      statLabel:'Days to Live',        emoji:'🚀' },
+  { icon: <Search  className="w-10 h-10" />, color:'#06b6d4', title:'SEO + Ads Built In',      desc:'Traffic strategies baked in from the start — no expensive upsells ever.',         stat:'#1',       statLabel:'On Google',           emoji:'📈' },
+  { icon: <ShieldCheck className="w-10 h-10" />, color:'#22c55e', title:'You Own Everything',  desc:'No vendor lock-in. Your domain, your content, your site — always.',               stat:'100%',     statLabel:'Your Property',       emoji:'🔒' },
+  { icon: <TrendingUp className="w-10 h-10" />, color:'#f97316', title:'Proven Track Record',  desc:'Real results for real businesses. 50+ sites launched, all generating leads.',      stat:'50+',      statLabel:'Sites Launched',      emoji:'⭐' },
+];
+
 const WhyChooseUs = () => {
-  const features: Feature[] = [
-    { icon: <Rocket className="w-4 h-4" />, color: '#3b82f6', title: 'Lead Generation First', description: 'Every design decision is made to generate calls, form fills, and booked jobs.' },
-    { icon: <Clock className="w-4 h-4" />,  color: '#8b5cf6', title: '3–7 Day Launch',         description: 'We move fast without sacrificing quality. See results in days, not months.' },
-    { icon: <Search className="w-4 h-4" />, color: '#06b6d4', title: 'SEO + Ads Built In',     description: 'Traffic strategies baked in from the start — no expensive upsells.' },
-    { icon: <ShieldCheck className="w-4 h-4" />, color: '#22c55e', title: 'You Own Everything', description: 'No vendor lock-in. Your domain, your content, your site — always.' },
-    { icon: <TrendingUp className="w-4 h-4" />, color: '#f97316', title: 'Proven Track Record', description: 'Real results for real businesses. Check our portfolio to see the proof.' },
-  ];
+  const [idx,   setIdx]   = useState(0);
+  const [phase, setPhase] = useState<'enter'|'hold'|'exit'>('enter');
+
+  useEffect(() => {
+    let t1: ReturnType<typeof setTimeout>;
+    let t2: ReturnType<typeof setTimeout>;
+    let t3: ReturnType<typeof setTimeout>;
+    const run = () => {
+      setPhase('enter');
+      t1 = setTimeout(() => setPhase('hold'), 650);
+      t2 = setTimeout(() => setPhase('exit'), 4000);
+      t3 = setTimeout(() => { setIdx(i => (i + 1) % WHY_FEATURES.length); }, 4700);
+    };
+    run();
+    const id = setInterval(run, 4700);
+    return () => { clearInterval(id); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+
+  const f = WHY_FEATURES[idx];
+  const cardX = phase === 'enter' ? 320 : phase === 'exit' ? 320 : 0;
+  const cardO = phase === 'hold' ? 1 : 0;
 
   return (
-    <section className="py-24 bg-[#040a16] relative overflow-hidden">
-      {/* ── Animated orbs — one per feature-card color ──────── */}
-      <div className="absolute top-[-8%]  left-[-4%]  w-[420px] h-[420px] rounded-full blur-[110px] pointer-events-none animate-orb"
-        style={{ background:'rgba(37,99,235,0.10)' }} />
-      <div className="absolute top-[-4%]  right-[-4%] w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none animate-orb-delay"
-        style={{ background:'rgba(124,58,237,0.09)' }} />
-      <div className="absolute bottom-[-8%] left-[4%]  w-[360px] h-[360px] rounded-full blur-[100px] pointer-events-none animate-orb-slow"
-        style={{ background:'rgba(6,182,212,0.08)' }} />
-      <div className="absolute bottom-[-4%] right-[8%] w-[320px] h-[320px] rounded-full blur-[95px]  pointer-events-none animate-orb"
-        style={{ background:'rgba(34,197,94,0.07)', animationDelay:'3s' }} />
-      <div className="absolute top-[35%]  left-[42%] w-[260px] h-[260px] rounded-full blur-[85px]  pointer-events-none animate-orb-delay"
-        style={{ background:'rgba(249,115,22,0.07)', animationDelay:'1.5s' }} />
-      <div className="absolute top-[20%]  right-[22%] w-[200px] h-[200px] rounded-full blur-[70px]  pointer-events-none animate-orb-slow"
-        style={{ background:'rgba(236,72,153,0.06)', animationDelay:'5s' }} />
+    <section className="py-0 bg-[#040a16] relative overflow-hidden" style={{ minHeight:600 }}>
 
-      {/* Grid + dot pattern overlay */}
-      <div className="absolute inset-0 bg-grid opacity-[0.35] pointer-events-none" />
-      <div className="absolute inset-0 bg-dot  opacity-[0.25] pointer-events-none" />
+      {/* ── Robot arm GIF — full background ── */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://motionsites.ai/assets/hero-automation-machines-preview-DlTveRIN.gif"
+          alt="" className="w-full h-full object-cover pointer-events-none"
+          style={{ opacity:0.55 }}
+        />
+        {/* Dark tint to match VCV palette */}
+        <div className="absolute inset-0"
+          style={{ background:'linear-gradient(135deg,rgba(4,10,22,0.82) 0%,rgba(4,10,22,0.45) 50%,rgba(4,10,22,0.75) 100%)' }}/>
+        {/* Left fade so text pops */}
+        <div className="absolute inset-y-0 left-0 w-1/2"
+          style={{ background:'linear-gradient(90deg,rgba(4,10,22,0.88),transparent)' }}/>
+        {/* Top/bottom edge lines */}
+        <div className="absolute top-0 left-0 right-0 h-px"
+          style={{ background:'linear-gradient(90deg,transparent,rgba(37,99,235,0.4),rgba(124,58,237,0.3),transparent)' }}/>
+        <div className="absolute bottom-0 left-0 right-0 h-px"
+          style={{ background:'linear-gradient(90deg,transparent,rgba(6,182,212,0.3),transparent)' }}/>
+      </div>
 
-      {/* Top edge glow line */}
-      <div className="absolute top-0 left-0 right-0 h-px pointer-events-none"
-        style={{ background:'linear-gradient(90deg,transparent,rgba(37,99,235,0.4),rgba(124,58,237,0.3),transparent)' }} />
-      {/* Bottom edge glow line */}
-      <div className="absolute bottom-0 left-0 right-0 h-px pointer-events-none"
-        style={{ background:'linear-gradient(90deg,transparent,rgba(6,182,212,0.3),transparent)' }} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-24">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+
+          {/* ── Left: heading + dot indicators ── */}
+          <motion.div initial={{ opacity:0, x:-30 }} whileInView={{ opacity:1, x:0 }} viewport={{ once:true }}>
             <p className="neon-badge mb-5">Why VCV?</p>
             <h2 className="font-display text-5xl md:text-6xl text-white mb-6 leading-tight">
-              WHY BUSINESSES <br />
+              WHY BUSINESSES<br/>
               <span className="gradient-text">CHOOSE US</span>
             </h2>
-            <p className="text-gray-400 text-lg mb-8 leading-relaxed">
+            <p className="text-gray-400 text-lg mb-10 leading-relaxed max-w-md">
               We don't just build websites — we build{' '}
-              <MarkerHighlight
-                highlight="growth engines"
-                markerColor="rgba(124, 58, 237, 0.88)"
-                textColor="white"
-                delay={0.15}
-              />{' '}
+              <MarkerHighlight highlight="growth engines" markerColor="rgba(124,58,237,0.88)" textColor="white" delay={0.15}/>{' '}
               tuned to your market. One metric: your return on investment.
             </p>
-            <FeatureCarousel features={features} />
+
+            {/* Feature dot nav */}
+            <div className="space-y-3">
+              {WHY_FEATURES.map((feat, i) => (
+                <motion.button key={i}
+                  onClick={() => { setIdx(i); setPhase('enter'); }}
+                  className="flex items-center gap-3 w-full text-left group"
+                  animate={{ opacity: i === idx ? 1 : 0.45 }}
+                  transition={{ duration:0.3 }}>
+                  <motion.div
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    animate={{ scale: i === idx ? 1.6 : 1, background: feat.color }}
+                    style={{ boxShadow: i === idx ? `0 0 8px ${feat.color}` : 'none' }}
+                    transition={{ duration:0.3 }}/>
+                  <span className="text-sm font-semibold"
+                    style={{ color: i === idx ? feat.color : 'rgba(148,163,184,0.7)' }}>
+                    {feat.title}
+                  </span>
+                  {i === idx && (
+                    <motion.div className="flex-1 h-[1px]"
+                      style={{ background:`linear-gradient(90deg,${feat.color}80,transparent)` }}
+                      initial={{ scaleX:0, originX:0 }} animate={{ scaleX:1 }}
+                      transition={{ duration: 4.0, ease:'linear' }}/>
+                  )}
+                </motion.button>
+              ))}
+            </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }} viewport={{ once: true }}>
-            <BeforeAfterMockup />
-          </motion.div>
+          {/* ── Right: robot pulls feature card in ── */}
+          <div className="relative flex items-center justify-center" style={{ minHeight:320 }}>
+            <AnimatePresence mode="wait">
+              <motion.div key={`${idx}-${phase}`}
+                className="w-full max-w-sm"
+                initial={{ x:320, opacity:0 }}
+                animate={{ x: cardX, opacity: cardO }}
+                exit={{ x:320, opacity:0 }}
+                transition={{ type:'spring', stiffness:180, damping:22 }}>
+
+                {/* Feature card */}
+                <div className="rounded-2xl p-8 relative overflow-hidden"
+                  style={{
+                    background:`linear-gradient(145deg,${f.color}18,${f.color}08)`,
+                    border:`2px solid ${f.color}45`,
+                    boxShadow:`0 0 60px ${f.color}25, 0 0 0 1px ${f.color}15`,
+                  }}>
+
+                  {/* Glow behind icon */}
+                  <div className="absolute top-6 right-6 w-24 h-24 rounded-full blur-[40px] pointer-events-none"
+                    style={{ background:f.color, opacity:0.2 }}/>
+
+                  {/* Emoji + icon row */}
+                  <div className="flex items-center justify-between mb-6">
+                    <motion.div className="rounded-2xl p-4 flex-shrink-0"
+                      style={{ background:`${f.color}20`, border:`1px solid ${f.color}45`, color:f.color }}
+                      animate={{ boxShadow:[`0 0 0px ${f.color}00`,`0 0 30px ${f.color}60`,`0 0 0px ${f.color}00`] }}
+                      transition={{ duration:2.2, repeat:Infinity }}>
+                      {f.icon}
+                    </motion.div>
+                    <span style={{ fontSize:44 }}>{f.emoji}</span>
+                  </div>
+
+                  {/* Stat */}
+                  <div className="mb-4">
+                    <motion.p className="font-display leading-none mb-1"
+                      style={{ fontSize:'clamp(3rem,6vw,4.5rem)', color:f.color,
+                        textShadow:`0 0 30px ${f.color}80` }}
+                      animate={{ textShadow:[`0 0 20px ${f.color}60`,`0 0 50px ${f.color}cc`,`0 0 20px ${f.color}60`] }}
+                      transition={{ duration:2, repeat:Infinity }}>
+                      {f.stat}
+                    </motion.p>
+                    <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">{f.statLabel}</p>
+                  </div>
+
+                  {/* Title + desc */}
+                  <h3 className="text-white font-bold text-xl mb-2">{f.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">{f.desc}</p>
+
+                  {/* Bottom progress bar */}
+                  {phase === 'hold' && (
+                    <motion.div className="absolute bottom-0 left-0 right-0 h-1 rounded-b-2xl overflow-hidden">
+                      <motion.div className="h-full rounded-b-2xl"
+                        style={{ background:f.color }}
+                        initial={{ width:'0%' }} animate={{ width:'100%' }}
+                        transition={{ duration:3.35, ease:'linear' }}/>
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* "Robot pulling" arrow indicator */}
+                <motion.div className="flex items-center gap-2 mt-3 justify-end"
+                  animate={{ opacity:[0.4,0.9,0.4] }} transition={{ duration:1.5, repeat:Infinity }}>
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color:`${f.color}90` }}>
+                    Robot is pulling this
+                  </span>
+                  <ArrowRight className="w-3.5 h-3.5" style={{ color:f.color }}/>
+                </motion.div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
         </div>
       </div>
     </section>
