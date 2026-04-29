@@ -189,11 +189,22 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
   );
 };
 
+const PRICING_VIDEO = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260416_101255_3099d3e4-d0cf-4e59-9666-97fbf521ac71.mp4';
+
 export const PricingSection = () => (
   <section className="py-24 bg-[#030712] relative overflow-hidden">
+    {/* MP4 video — lowest layer, mix-blend-screen so dark areas vanish */}
+    <video
+      src={PRICING_VIDEO}
+      autoPlay muted loop playsInline
+      className="absolute inset-0 w-full h-full pointer-events-none select-none"
+      style={{ objectFit: 'cover', mixBlendMode: 'screen', opacity: 0.45 }}
+    />
+    {/* extra scrim so waves + cards stay fully readable */}
+    <div className="absolute inset-0 bg-[#030712]/55 pointer-events-none" />
     <PricingBgCanvas />
     {/* dark overlay keeps cards readable */}
-    <div className="absolute inset-0 bg-[#030712]/52 pointer-events-none" />
+    <div className="absolute inset-0 bg-[#030712]/40 pointer-events-none" />
     <div className="absolute inset-0 bg-grid opacity-18 pointer-events-none" />
 
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
