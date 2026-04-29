@@ -1199,6 +1199,17 @@ const PerfectFor = () => {
 
   return (
     <section style={{ borderTop: '1px solid rgba(37,99,235,0.15)', borderBottom: '1px solid rgba(37,99,235,0.15)', background: '#030712', position:'relative', overflow:'hidden' }}>
+
+      {/* ── Orbis space video background ── */}
+      <video autoPlay loop muted playsInline
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        style={{ zIndex:0, opacity:0.38 }}>
+        <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_045634_e1c98c76-1265-4f5c-882a-4276f2080894.mp4" type="video/mp4"/>
+      </video>
+      {/* VCV dark-blue tint so it matches the site palette */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex:1,
+        background:'linear-gradient(160deg,rgba(3,7,18,0.70) 0%,rgba(10,15,40,0.50) 50%,rgba(3,7,18,0.72) 100%)' }}/>
+
       <AuroraCanvas />
 
       {/* ── Shared heading ── */}
@@ -1209,7 +1220,7 @@ const PerfectFor = () => {
             textShadow:'0 0 50px rgba(37,99,235,0.6), 0 0 100px rgba(124,58,237,0.3), 0 2px 0 rgba(0,0,0,0.9)' }}>
           PERFECT FOR
         </h2>
-        <p className="text-gray-400 text-sm tracking-wide hidden md:block">Watch the avatar visit bubbles — or click any bubble yourself</p>
+        <p className="text-gray-400 text-sm tracking-wide hidden md:block">Watch the astronaut explore your industry — or click any bubble yourself</p>
         <p className="text-gray-400 text-sm tracking-wide md:hidden">Tap any card to see how a website grows that business</p>
       </div>
 
@@ -1396,39 +1407,43 @@ const PerfectFor = () => {
         </div>
       ))}
 
-      {/* ── Traveling needle ── */}
+      {/* ── Traveling astronaut ── */}
       <motion.div
-        style={{ position:'absolute', top:0, left:0, zIndex:25, pointerEvents:'none',
-          transformOrigin:'0 0' }}
+        style={{ position:'absolute', top:0, left:0, zIndex:25, pointerEvents:'none', transformOrigin:'0 0' }}
         animate={{ x: avatarXY.x, y: avatarXY.y }}
         transition={{ duration: TRAVEL_MS / 1000, ease:'easeInOut' }}>
-        {/* Needle SVG — rotated toward target */}
-        <div style={{ transform:`translate(-50%,-50%) rotate(${avatarAngle}deg)`,
-          transition:`transform ${TRAVEL_MS / 1000}s ease-in-out`,
-          filter:'drop-shadow(0 0 8px rgba(99,102,241,0.9)) drop-shadow(0 0 16px rgba(255,255,255,0.5))' }}>
-          <svg width="72" height="18" viewBox="0 0 72 18" fill="none">
-            {/* Glow layer */}
-            <polygon points="0,7 52,8.5 0,11" fill="rgba(99,102,241,0.55)" style={{filter:'blur(4px)'}}/>
-            {/* Tail fins */}
-            <polygon points="0,5  10,8 0,9"  fill="rgba(199,210,254,0.8)"/>
-            <polygon points="0,13 10,9 0,10" fill="rgba(199,210,254,0.8)"/>
-            {/* Shaft */}
-            <rect x="8" y="8" width="44" height="2" rx="1" fill="white" opacity="0.95"/>
-            {/* Arrowhead */}
-            <polygon points="48,4 72,9 48,14" fill="white"/>
-            {/* Bright tip */}
-            <circle cx="71" cy="9" r="2" fill="rgba(200,210,255,1)"/>
-          </svg>
-        </div>
+
+        {/* Astronaut body */}
+        <motion.div
+          style={{ transform:'translate(-50%,-50%)', userSelect:'none', lineHeight:1 }}
+          animate={{ y:[0,-6,0], rotate:[-4,4,-4] }}
+          transition={{ duration:2.2, repeat:Infinity, ease:'easeInOut' }}>
+          {/* Glow ring behind astronaut */}
+          <motion.div
+            style={{ position:'absolute', inset:'-8px', borderRadius:'50%', pointerEvents:'none' }}
+            animate={{ boxShadow:[
+              '0 0 18px 6px rgba(6,182,212,0.5)',
+              '0 0 30px 10px rgba(139,92,246,0.7)',
+              '0 0 18px 6px rgba(6,182,212,0.5)',
+            ]}}
+            transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+          />
+          <span style={{ fontSize:46, filter:'drop-shadow(0 0 10px rgba(6,182,212,0.9)) drop-shadow(0 0 22px rgba(59,130,246,0.6))' }}>
+            🧑‍🚀
+          </span>
+        </motion.div>
+
         {/* Destination label */}
         {avatarBiz && (
-          <div style={{ position:'absolute', top:-26, left:'50%', transform:'translateX(-50%)',
-            background:'rgba(6,10,22,0.90)', border:`1px solid ${avatarBiz.color}70`,
-            borderRadius:6, padding:'3px 9px', whiteSpace:'nowrap',
-            color:'white', fontSize:10, fontWeight:700, letterSpacing:'0.05em',
-            boxShadow:`0 0 14px ${avatarBiz.color}40`, backdropFilter:'blur(10px)' }}>
-            ◎ {avatarBiz.name}
-          </div>
+          <motion.div
+            initial={{ opacity:0, y:4 }} animate={{ opacity:1, y:0 }}
+            style={{ position:'absolute', top:-32, left:'50%', transform:'translateX(-50%)',
+              background:'rgba(6,10,22,0.92)', border:`1.5px solid ${avatarBiz.color}80`,
+              borderRadius:8, padding:'4px 10px', whiteSpace:'nowrap',
+              color:'white', fontSize:10, fontWeight:800, letterSpacing:'0.06em',
+              boxShadow:`0 0 16px ${avatarBiz.color}50`, backdropFilter:'blur(10px)' }}>
+            🧑‍🚀 {avatarBiz.name}
+          </motion.div>
         )}
       </motion.div>
 
