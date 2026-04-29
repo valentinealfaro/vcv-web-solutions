@@ -1,13 +1,10 @@
 'use client';
-import { useEffect, useRef, useState, lazy, Suspense } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { useInView } from 'motion/react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
-
-// Lazy-load Spline so it never blocks SSR or initial paint
-const SplineScene = lazy(() => import('@splinetool/react-spline'));
 
 /* ─── Checkerboard background ─────────────────────────────── */
 const CELL = 50;
@@ -87,52 +84,62 @@ const CheckerBG = ({ cycle, ballPositions, clearing }: {
 
       const isClearing = clearingRef.current;
 
-      // ── Spawn (only when not clearing) ──
-      if (!isClearing && ts - spawnTick > 75 && lit.length < 55) {
+      // ── Spawn multiple blocks per tick — faster, denser ──
+      if (!isClearing && ts - spawnTick > 40 && lit.length < 90) {
         spawnTick = ts;
         const blocked = getBlocked();
-        for (let attempt = 0; attempt < 40; attempt++) {
-          const c = Math.floor(Math.random() * cols), r = Math.floor(Math.random() * rows);
-          if (!blocked.has(`${c},${r}`) && !lit.find(l => l.c === c && l.r === r)) {
-            lit.push({
-              c, r, alpha: 0,
-              col: CHECKER_COLORS[Math.floor(Math.random() * CHECKER_COLORS.length)],
-              decay: 0.002 + Math.random() * 0.004,
-              rising: true,
-            });
-            break;
+        // Spawn 2-3 at once for density
+        const spawnCount = Math.random() < 0.4 ? 3 : 2;
+        for (let s = 0; s < spawnCount; s++) {
+          for (let attempt = 0; attempt < 50; attempt++) {
+            const c = Math.floor(Math.random() * cols), r = Math.floor(Math.random() * rows);
+            if (!blocked.has(`${c},${r}`) && !lit.find(l => l.c === c && l.r === r)) {
+              lit.push({
+                c, r, alpha: 0,
+                col: CHECKER_COLORS[Math.floor(Math.random() * CHECKER_COLORS.length)],
+                decay: 0.0015 + Math.random() * 0.003, // longer-lived
+                rising: true,
+              });
+              break;
+            }
           }
         }
       }
 
+      // ── Random mid-life color shift — each block can change color ──
+      lit.forEach(l => {
+        if (!l.rising && l.alpha > 0.15 && Math.random() < 0.002) {
+          l.col = CHECKER_COLORS[Math.floor(Math.random() * CHECKER_COLORS.length)];
+        }
+      });
+
       // ── Update & draw ──
       lit = lit.filter(l => l.alpha >= 0);
       lit.forEach(l => {
-        if (isClearing) {
-          // Fast drain when layout is switching
-          l.rising = false;
-          l.decay = 0.04;
-        }
+        if (isClearing) { l.rising = false; l.decay = 0.04; }
         if (l.rising) {
-          l.alpha += 0.022;
-          if (l.alpha >= 0.42) { l.alpha = 0.42; l.rising = false; }
+          l.alpha += 0.028; // faster rise
+          if (l.alpha >= 0.72) { l.alpha = 0.72; l.rising = false; } // brighter max
         } else {
           l.alpha -= l.decay;
         }
         const x = l.c * CELL, y = l.r * CELL;
         const [rv, gv, bv] = l.col;
-        // Fill
+        // Fill — more opaque
         ctx.fillStyle = `rgba(${rv},${gv},${bv},${l.alpha})`;
         ctx.fillRect(x + 1, y + 1, CELL - 2, CELL - 2);
         // Bright border
-        ctx.strokeStyle = `rgba(${rv},${gv},${bv},${Math.min(1, l.alpha * 2.8)})`;
-        ctx.lineWidth = 1.4;
+        ctx.strokeStyle = `rgba(${rv},${gv},${bv},${Math.min(1, l.alpha * 2.2)})`;
+        ctx.lineWidth = 1.8;
         ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
+        // Inner glow highlight
+        ctx.fillStyle = `rgba(${rv},${gv},${bv},${l.alpha * 0.25})`;
+        ctx.fillRect(x + 4, y + 4, CELL - 8, CELL - 8);
         // Corner accent dots
         const d = 3;
-        ctx.fillStyle = `rgba(${rv},${gv},${bv},${Math.min(1, l.alpha * 3)})`;
+        ctx.fillStyle = `rgba(${rv},${gv},${bv},${Math.min(1, l.alpha * 2.5)})`;
         [[x+d,y+d],[x+CELL-d,y+d],[x+d,y+CELL-d],[x+CELL-d,y+CELL-d]].forEach(([cx,cy]) => {
-          ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(cx, cy, 2.5, 0, Math.PI*2); ctx.fill();
         });
       });
 
@@ -274,24 +281,7 @@ export const WhatHappensNextSection = () => {
   return (
     <section ref={sectionRef} className="py-16 relative overflow-hidden bg-[#040a16]">
 
-      {/* ── Layer 1: Spline 3D scene (deepest) ── */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <Suspense fallback={<div className="absolute inset-0 bg-[#040a16]" />}>
-          <SplineScene
-            scene="https://prod.spline.design/Slk6b8kz3LRlKiyk/scene.splinecode"
-            className="w-full h-full"
-            style={{ opacity: 0.45 }}
-          />
-        </Suspense>
-        {/* VCV-tinted overlay keeps Spline from washing out the blue scheme */}
-        <div className="absolute inset-0"
-          style={{ background:'linear-gradient(135deg,rgba(3,7,18,0.72),rgba(4,10,22,0.55),rgba(3,7,18,0.70))' }}/>
-        {/* Blue ambient tint to match VCV palette */}
-        <div className="absolute inset-0"
-          style={{ background:'radial-gradient(ellipse 90% 60% at 50% 50%,rgba(37,99,235,0.08),transparent 70%)' }}/>
-      </div>
-
-      {/* ── Layer 2: Animated checkerboard blocks ── */}
+      {/* Animated checkerboard blocks */}
       <CheckerBG cycle={cycle} ballPositions={layout.positions} clearing={fading} />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
