@@ -532,93 +532,71 @@ const Hero = () => (
           </div>
         </motion.div>
 
-        {/* ── AI Robot building the site ── */}
+        {/* ── Robot + Mockup: robot building the site ── */}
         <motion.div
-          initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.9, delay: 0.2 }}
-          className="relative hidden lg:flex items-center justify-center">
+          initial={{ opacity:0, x:40 }} animate={{ opacity:1, x:0 }}
+          transition={{ duration:0.9, delay:0.2 }}
+          className="relative hidden lg:flex items-center justify-end gap-0">
 
-          {/* Outer glow ring */}
-          <motion.div
-            className="absolute w-[480px] h-[480px] rounded-full pointer-events-none"
-            animate={{ scale:[1,1.08,1], opacity:[0.3,0.55,0.3] }}
-            transition={{ duration:4, repeat:Infinity, ease:'easeInOut' }}
-            style={{ background:'radial-gradient(circle,rgba(6,182,212,0.18) 0%,rgba(59,130,246,0.10) 40%,transparent 70%)' }}
-          />
+          {/* ── Robot (left, pointing at the mockup) ── */}
+          <div className="relative flex-shrink-0 -mr-6" style={{ zIndex:2 }}>
 
-          {/* Floating circuit particles */}
-          {[
-            { x:'10%',  y:'15%', size:6,  dur:3.2, color:'#06b6d4' },
-            { x:'85%',  y:'20%', size:4,  dur:4.1, color:'#3b82f6' },
-            { x:'5%',   y:'65%', size:5,  dur:3.8, color:'#8b5cf6' },
-            { x:'90%',  y:'70%', size:4,  dur:2.9, color:'#22c55e' },
-            { x:'50%',  y:'8%',  size:5,  dur:4.5, color:'#06b6d4' },
-            { x:'20%',  y:'85%', size:4,  dur:3.5, color:'#ec4899' },
-            { x:'75%',  y:'88%', size:6,  dur:4.2, color:'#3b82f6' },
-            { x:'40%',  y:'92%', size:3,  dur:3.0, color:'#8b5cf6' },
-          ].map((p,i) => (
-            <motion.div key={i}
-              className="absolute rounded-full pointer-events-none"
-              style={{ left:p.x, top:p.y, width:p.size, height:p.size, background:p.color, boxShadow:`0 0 ${p.size*3}px ${p.color}` }}
-              animate={{ y:[-8,8,-8], opacity:[0.4,1,0.4], scale:[0.8,1.4,0.8] }}
-              transition={{ duration:p.dur, repeat:Infinity, ease:'easeInOut', delay:i*0.3 }}
-            />
-          ))}
+            {/* Glow behind robot */}
+            <div className="absolute inset-0 pointer-events-none blur-[50px]"
+              style={{ background:'radial-gradient(circle at 60% 55%,rgba(6,182,212,0.4),rgba(59,130,246,0.2),transparent 70%)' }}/>
 
-          {/* Horizontal scan line */}
-          <motion.div
-            className="absolute left-[5%] right-[5%] h-[1px] pointer-events-none"
-            style={{ background:'linear-gradient(90deg,transparent,rgba(6,182,212,0.6),rgba(59,130,246,0.8),rgba(6,182,212,0.6),transparent)' }}
-            animate={{ top:['15%','80%','15%'], opacity:[0,0.8,0] }}
-            transition={{ duration:4, repeat:Infinity, ease:'easeInOut' }}
-          />
-
-          {/* Robot image */}
-          <motion.div
-            className="relative"
-            animate={{ y:[0,-12,0] }}
-            transition={{ duration:5, repeat:Infinity, ease:'easeInOut' }}>
-
-            {/* Blue glow behind robot */}
-            <div className="absolute inset-0 rounded-full blur-[60px] pointer-events-none"
-              style={{ background:'radial-gradient(circle at 50% 60%,rgba(6,182,212,0.35),rgba(59,130,246,0.2),transparent)' }}/>
-
+            {/* Floating robot */}
             <motion.img
               src="/ai-robot.png"
               alt="AI building your website"
-              className="relative w-[420px] drop-shadow-2xl select-none"
-              style={{ filter:'drop-shadow(0 0 30px rgba(6,182,212,0.5)) drop-shadow(0 0 60px rgba(59,130,246,0.3))' }}
-              animate={{ filter:[
-                'drop-shadow(0 0 25px rgba(6,182,212,0.5)) drop-shadow(0 0 50px rgba(59,130,246,0.3)) brightness(1.05)',
-                'drop-shadow(0 0 40px rgba(59,130,246,0.7)) drop-shadow(0 0 80px rgba(139,92,246,0.4)) brightness(1.1)',
-                'drop-shadow(0 0 25px rgba(6,182,212,0.5)) drop-shadow(0 0 50px rgba(59,130,246,0.3)) brightness(1.05)',
-              ]}}
-              transition={{ duration:3.5, repeat:Infinity, ease:'easeInOut' }}
+              className="relative select-none"
+              style={{ width:240, filter:'drop-shadow(0 0 20px rgba(6,182,212,0.6)) drop-shadow(0 0 40px rgba(59,130,246,0.3))' }}
+              animate={{
+                y: [0,-10,0],
+                filter:[
+                  'drop-shadow(0 0 18px rgba(6,182,212,0.6)) drop-shadow(0 0 36px rgba(59,130,246,0.3)) brightness(1.05)',
+                  'drop-shadow(0 0 30px rgba(59,130,246,0.8)) drop-shadow(0 0 60px rgba(139,92,246,0.5)) brightness(1.12)',
+                  'drop-shadow(0 0 18px rgba(6,182,212,0.6)) drop-shadow(0 0 36px rgba(59,130,246,0.3)) brightness(1.05)',
+                ],
+              }}
+              transition={{ duration:4, repeat:Infinity, ease:'easeInOut' }}
             />
 
-            {/* "Building your site..." badge */}
+            {/* "AI Building..." badge above robot */}
             <motion.div
-              className="absolute top-6 -right-4 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-white"
-              style={{ background:'rgba(6,182,212,0.15)', border:'1px solid rgba(6,182,212,0.5)', backdropFilter:'blur(10px)' }}
-              animate={{ scale:[1,1.06,1], boxShadow:['0 0 10px rgba(6,182,212,0.3)','0 0 24px rgba(6,182,212,0.7)','0 0 10px rgba(6,182,212,0.3)'] }}
-              transition={{ duration:2.2, repeat:Infinity, ease:'easeInOut' }}>
-              <motion.span
-                className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block"
-                animate={{ opacity:[1,0.2,1] }} transition={{ duration:0.8, repeat:Infinity }}/>
-              Building your site...
+              className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold text-white"
+              style={{ background:'rgba(6,182,212,0.15)', border:'1px solid rgba(6,182,212,0.5)', backdropFilter:'blur(8px)' }}
+              animate={{ boxShadow:['0 0 8px rgba(6,182,212,0.3)','0 0 20px rgba(6,182,212,0.7)','0 0 8px rgba(6,182,212,0.3)'] }}
+              transition={{ duration:2, repeat:Infinity }}>
+              <motion.span className="w-1.5 h-1.5 rounded-full bg-cyan-400"
+                animate={{ opacity:[1,0.2,1] }} transition={{ duration:0.7, repeat:Infinity }}/>
+              AI Building Your Site
             </motion.div>
 
-            {/* Code snippet floating */}
-            <motion.div
-              className="absolute -left-8 bottom-24 px-3 py-2 rounded-lg text-[10px] font-mono text-cyan-300 pointer-events-none"
-              style={{ background:'rgba(3,7,18,0.85)', border:'1px solid rgba(6,182,212,0.3)' }}
-              animate={{ opacity:[0.6,1,0.6], x:[-2,2,-2] }}
-              transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}>
-              &lt;div class="hero"&gt;<br/>
-              &nbsp;&nbsp;+312% more leads<br/>
-              &lt;/div&gt;
-            </motion.div>
-          </motion.div>
+            {/* Particles flowing from robot finger toward mockup */}
+            {[0,1,2,3,4].map(i => (
+              <motion.div key={i}
+                className="absolute rounded-full pointer-events-none"
+                style={{ right:-4, top:'52%', width:5, height:5, background:'#06b6d4', boxShadow:'0 0 8px #06b6d4' }}
+                animate={{ x:[0,60,120], opacity:[0,1,0], scale:[0.5,1.2,0.3] }}
+                transition={{ duration:1.4, repeat:Infinity, ease:'easeOut', delay:i*0.28 }}
+              />
+            ))}
+          </div>
+
+          {/* Glowing beam from robot finger to mockup */}
+          <motion.div
+            className="flex-shrink-0 pointer-events-none"
+            style={{ width:30, height:2, background:'linear-gradient(90deg,rgba(6,182,212,0.8),rgba(59,130,246,0.6))', borderRadius:99, alignSelf:'center', marginTop:20, zIndex:1 }}
+            animate={{ opacity:[0.4,1,0.4], scaleX:[0.8,1.1,0.8], boxShadow:['0 0 6px #06b6d4','0 0 16px #3b82f6','0 0 6px #06b6d4'] }}
+            transition={{ duration:1.2, repeat:Infinity }}
+          />
+
+          {/* ── Browser Mockup (right) ── */}
+          <div className="flex-shrink-0" style={{ zIndex:2 }}>
+            <AnimatedMockup />
+          </div>
+
         </motion.div>
       </div>
     </div>
