@@ -778,7 +778,7 @@ const StaticElectricity = ({
         const x2      = x1 + Math.cos(angle) * reach;
         const y2      = y1 + Math.sin(angle) * reach;
 
-        drawArc(x1, y1, x2, y2, isBolt ? 7 : 3, alpha, color, isBolt ? 5 : 2);
+        drawArc(x1, y1, x2, y2, isBolt ? 7 : 3, alpha, color, isBolt ? 1.8 : 0.7);
 
         // Check if bolt endpoint hits a card
         if (hitRectsRef?.current && onHit) {
@@ -802,13 +802,13 @@ const StaticElectricity = ({
           const my  = (y1 + y2) / 2 + (Math.random() - 0.5) * 20;
           const bx  = mx + (Math.random() - 0.5) * 100;
           const by  = my + (Math.random() - 0.5) * 100;
-          drawArc(mx, my, bx, by, 4, alpha * 0.55, color, 2);
+          drawArc(mx, my, bx, by, 4, alpha * 0.55, color, 0.7);
 
           // Occasional second branch
           if (Math.random() < 0.3) {
             const bx2 = mx + (Math.random() - 0.5) * 70;
             const by2 = my + (Math.random() - 0.5) * 70;
-            drawArc(mx, my, bx2, by2, 3, alpha * 0.35, color, 1.2);
+            drawArc(mx, my, bx2, by2, 3, alpha * 0.35, color, 0.5);
           }
         }
       }
