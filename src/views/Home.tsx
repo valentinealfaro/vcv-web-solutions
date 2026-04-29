@@ -922,7 +922,7 @@ const StatsSection = () => {
   const hitRectsRef = useRef<(DOMRect | null)[]>([null, null, null, null]);
 
   useEffect(() => {
-    // Swap two random cards every 2.5 s
+    // Swap two random cards every 7 s
     const shuffleId = setInterval(() => {
       setOrder(prev => {
         const next = [...prev];
@@ -932,12 +932,12 @@ const StatsSection = () => {
         [next[i], next[j]] = [next[j], next[i]];
         return next;
       });
-    }, 2500);
+    }, 7000);
 
-    // Randomly toggle some cards to square every 3 s
+    // Randomly toggle some cards to square every 8 s
     const shapeId = setInterval(() => {
       setShapes(STAT_CARDS.map(() => Math.random() < 0.45));
-    }, 3000);
+    }, 8000);
 
     // Keep hitRectsRef updated every frame
     let rafId: number;
@@ -984,7 +984,7 @@ const StatsSection = () => {
                   layout
                   layoutId={`stat-${card.id}`}
                   ref={(el: HTMLDivElement | null) => { wrapperRefs.current[pos] = el; }}
-                  transition={{ layout: { duration: 0.75, ease: [0.16, 1, 0.3, 1] } }}>
+                  transition={{ layout: { duration: 1.4, ease: [0.16, 1, 0.3, 1] } }}>
                   <StatCard {...card} isSquare={shapes[pos]} />
                 </motion.div>
               );
