@@ -1203,12 +1203,12 @@ const PerfectFor = () => {
       {/* ── Orbis space video background ── */}
       <video autoPlay loop muted playsInline
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-        style={{ zIndex:0, opacity:0.38 }}>
+        style={{ zIndex:0, opacity:0.85 }}>
         <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_045634_e1c98c76-1265-4f5c-882a-4276f2080894.mp4" type="video/mp4"/>
       </video>
-      {/* VCV dark-blue tint so it matches the site palette */}
+      {/* Light VCV tint — just enough to blend edges, let the video breathe */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex:1,
-        background:'linear-gradient(160deg,rgba(3,7,18,0.70) 0%,rgba(10,15,40,0.50) 50%,rgba(3,7,18,0.72) 100%)' }}/>
+        background:'linear-gradient(160deg,rgba(3,7,18,0.35) 0%,rgba(10,15,40,0.18) 50%,rgba(3,7,18,0.38) 100%)' }}/>
 
       <AuroraCanvas />
 
