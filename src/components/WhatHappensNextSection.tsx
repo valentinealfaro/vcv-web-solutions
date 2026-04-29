@@ -63,6 +63,7 @@ const WordSpeller = ({
   cW, cH, fading, cycle,
 }: { cW: number; cH: number; fading: boolean; cycle: number }) => {
   const [entries,  setEntries]  = useState<WordEntry[]>([]);
+  const [bursting, setBursting] = useState(false);   // pre-explosion pulse phase
   const prevFading = useRef(false);
   const timers     = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -72,22 +73,17 @@ const WordSpeller = ({
   // Unmount cleanup
   useEffect(() => () => clearAll(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Safety: as soon as the staircase starts rebuilding (fading→false), wipe words instantly
+  // Safety: staircase rebuilding — wipe immediately
   useEffect(() => {
-    if (!fading) { clearAll(); setEntries([]); }
+    if (!fading) { clearAll(); setBursting(false); setEntries([]); }
   }, [fading]);
 
   useEffect(() => {
-    // Rising-edge only
     if (!fading || prevFading.current) { prevFading.current = fading; return; }
     prevFading.current = fading;
 
-    // ── Fit all three stacked words between heading (28%) and CTA button (78%) ──
-    // Available band height:  cH * 0.50
-    // stackH = 3*(7*sws-3) + 2*round(sws*0.55) ≈ 22.1*sws - 9
-    // Solve for sws: sws = (availH + 9) / 22.1
     const bandTop  = cH * 0.28;
-    const bandBot  = cH * 0.78;   // stop well above CTA button
+    const bandBot  = cH * 0.78;
     const availH   = bandBot - bandTop;
     const sws      = Math.min(28, Math.max(16, Math.floor((availH + 9) / 22.1)));
     const swh      = wordHeight(sws);
@@ -95,15 +91,18 @@ const WordSpeller = ({
     const stackH   = 3 * swh + 2 * gap;
     const sy       = bandTop + (availH - stackH) / 2;
 
-    // ── Always show GET / FREE / DEMO stacked ────────────────────────────
+    // Show all three stacked
     q(() => setEntries([
       { word:'GET',  tiltDeg:0, opacity:0.94, yPx:sy,               ws:sws },
       { word:'FREE', tiltDeg:0, opacity:0.94, yPx:sy + swh + gap,   ws:sws },
       { word:'DEMO', tiltDeg:0, opacity:0.94, yPx:sy + 2*(swh+gap), ws:sws },
     ]), 0);
 
-    // Hold for 5 s, then clear (safety effect also clears on fading→false)
-    q(() => setEntries([]), 5000);
+    // At 4.2 s: trigger burst pulse (cells scale up + glow)
+    q(() => setBursting(true), 4200);
+
+    // At 5 s: clear entries — AnimatePresence fires radial-explosion exit
+    q(() => { setBursting(false); setEntries([]); }, 5000);
   }, [fading, cycle]);
 
   if (!cW || entries.length === 0) return null;
@@ -118,24 +117,45 @@ const WordSpeller = ({
             <motion.div
               key={`${entry.word}-${cycle}-${ei}`}
               className="absolute inset-0"
-              style={{ transformOrigin: 'center center' }}
-              initial={{ rotate: entry.tiltDeg * 0.6, opacity: 0 }}
-              animate={{ rotate: entry.tiltDeg, opacity: 1 }}
-              exit={{ rotate: 0, opacity: 0 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}>
-              {cells.map((c, i) => (
-                <motion.div key={c.k}
-                  style={{ position: 'absolute', width: c.wc, height: c.wc, borderRadius: 4,
-                    background: c.color, border: `1.5px solid ${c.color}`,
-                    boxShadow: `0 0 10px ${c.color}90, 0 0 24px ${c.color}45` }}
-                  initial={{ x: (Math.random()-0.5)*cW, y: (Math.random()-0.5)*cH,
-                             scale: 0, opacity: 0, rotate: (Math.random()-0.5)*180 }}
-                  animate={{ x: c.x, y: c.y, scale: 1, opacity: entry.opacity, rotate: 0 }}
-                  exit={{ x: (Math.random()-0.5)*cW, y: (Math.random()-0.5)*cH,
-                          scale: 0, opacity: 0 }}
-                  transition={{ type: 'spring', stiffness: 80, damping: 13, delay: i * 0.005 }}
-                />
-              ))}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 1 }}   // keep wrapper visible; cells handle their own exit
+              transition={{ duration: 0.4 }}>
+              {cells.map((c, i) => {
+                // Radial direction from section centre for explosion exit
+                const dx = c.x - cW / 2;
+                const dy = c.y - cH / 2;
+                const dist = Math.hypot(dx, dy) || 1;
+                const nx = dx / dist, ny = dy / dist;
+                const thrust = 500 + (i % 9) * 70;
+
+                return (
+                  <motion.div key={c.k}
+                    style={{ position: 'absolute', width: c.wc, height: c.wc, borderRadius: 4,
+                      background: c.color, border: `1.5px solid ${c.color}` }}
+                    initial={{ x: (Math.random()-0.5)*cW, y: (Math.random()-0.5)*cH,
+                               scale: 0, opacity: 0, rotate: (Math.random()-0.5)*180 }}
+                    animate={bursting
+                      // Pulse phase: scale up and flare
+                      ? { x: c.x + nx*30, y: c.y + ny*30, scale: 1.7, opacity: 1, rotate: 0,
+                          boxShadow: `0 0 28px ${c.color}, 0 0 55px ${c.color}80` }
+                      // Normal hold
+                      : { x: c.x, y: c.y, scale: 1, opacity: entry.opacity, rotate: 0,
+                          boxShadow: `0 0 10px ${c.color}90, 0 0 24px ${c.color}45` }}
+                    exit={{
+                      // Radial explosion outward then scatter
+                      x: c.x + nx * thrust,
+                      y: c.y + ny * thrust,
+                      scale: 0,
+                      opacity: 0,
+                      rotate: (i % 2 === 0 ? 1 : -1) * (90 + (i % 4) * 45),
+                    }}
+                    transition={bursting
+                      ? { duration: 0.25, ease: 'easeOut', delay: i * 0.001 }
+                      : { type: 'spring', stiffness: 80, damping: 13, delay: i * 0.005 }}
+                  />
+                );
+              })}
             </motion.div>
           );
         })}
