@@ -1962,27 +1962,74 @@ const WhyChooseUs = () => {
             </p>
 
             {/* Feature dot nav */}
-            <div className="space-y-3">
+            <div className="space-y-1">
               {WHY_FEATURES.map((feat, i) => (
                 <motion.button key={i}
                   onClick={() => { setIdx(i); setPhase('enter'); }}
-                  className="flex items-center gap-3 w-full text-left group"
-                  animate={{ opacity: i === idx ? 1 : 0.45 }}
-                  transition={{ duration:0.3 }}>
+                  className="relative flex items-center gap-3 w-full text-left group px-2 py-2 rounded-lg overflow-hidden"
+                  animate={{ opacity: i === idx ? 1 : 0.42 }}
+                  transition={{ duration: 0.3 }}>
+
+                  {/* ── Sliding background highlight ── */}
+                  <AnimatePresence>
+                    {i === idx && (
+                      <motion.div
+                        key={`bg-${idx}`}
+                        className="absolute inset-0 rounded-lg pointer-events-none"
+                        style={{ background: `linear-gradient(90deg,${feat.color}22 0%,${feat.color}06 100%)`,
+                          border: `1px solid ${feat.color}25` }}
+                        initial={{ x: '-100%' }}
+                        animate={{ x: '0%' }}
+                        exit={{ x: '100%', opacity: 0 }}
+                        transition={{ type: 'spring', stiffness: 160, damping: 22 }}
+                      />
+                    )}
+                  </AnimatePresence>
+
+                  {/* ── Shimmer beam sweeps left → right ── */}
+                  <AnimatePresence>
+                    {i === idx && (
+                      <motion.div
+                        key={`shimmer-${idx}`}
+                        className="absolute inset-y-0 w-12 pointer-events-none"
+                        style={{ background: `linear-gradient(90deg,transparent,${feat.color}50,transparent)`,
+                          borderRadius: 4 }}
+                        initial={{ left: '-10%' }}
+                        animate={{ left: '110%' }}
+                        transition={{ duration: 0.75, ease: 'easeInOut', delay: 0.1 }}
+                      />
+                    )}
+                  </AnimatePresence>
+
+                  {/* ── Dot ── */}
                   <motion.div
-                    className="w-2 h-2 rounded-full flex-shrink-0"
-                    animate={{ scale: i === idx ? 1.6 : 1, background: feat.color }}
-                    style={{ boxShadow: i === idx ? `0 0 8px ${feat.color}` : 'none' }}
-                    transition={{ duration:0.3 }}/>
-                  <span className="text-sm font-semibold"
-                    style={{ color: i === idx ? feat.color : 'rgba(148,163,184,0.7)' }}>
+                    className="w-2.5 h-2.5 rounded-full flex-shrink-0 relative z-10"
+                    animate={{ scale: i === idx ? 1.7 : 1, background: feat.color }}
+                    style={{ boxShadow: i === idx ? `0 0 10px ${feat.color}, 0 0 20px ${feat.color}60` : 'none' }}
+                    transition={{ duration: 0.3 }}
+                  />
+
+                  {/* ── Label slides in from left when it becomes active ── */}
+                  <motion.span
+                    key={`label-${i}-${i === idx}`}
+                    className="text-sm font-bold relative z-10 flex-shrink-0"
+                    style={{ color: i === idx ? feat.color : 'rgba(148,163,184,0.7)',
+                      textShadow: i === idx ? `0 0 12px ${feat.color}80` : 'none' }}
+                    initial={{ x: i === idx ? -50 : 0, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+                  >
                     {feat.title}
-                  </span>
+                  </motion.span>
+
+                  {/* ── Progress sweep line ── */}
                   {i === idx && (
-                    <motion.div className="flex-1 h-[1px]"
-                      style={{ background:`linear-gradient(90deg,${feat.color}80,transparent)` }}
-                      initial={{ scaleX:0, originX:0 }} animate={{ scaleX:1 }}
-                      transition={{ duration: 4.0, ease:'linear' }}/>
+                    <motion.div className="flex-1 h-px relative z-10"
+                      style={{ background: `linear-gradient(90deg,${feat.color}90,transparent)` }}
+                      initial={{ scaleX: 0, originX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 4.0, ease: 'linear' }}
+                    />
                   )}
                 </motion.button>
               ))}
