@@ -82,44 +82,28 @@ const WordSpeller = ({
     if (!fading || prevFading.current) { prevFading.current = fading; return; }
     prevFading.current = fading;
 
-    // ── Sizes ────────────────────────────────────────────────────────────
-    const ws       = calcWS(cW, 0.88);
-    const wh       = wordHeight(ws);
-    const bandTop  = cH * 0.30;
-    const bandBot  = cH * 0.90;
-    const cy       = bandTop + (bandBot - bandTop - wh) / 2;
-
-    // Stacked sizes (used on cycle % 4 === 3)
-    const sws      = calcWS(cW, 0.78);
+    // ── Fit all three stacked words between heading (28%) and CTA button (78%) ──
+    // Available band height:  cH * 0.50
+    // stackH = 3*(7*sws-3) + 2*round(sws*0.55) ≈ 22.1*sws - 9
+    // Solve for sws: sws = (availH + 9) / 22.1
+    const bandTop  = cH * 0.28;
+    const bandBot  = cH * 0.78;   // stop well above CTA button
+    const availH   = bandBot - bandTop;
+    const sws      = Math.min(28, Math.max(16, Math.floor((availH + 9) / 22.1)));
     const swh      = wordHeight(sws);
     const gap      = Math.round(sws * 0.55);
     const stackH   = 3 * swh + 2 * gap;
-    const sy       = Math.max(cH * 0.28, (cH - stackH) / 2);
+    const sy       = bandTop + (availH - stackH) / 2;
 
-    // ── One word per fade window — rotate through GET → FREE → DEMO → ALL ─
-    const phase = cycle % 4;
+    // ── Always show GET / FREE / DEMO stacked ────────────────────────────
+    q(() => setEntries([
+      { word:'GET',  tiltDeg:0, opacity:0.94, yPx:sy,               ws:sws },
+      { word:'FREE', tiltDeg:0, opacity:0.94, yPx:sy + swh + gap,   ws:sws },
+      { word:'DEMO', tiltDeg:0, opacity:0.94, yPx:sy + 2*(swh+gap), ws:sws },
+    ]), 0);
 
-    if (phase === 3) {
-      // Every 4th fade: show all three stacked simultaneously
-      q(() => setEntries([
-        { word:'GET',  tiltDeg:0, opacity:0.94, yPx:sy,               ws:sws },
-        { word:'FREE', tiltDeg:0, opacity:0.94, yPx:sy + swh + gap,   ws:sws },
-        { word:'DEMO', tiltDeg:0, opacity:0.94, yPx:sy + 2*(swh+gap), ws:sws },
-      ]), 0);
-    } else {
-      const WORDS  = ['GET', 'FREE', 'DEMO'] as const;
-      const TILTS  = [0, -5, 5];
-      q(() => setEntries([{
-        word: WORDS[phase], tiltDeg: TILTS[phase],
-        opacity: 0.92, yPx: cy, ws,
-      }]), 0);
-    }
-
-    // Hold for 5 seconds, then clear before the next fade window
+    // Hold for 5 s, then clear (safety effect also clears on fading→false)
     q(() => setEntries([]), 5000);
-
-    // `cycle` is safe in deps now — the safety effect above handles clearing
-    // when fading→false, so no in-flight timers survive past the staircase fade
   }, [fading, cycle]);
 
   if (!cW || entries.length === 0) return null;
