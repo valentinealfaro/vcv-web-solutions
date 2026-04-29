@@ -4,7 +4,7 @@ import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck, Loader2 
 import Link from 'next/link';
 import { cn } from '../lib/utils';
 import { useState, useEffect, useRef } from 'react';
-import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay, RainbowWavesCanvas, BouncingBall } from '@/components/PageEffects';
+import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay, PricingBgCanvas } from '@/components/PageEffects';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { DottedSurface } from '@/components/ui/dotted-surface';
 
@@ -246,8 +246,7 @@ export default function Pricing() {
 
       {/* Pricing Cards — 2 columns with static electricity bg */}
       <div className="relative py-16 overflow-hidden bg-[#030712]">
-        <StaticElectricity />
-        <BouncingBall />
+        <PricingBgCanvas />
         <SectionOrbs variant="blue" />
         <GridOverlay gridOp={0.25} dotOp={0.1} />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch relative z-10">

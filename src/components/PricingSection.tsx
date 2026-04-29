@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { CheckCircle2, ArrowRight, Zap, Loader2, Tag } from 'lucide-react';
-import { RainbowWavesCanvas, BouncingBall } from '@/components/PageEffects';
+import { PricingBgCanvas } from '@/components/PageEffects';
 
 const plans = [
   {
@@ -191,11 +191,10 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
 
 export const PricingSection = () => (
   <section className="py-24 bg-[#030712] relative overflow-hidden">
-    <RainbowWavesCanvas />
-    <BouncingBall />
-    {/* dark overlay keeps cards readable over the waves */}
-    <div className="absolute inset-0 bg-[#030712]/55 pointer-events-none" />
-    <div className="absolute inset-0 bg-grid opacity-20 pointer-events-none" />
+    <PricingBgCanvas />
+    {/* dark overlay keeps cards readable */}
+    <div className="absolute inset-0 bg-[#030712]/52 pointer-events-none" />
+    <div className="absolute inset-0 bg-grid opacity-18 pointer-events-none" />
 
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <motion.div className="text-center mb-4"
