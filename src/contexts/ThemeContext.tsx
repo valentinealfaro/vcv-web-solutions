@@ -67,6 +67,14 @@ export const THEMES: Theme[] = [
     filter: 'hue-rotate(320deg) saturate(1.8) brightness(0.94)',
     swatch: ['#ff0044', '#cc00ff'],
   },
+  {
+    id: 'light',
+    label: 'Light Mode',
+    emoji: '☀️',
+    /* invert + hue-rotate(180) flips dark→light while keeping colour hues */
+    filter: 'invert(1) hue-rotate(180deg)',
+    swatch: ['#ffffff', '#e5e7eb'],
+  },
 ];
 
 interface ThemeCtx {
@@ -97,8 +105,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const html = document.documentElement;
     html.style.filter = THEMES[themeIdx].filter;
+    html.setAttribute('data-theme', THEMES[themeIdx].id);
     localStorage.setItem('vcv-theme-idx', String(themeIdx));
-    return () => { html.style.filter = ''; };
+    return () => { html.style.filter = ''; html.removeAttribute('data-theme'); };
   }, [themeIdx]);
 
   return (

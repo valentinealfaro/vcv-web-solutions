@@ -6,6 +6,16 @@
 }
 
 /* ============================================================
+   LIGHT THEME — re-invert media so photos/videos look normal
+============================================================ */
+html[data-theme="light"] img,
+html[data-theme="light"] video,
+html[data-theme="light"] iframe,
+html[data-theme="light"] svg image {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* ============================================================
    BASE
 ============================================================ */
 @layer base {
