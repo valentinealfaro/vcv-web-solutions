@@ -1,9 +1,9 @@
 'use client';
 import Link from 'next/link';
-import { motion } from 'motion/react';
+import { motion, useMotionValue, useSpring } from 'motion/react';
 import { Mail, Phone, MapPin, Star, Zap, CheckCircle2 } from 'lucide-react';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /* ─── HLS video background ─────────────────────────────────── */
 const HLS_SRC = 'https://stream.mux.com/Kec29dVyJgiPdtWaQtPuEiiGHkJIYQAVUJcNiIHUYeo.m3u8';
@@ -70,6 +70,95 @@ const STATS = [
   { val:'30-Day', label:'Results Guarantee' },
 ];
 
+/* ─── Stat card with traveling dot + mouse-tilt ─────────────── */
+const StatTiltCard = ({ s, i }: { s: typeof STATS[0]; i: number }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [dims,   setDims]   = useState({ w: 200, h: 80 });
+
+  const rotX = useMotionValue(0);
+  const rotY = useMotionValue(0);
+  const sRotX = useSpring(rotX, { stiffness: 200, damping: 22 });
+  const sRotY = useSpring(rotY, { stiffness: 200, damping: 22 });
+
+  useEffect(() => {
+    const el = cardRef.current; if (!el) return;
+    const measure = () => setDims({ w: el.offsetWidth, h: el.offsetHeight });
+    measure();
+    const obs = new ResizeObserver(measure);
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = cardRef.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width  - 0.5;
+    const y = (e.clientY - r.top)  / r.height - 0.5;
+    rotY.set(x * 16);
+    rotX.set(-y * 16);
+  };
+  const onLeave = () => { rotX.set(0); rotY.set(0); };
+
+  const { w, h } = dims;
+  const r = 12;
+  const path = `M ${r} 0 L ${w-r} 0 Q ${w} 0 ${w} ${r} L ${w} ${h-r} Q ${w} ${h} ${w-r} ${h} L ${r} ${h} Q 0 ${h} 0 ${h-r} L 0 ${r} Q 0 0 ${r} 0 Z`;
+  const dur = `${2.6 + i * 0.5}s`;
+  const uid = `fdot-${i}`;
+
+  return (
+    <motion.div
+      initial={{ opacity:0, y:10 }} whileInView={{ opacity:1, y:0 }}
+      viewport={{ once:true }} transition={{ delay: i * 0.08 }}
+      style={{ perspective: '600px' }}>
+      <motion.div
+        ref={cardRef}
+        className="text-center px-4 py-4 rounded-xl relative cursor-default select-none"
+        style={{
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          rotateX: sRotX, rotateY: sRotY,
+          transformStyle: 'preserve-3d',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
+        }}
+        onMouseMove={onMove}
+        onMouseLeave={onLeave}
+        whileHover={{ scale: 1.04 }}>
+
+        {/* Traveling dot around the border */}
+        <svg className="absolute inset-0 pointer-events-none" width="100%" height="100%"
+          viewBox={`0 0 ${w} ${h}`} style={{ overflow:'visible', zIndex:5 }}>
+          <defs>
+            <filter id={uid} x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="4" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          {/* Glow halo */}
+          <circle r="12" fill="rgba(37,99,235,0.14)" filter={`url(#${uid})`}>
+            <animateMotion dur={dur} repeatCount="indefinite" path={path}/>
+          </circle>
+          {/* Coloured dot */}
+          <circle r="4.5" fill="rgba(139,92,246,0.95)" filter={`url(#${uid})`}>
+            <animateMotion dur={dur} repeatCount="indefinite" path={path}/>
+          </circle>
+          {/* Bright core */}
+          <circle r="2" fill="white">
+            <animateMotion dur={dur} repeatCount="indefinite" path={path}/>
+          </circle>
+        </svg>
+
+        <div className="relative z-10 font-display text-2xl text-white mb-0.5"
+          style={{ textShadow:'0 0 20px rgba(59,130,246,0.5)' }}>
+          {s.val}
+        </div>
+        <div className="relative z-10 text-gray-500 text-xs uppercase tracking-wider font-semibold">
+          {s.label}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 export const Footer = () => (
   <footer className="relative bg-[#030712] overflow-hidden">
 
@@ -108,17 +197,7 @@ export const Footer = () => (
     <div className="relative z-10 border-b border-white/[0.04]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {STATS.map((s, i) => (
-            <motion.div key={i}
-              initial={{ opacity:0, y:10 }} whileInView={{ opacity:1, y:0 }}
-              viewport={{ once:true }} transition={{ delay: i * 0.08 }}
-              className="text-center px-4 py-3 rounded-xl"
-              style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.06)' }}>
-              <div className="font-display text-2xl text-white mb-0.5"
-                style={{ textShadow:'0 0 20px rgba(59,130,246,0.5)' }}>{s.val}</div>
-              <div className="text-gray-500 text-xs uppercase tracking-wider font-semibold">{s.label}</div>
-            </motion.div>
-          ))}
+          {STATS.map((s, i) => <StatTiltCard key={i} s={s} i={i} />)}
         </div>
       </div>
     </div>
