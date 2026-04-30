@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useInView } from 'motion/react';
 import Link from 'next/link';
@@ -57,259 +57,128 @@ const getWordCellsAt = (
   return cells;
 };
 
-interface WordEntry { word: string; tiltDeg: number; opacity: number; yPx: number; ws: number }
-
-const WordSpeller = ({
-  cW, cH, fading, cycle,
-}: { cW: number; cH: number; fading: boolean; cycle: number }) => {
-  const [entries,  setEntries]  = useState<WordEntry[]>([]);
-  const [bursting, setBursting] = useState(false);   // pre-explosion pulse phase
-  const prevFading = useRef(false);
-  const timers     = useRef<ReturnType<typeof setTimeout>[]>([]);
-
-  const clearAll = () => { timers.current.forEach(clearTimeout); timers.current = []; };
-  const q = (fn: () => void, ms: number) => { timers.current.push(setTimeout(fn, ms)); };
-
-  // Unmount cleanup
-  useEffect(() => () => clearAll(), []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Safety: staircase rebuilding — wipe immediately
-  useEffect(() => {
-    if (!fading) { clearAll(); setBursting(false); setEntries([]); }
-  }, [fading]);
-
-  useEffect(() => {
-    if (!fading || prevFading.current) { prevFading.current = fading; return; }
-    prevFading.current = fading;
-
-    const bandTop  = cH * 0.28;
-    const bandBot  = cH * 0.78;
-    const availH   = bandBot - bandTop;
-    const sws      = Math.min(28, Math.max(16, Math.floor((availH + 9) / 22.1)));
-    const swh      = wordHeight(sws);
-    const gap      = Math.round(sws * 0.55);
-    const stackH   = 3 * swh + 2 * gap;
-    const sy       = bandTop + (availH - stackH) / 2;
-
-    // Show all three stacked
-    q(() => setEntries([
-      { word:'GET',  tiltDeg:0, opacity:0.94, yPx:sy,               ws:sws },
-      { word:'FREE', tiltDeg:0, opacity:0.94, yPx:sy + swh + gap,   ws:sws },
-      { word:'DEMO', tiltDeg:0, opacity:0.94, yPx:sy + 2*(swh+gap), ws:sws },
-    ]), 0);
-
-    // At 4.2 s: trigger burst pulse (cells scale up + glow)
-    q(() => setBursting(true), 4200);
-
-    // At 5 s: clear entries — AnimatePresence fires radial-explosion exit
-    q(() => { setBursting(false); setEntries([]); }, 5000);
-  }, [fading, cycle]);
-
-  if (!cW || entries.length === 0) return null;
-
-  return (
-    <div className="absolute inset-0 pointer-events-none hidden md:block"
-      style={{ zIndex: 30, overflow: 'hidden' }}>
-      <AnimatePresence>
-        {entries.map((entry, ei) => {
-          const cells = getWordCellsAt(entry.word, cW, entry.yPx, entry.ws);
-          return (
-            <motion.div
-              key={`${entry.word}-${cycle}-${ei}`}
-              className="absolute inset-0"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 1 }}   // keep wrapper visible; cells handle their own exit
-              transition={{ duration: 0.4 }}>
-              {cells.map((c, i) => {
-                // Radial direction from section centre for explosion exit
-                const dx = c.x - cW / 2;
-                const dy = c.y - cH / 2;
-                const dist = Math.hypot(dx, dy) || 1;
-                const nx = dx / dist, ny = dy / dist;
-                const thrust = 500 + (i % 9) * 70;
-
-                return (
-                  <motion.div key={c.k}
-                    style={{ position: 'absolute', width: c.wc, height: c.wc, borderRadius: 4,
-                      background: c.color, border: `1.5px solid ${c.color}` }}
-                    initial={{ x: (Math.random()-0.5)*cW, y: (Math.random()-0.5)*cH,
-                               scale: 0, opacity: 0, rotate: (Math.random()-0.5)*180 }}
-                    animate={bursting
-                      // Pulse phase: scale up and flare
-                      ? { x: c.x + nx*30, y: c.y + ny*30, scale: 1.7, opacity: 1, rotate: 0,
-                          boxShadow: `0 0 28px ${c.color}, 0 0 55px ${c.color}80` }
-                      // Normal hold
-                      : { x: c.x, y: c.y, scale: 1, opacity: entry.opacity, rotate: 0,
-                          boxShadow: `0 0 10px ${c.color}90, 0 0 24px ${c.color}45` }}
-                    exit={{
-                      // Radial explosion outward then scatter
-                      x: c.x + nx * thrust,
-                      y: c.y + ny * thrust,
-                      scale: 0,
-                      opacity: 0,
-                      rotate: (i % 2 === 0 ? 1 : -1) * (90 + (i % 4) * 45),
-                    }}
-                    transition={bursting
-                      ? { duration: 0.25, ease: 'easeOut', delay: i * 0.001 }
-                      : { type: 'spring', stiffness: 80, damping: 13, delay: i * 0.005 }}
-                  />
-                );
-              })}
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
-    </div>
-  );
-};
-
-/* ─── Checkerboard background ─────────────────────────────── */
-const CELL = 50;
-// More vibrant, varied palette
-const CHECKER_COLORS: [number,number,number][] = [
-  [59,  130, 246],   // blue
-  [99,  102, 241],   // indigo
-  [168, 85,  247],   // purple
-  [6,   182, 212],   // cyan
-  [16,  185, 129],   // emerald
-  [245, 158, 11],    // amber
-  [236, 72,  153],   // pink
-  [239, 68,  68],    // red
-  [20,  184, 166],   // teal
-  [234, 179, 8],     // yellow
+/* ─── Magnet Square Pool (replaces CheckerBG canvas + WordSpeller) ─────── */
+const HEX_PALETTE = [
+  '#3b82f6','#6366f1','#a855f7','#06b6d4',
+  '#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6','#eab308',
 ];
+const POOL_N = 270;
 
-const CheckerBG = ({ cycle, ballPositions, clearing }: {
-  cycle: number;
-  ballPositions: { svgX: number; svgY: number }[];
-  clearing: boolean;
-}) => {
-  const canvasRef   = useRef<HTMLCanvasElement>(null);
-  const clearingRef = useRef(clearing);
-  useEffect(() => { clearingRef.current = clearing; }, [clearing]);
+interface PSq { id:number; rx:number; ry:number; col:string; sz:number }
+type SpellPhase = 'idle'|'gather'|'burst'|'return';
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+// Deterministic spread so squares fill section evenly on every render
+const buildPool = (cW:number, cH:number): PSq[] =>
+  Array.from({length:POOL_N},(_,i)=>({
+    id:  i,
+    rx:  ((i*1618 + i*i*37) % Math.max(1, cW-70)) + 35,
+    ry:  ((i*971  + i*i*61) % Math.max(1, cH-70)) + 35,
+    col: HEX_PALETTE[i % HEX_PALETTE.length],
+    sz:  26 + (i % 5) * 7,          // 26 / 33 / 40 / 47 / 54 px
+  }));
 
-    let animId: number;
-    let spawnTick = 0;
+const SquarePool = ({
+  cW, cH, fading, cycle,
+}:{cW:number;cH:number;fading:boolean;cycle:number}) => {
 
-    interface LitCell { c: number; r: number; alpha: number; col: [number,number,number]; decay: number; rising: boolean }
-    let lit: LitCell[] = [];
+  const [sPhase,  setSPhase]  = useState<SpellPhase>('idle');
+  const [assigns, setAssigns] = useState(new Map<number,{x:number;y:number;col:string;sz:number}>());
+  const pool = useMemo(()=>buildPool(cW,cH),[cW,cH]);
 
-    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
-    resize();
-    window.addEventListener('resize', resize);
+  const prevFading = useRef(false);
+  const tids = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const clearAll = ()=>{ tids.current.forEach(clearTimeout); tids.current=[]; };
+  const q = (fn:()=>void,ms:number)=>tids.current.push(setTimeout(fn,ms));
 
-    const getBlocked = () => {
-      const set = new Set<string>();
-      const W = canvas.width;
-      const isMobile = W < 768;
+  useEffect(()=>()=>clearAll(),[]);                     // unmount
 
-      if (isMobile) {
-        // On mobile: only block a narrow center strip for the heading text
-        const hL = Math.floor(W * 0.1 / CELL), hR = Math.ceil(W * 0.9 / CELL), hB = Math.ceil(120 / CELL);
-        for (let c = hL; c <= hR; c++) for (let r = 0; r <= hB; r++) set.add(`${c},${r}`);
-        // No ball blocking on mobile — squares can go everywhere else
-      } else {
-        // Desktop: block heading zone + staircase ball zones
-        const hL = Math.floor(W * 0.12 / CELL), hR = Math.ceil(W * 0.88 / CELL), hB = Math.ceil(265 / CELL);
-        for (let c = hL; c <= hR; c++) for (let r = 0; r <= hB; r++) set.add(`${c},${r}`);
-        const svgW = W * 0.88, svgL = (W - svgW) / 2, svgTop = 270;
-        ballPositions.forEach(({ svgX, svgY }) => {
-          const bc = Math.round((svgL + (svgX / 700) * svgW) / CELL);
-          const br = Math.round((svgTop + (svgY / 460) * 500) / CELL);
-          for (let dc = -3; dc <= 3; dc++) for (let dr = -3; dr <= 3; dr++) set.add(`${bc+dc},${br+dr}`);
-        });
-      }
-      return set;
-    };
+  // Safety: staircase rebuilding — snap back to idle
+  useEffect(()=>{
+    if(!fading){ clearAll(); setSPhase('idle'); setAssigns(new Map()); }
+  },[fading]);
 
-    const draw = (ts: number) => {
-      const W = canvas.width, H = canvas.height;
-      const cols = Math.ceil(W / CELL), rows = Math.ceil(H / CELL);
-      ctx.clearRect(0, 0, W, H);
+  useEffect(()=>{
+    if(!fading||prevFading.current){prevFading.current=fading;return;}
+    prevFading.current=fading;
 
-      // ── Grid lines ──
-      ctx.strokeStyle = 'rgba(99,102,241,0.09)';
-      ctx.lineWidth = 0.7;
-      for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(c*CELL, 0); ctx.lineTo(c*CELL, H); ctx.stroke(); }
-      for (let r = 0; r <= rows; r++) { ctx.beginPath(); ctx.moveTo(0, r*CELL); ctx.lineTo(W, r*CELL); ctx.stroke(); }
+    // ── Letter cell positions ──────────────────────────────────
+    const bandTop=cH*0.28, bandBot=cH*0.78, availH=bandBot-bandTop;
+    const sws=Math.min(28,Math.max(16,Math.floor((availH+9)/22.1)));
+    const swh=wordHeight(sws), gap=Math.round(sws*0.55);
+    const sy=bandTop+(availH-(3*swh+2*gap))/2;
 
-      const isClearing = clearingRef.current;
+    const cells=[
+      ...getWordCellsAt('GET',  cW, sy,               sws),
+      ...getWordCellsAt('FREE', cW, sy+swh+gap,        sws),
+      ...getWordCellsAt('DEMO', cW, sy+2*(swh+gap),    sws),
+    ];
 
-      // ── Spawn multiple blocks per tick — faster, denser ──
-      if (!isClearing && ts - spawnTick > 40 && lit.length < 90) {
-        spawnTick = ts;
-        const blocked = getBlocked();
-        // Spawn 2-3 at once for density
-        const spawnCount = Math.random() < 0.4 ? 3 : 2;
-        for (let s = 0; s < spawnCount; s++) {
-          for (let attempt = 0; attempt < 50; attempt++) {
-            const c = Math.floor(Math.random() * cols), r = Math.floor(Math.random() * rows);
-            if (!blocked.has(`${c},${r}`) && !lit.find(l => l.c === c && l.r === r)) {
-              lit.push({
-                c, r, alpha: 0,
-                col: CHECKER_COLORS[Math.floor(Math.random() * CHECKER_COLORS.length)],
-                decay: 0.0015 + Math.random() * 0.003, // longer-lived
-                rising: true,
-              });
-              break;
-            }
-          }
-        }
-      }
-
-      // ── Random mid-life color shift — each block can change color ──
-      lit.forEach(l => {
-        if (!l.rising && l.alpha > 0.15 && Math.random() < 0.002) {
-          l.col = CHECKER_COLORS[Math.floor(Math.random() * CHECKER_COLORS.length)];
-        }
+    // ── Nearest-neighbour assignment O(cells×pool) ─────────────
+    const rem=[...pool];
+    const map=new Map<number,{x:number;y:number;col:string;sz:number}>();
+    cells.forEach(cell=>{
+      if(!rem.length)return;
+      let bi=0,bd=Infinity;
+      rem.forEach((sq,i)=>{
+        const d=Math.hypot(sq.rx-cell.x,sq.ry-cell.y);
+        if(d<bd){bd=d;bi=i;}
       });
+      const [sq]=rem.splice(bi,1);
+      map.set(sq.id,{x:cell.x,y:cell.y,col:cell.color,sz:cell.wc});
+    });
 
-      // ── Update & draw ──
-      lit = lit.filter(l => l.alpha >= 0);
-      lit.forEach(l => {
-        if (isClearing) { l.rising = false; l.decay = 0.04; }
-        if (l.rising) {
-          l.alpha += 0.028; // faster rise
-          if (l.alpha >= 0.72) { l.alpha = 0.72; l.rising = false; } // brighter max
-        } else {
-          l.alpha -= l.decay;
-        }
-        const x = l.c * CELL, y = l.r * CELL;
-        const [rv, gv, bv] = l.col;
-        // Fill — more opaque
-        ctx.fillStyle = `rgba(${rv},${gv},${bv},${l.alpha})`;
-        ctx.fillRect(x + 1, y + 1, CELL - 2, CELL - 2);
-        // Bright border
-        ctx.strokeStyle = `rgba(${rv},${gv},${bv},${Math.min(1, l.alpha * 2.2)})`;
-        ctx.lineWidth = 1.8;
-        ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
-        // Inner glow highlight
-        ctx.fillStyle = `rgba(${rv},${gv},${bv},${l.alpha * 0.25})`;
-        ctx.fillRect(x + 4, y + 4, CELL - 8, CELL - 8);
-        // Corner accent dots
-        const d = 3;
-        ctx.fillStyle = `rgba(${rv},${gv},${bv},${Math.min(1, l.alpha * 2.5)})`;
-        [[x+d,y+d],[x+CELL-d,y+d],[x+d,y+CELL-d],[x+CELL-d,y+CELL-d]].forEach(([cx,cy]) => {
-          ctx.beginPath(); ctx.arc(cx, cy, 2.5, 0, Math.PI*2); ctx.fill();
-        });
-      });
-
-      animId = requestAnimationFrame(draw);
-    };
-    animId = requestAnimationFrame(draw);
-    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
-  }, [cycle, ballPositions]);
+    // ── Sequence ──────────────────────────────────────────────
+    q(()=>{setAssigns(map);setSPhase('gather');},   0);    // magnet pull
+    q(()=>setSPhase('burst'),                    4200);    // pulse + explode
+    q(()=>setSPhase('return'),                   4600);    // spring back to rest
+    q(()=>{setAssigns(new Map());setSPhase('idle');},5200); // cleanup
+  },[fading,cycle]);
 
   return (
-    <canvas ref={canvasRef}
-      style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none', zIndex:1 }} />
+    <div className="absolute inset-0 pointer-events-none" style={{zIndex:2,overflow:'hidden'}}>
+      {pool.map(sq=>{
+        const a      = assigns.get(sq.id);
+        const gather = sPhase==='gather';
+        const burst  = sPhase==='burst';
+        const ret    = sPhase==='return';
+
+        // Position target
+        let tx=sq.rx, ty=sq.ry;
+        if(a && gather){ tx=a.x; ty=a.y; }
+        if(a && burst){
+          const dx=a.x-cW/2, dy=a.y-cH/2, len=Math.hypot(dx,dy)||1;
+          tx=a.x+(dx/len)*650; ty=a.y+(dy/len)*650;
+        }
+        // During return / idle: square goes back to rest regardless of assignment
+
+        const col     = a&&(gather||burst) ? a.col : sq.col;
+        const sz      = a&&(gather||burst) ? a.sz  : sq.sz;
+        const opacity = a&&gather ? 0.95 : a&&burst ? 0 : gather ? 0.15 : 0.72;
+        const glow    = a&&gather ? `0 0 14px ${col}90,0 0 30px ${col}55` : 'none';
+
+        return (
+          <motion.div key={sq.id}
+            style={{
+              position:'absolute', top:0, left:0,
+              width:sz, height:sz, borderRadius:6,
+              background:col, border:`1.5px solid ${col}`,
+              boxShadow: glow,
+            }}
+            animate={{ x:tx, y:ty, opacity, scale: a&&burst ? 1.6 : 1 }}
+            transition={{
+              x:{ type:'spring',
+                  stiffness: gather&&a ? 90 : burst&&a ? 400 : 40,
+                  damping:   gather&&a ? 14 : burst&&a ? 18  : 12 },
+              y:{ type:'spring',
+                  stiffness: gather&&a ? 90 : burst&&a ? 400 : 40,
+                  damping:   gather&&a ? 14 : burst&&a ? 18  : 12 },
+              scale:   { duration:0.3, ease:'easeOut' },
+              opacity: { duration:0.5 },
+            }}
+          />
+        );
+      })}
+    </div>
   );
 };
 
@@ -449,11 +318,8 @@ export const WhatHappensNextSection = () => {
   return (
     <section ref={sectionRef} className="py-16 relative overflow-hidden bg-[#040a16]">
 
-      {/* Animated checkerboard blocks */}
-      <CheckerBG cycle={cycle} ballPositions={layout.positions} clearing={fading} />
-
-      {/* Word speller — synced to staircase fade cycle */}
-      <WordSpeller cW={dims.w} cH={dims.h} fading={fading} cycle={cycle} />
+      {/* Magnet squares — ambient scatter + letter gather on staircase fade */}
+      {dims.w > 0 && <SquarePool cW={dims.w} cH={dims.h} fading={fading} cycle={cycle} />}
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
