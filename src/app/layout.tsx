@@ -7,6 +7,8 @@ import { FloatingCTA } from '@/components/FloatingCTA';
 import { CustomCursor } from '@/components/CustomCursor';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { MobileStickyBar } from '@/components/MobileStickyBar';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 const OG_DESC  = 'High-converting websites built in 3-7 days for local service businesses. SEO-optimized, mobile-ready, and engineered to generate leads — not just look pretty.';
@@ -60,15 +62,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <CustomCursor />
-        <Navbar />
-        <ErrorBoundary>
-          <main>{children}</main>
-        </ErrorBoundary>
-        <Footer />
-        <FloatingCTA />
-
-        <MobileStickyBar />
+        <ThemeProvider>
+          <CustomCursor />
+          <Navbar />
+          <ErrorBoundary>
+            <main>{children}</main>
+          </ErrorBoundary>
+          <Footer />
+          <FloatingCTA />
+          <MobileStickyBar />
+          <ThemeSwitcher />
+        </ThemeProvider>
       </body>
     </html>
   );
