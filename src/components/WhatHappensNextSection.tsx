@@ -62,27 +62,29 @@ const HEX_PALETTE = [
   '#3b82f6','#6366f1','#a855f7','#06b6d4',
   '#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6','#eab308',
 ];
-const POOL_N = 270;
+const POOL_N = 200;
 
 interface PSq { id:number; rx:number; ry:number; col:string; sz:number }
-type SpellPhase = 'idle'|'gather'|'burst'|'return';
+type SpellPhase = 'idle'|'gather'|'pop'|'spread';
 
-// Deterministic spread so squares fill section evenly on every render
+// Deterministic spread — biased toward edges so squares don't crowd center content
 const buildPool = (cW:number, cH:number): PSq[] =>
   Array.from({length:POOL_N},(_,i)=>({
     id:  i,
     rx:  ((i*1618 + i*i*37) % Math.max(1, cW-70)) + 35,
     ry:  ((i*971  + i*i*61) % Math.max(1, cH-70)) + 35,
     col: HEX_PALETTE[i % HEX_PALETTE.length],
-    sz:  26 + (i % 5) * 7,          // 26 / 33 / 40 / 47 / 54 px
+    sz:  18 + (i % 4) * 5,          // 18 / 23 / 28 / 33 px — small enough to not crowd
   }));
 
 const SquarePool = ({
   cW, cH, fading, cycle,
 }:{cW:number;cH:number;fading:boolean;cycle:number}) => {
 
-  const [sPhase,  setSPhase]  = useState<SpellPhase>('idle');
-  const [assigns, setAssigns] = useState(new Map<number,{x:number;y:number;col:string;sz:number}>());
+  const [sPhase,    setSPhase]    = useState<SpellPhase>('idle');
+  const [assigns,   setAssigns]   = useState(new Map<number,{x:number;y:number;col:string;sz:number}>());
+  // Spread-landing positions: filled once at burst time, kept until next gather
+  const [landPos,   setLandPos]   = useState(new Map<number,{x:number;y:number;rot:number}>());
   const pool = useMemo(()=>buildPool(cW,cH),[cW,cH]);
 
   const prevFading = useRef(false);
@@ -90,9 +92,9 @@ const SquarePool = ({
   const clearAll = ()=>{ tids.current.forEach(clearTimeout); tids.current=[]; };
   const q = (fn:()=>void,ms:number)=>tids.current.push(setTimeout(fn,ms));
 
-  useEffect(()=>()=>clearAll(),[]);                     // unmount
+  useEffect(()=>()=>clearAll(),[]);
 
-  // Safety: staircase rebuilding — snap back to idle
+  // Safety: staircase rebuilding — cancel timers but keep landPos so squares stay put
   useEffect(()=>{
     if(!fading){ clearAll(); setSPhase('idle'); setAssigns(new Map()); }
   },[fading]);
@@ -101,79 +103,97 @@ const SquarePool = ({
     if(!fading||prevFading.current){prevFading.current=fading;return;}
     prevFading.current=fading;
 
-    // ── Letter cell positions ──────────────────────────────────
+    // ── Letter cells ───────────────────────────────────────────
     const bandTop=cH*0.28, bandBot=cH*0.78, availH=bandBot-bandTop;
     const sws=Math.min(28,Math.max(16,Math.floor((availH+9)/22.1)));
     const swh=wordHeight(sws), gap=Math.round(sws*0.55);
     const sy=bandTop+(availH-(3*swh+2*gap))/2;
-
     const cells=[
       ...getWordCellsAt('GET',  cW, sy,               sws),
       ...getWordCellsAt('FREE', cW, sy+swh+gap,        sws),
       ...getWordCellsAt('DEMO', cW, sy+2*(swh+gap),    sws),
     ];
 
-    // ── Nearest-neighbour assignment O(cells×pool) ─────────────
+    // ── Nearest-neighbour assignment ───────────────────────────
     const rem=[...pool];
     const map=new Map<number,{x:number;y:number;col:string;sz:number}>();
     cells.forEach(cell=>{
       if(!rem.length)return;
       let bi=0,bd=Infinity;
-      rem.forEach((sq,i)=>{
-        const d=Math.hypot(sq.rx-cell.x,sq.ry-cell.y);
-        if(d<bd){bd=d;bi=i;}
-      });
+      rem.forEach((sq,i)=>{const d=Math.hypot(sq.rx-cell.x,sq.ry-cell.y);if(d<bd){bd=d;bi=i;}});
       const [sq]=rem.splice(bi,1);
       map.set(sq.id,{x:cell.x,y:cell.y,col:cell.color,sz:cell.wc});
     });
 
-    // ── Sequence ──────────────────────────────────────────────
-    q(()=>{setAssigns(map);setSPhase('gather');},   0);    // magnet pull
-    q(()=>setSPhase('burst'),                    4200);    // pulse + explode
-    q(()=>setSPhase('return'),                   4600);    // spring back to rest
-    q(()=>{setAssigns(new Map());setSPhase('idle');},5200); // cleanup
+    // ── Sequence ───────────────────────────────────────────────
+    q(()=>{ setAssigns(map); setSPhase('gather'); }, 0);          // magnets pull in
+
+    q(()=>setSPhase('pop'), 4200);                                // POP: scale up huge
+
+    q(()=>{
+      // Generate FULL-SECTION random landing spots for every square
+      const lm=new Map<number,{x:number;y:number;rot:number}>();
+      pool.forEach(sq=>{
+        lm.set(sq.id,{
+          x: 20 + Math.random()*(cW-40),
+          y: 20 + Math.random()*(cH-40),
+          rot: (Math.random()-0.5)*60,   // up to ±30° tilt when landing
+        });
+      });
+      setLandPos(lm);
+      setSPhase('spread');                                        // SPREAD: fly everywhere
+    }, 4600);
+
+    q(()=>{ setAssigns(new Map()); setSPhase('idle'); }, 6000);   // settle / idle
   },[fading,cycle]);
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{zIndex:2,overflow:'hidden'}}>
       {pool.map(sq=>{
         const a      = assigns.get(sq.id);
+        const lp     = landPos.get(sq.id);
+
         const gather = sPhase==='gather';
-        const burst  = sPhase==='burst';
-        const ret    = sPhase==='return';
+        const pop    = sPhase==='pop';
+        const spread = sPhase==='spread';
 
-        // Position target
-        let tx=sq.rx, ty=sq.ry;
-        if(a && gather){ tx=a.x; ty=a.y; }
-        if(a && burst){
-          const dx=a.x-cW/2, dy=a.y-cH/2, len=Math.hypot(dx,dy)||1;
-          tx=a.x+(dx/len)*650; ty=a.y+(dy/len)*650;
+        // ── Target position ──────────────────────────────────
+        // idle & gather-unassigned: original rest position (never use landPos as rest)
+        let tx=sq.rx, ty=sq.ry, rot=0;
+        if(a && (gather||pop)){ tx=a.x; ty=a.y; }
+        if(spread){
+          tx = lp ? lp.x : sq.rx;
+          ty = lp ? lp.y : sq.ry;
+          rot = lp ? lp.rot : 0;
         }
-        // During return / idle: square goes back to rest regardless of assignment
 
-        const col     = a&&(gather||burst) ? a.col : sq.col;
-        const sz      = a&&(gather||burst) ? a.sz  : sq.sz;
-        const opacity = a&&gather ? 0.95 : a&&burst ? 0 : gather ? 0.15 : 0.72;
-        const glow    = a&&gather ? `0 0 14px ${col}90,0 0 30px ${col}55` : 'none';
+        const col     = a&&(gather||pop) ? a.col : sq.col;
+        const sz      = a&&(gather||pop) ? a.sz  : sq.sz;
+        // Pop: assigned letters scale to 2.8×; others 1.2× for "screen pop" feel
+        const scale   = pop&&a ? 2.8 : pop ? 1.2 : 1;
+        const opacity = gather&&a ? 0.92 : pop&&a ? 1 : gather ? 0.10 : pop ? 0.40 : 0.55;
+        const shadow  = (gather||pop)&&a
+          ? `0 0 18px ${col}cc,0 0 36px ${col}88,0 0 55px ${col}44`
+          : 'none';
 
         return (
           <motion.div key={sq.id}
             style={{
               position:'absolute', top:0, left:0,
               width:sz, height:sz, borderRadius:6,
-              background:col, border:`1.5px solid ${col}`,
-              boxShadow: glow,
+              background:col, border:`1.5px solid ${col}`, boxShadow:shadow,
             }}
-            animate={{ x:tx, y:ty, opacity, scale: a&&burst ? 1.6 : 1 }}
+            animate={{ x:tx, y:ty, scale, opacity, rotate:rot }}
             transition={{
               x:{ type:'spring',
-                  stiffness: gather&&a ? 90 : burst&&a ? 400 : 40,
-                  damping:   gather&&a ? 14 : burst&&a ? 18  : 12 },
+                  stiffness: gather&&a ? 90 : pop&&a ? 5 : spread ? 55 : 45,
+                  damping:   gather&&a ? 14 : pop&&a ? 4 : spread ? 7  : 14 },
               y:{ type:'spring',
-                  stiffness: gather&&a ? 90 : burst&&a ? 400 : 40,
-                  damping:   gather&&a ? 14 : burst&&a ? 18  : 12 },
-              scale:   { duration:0.3, ease:'easeOut' },
-              opacity: { duration:0.5 },
+                  stiffness: gather&&a ? 90 : pop&&a ? 5 : spread ? 55 : 45,
+                  damping:   gather&&a ? 14 : pop&&a ? 4 : spread ? 7  : 14 },
+              scale:   { type:'spring', stiffness:260, damping: pop&&a ? 6 : 18 },
+              opacity: { duration:0.4 },
+              rotate:  { type:'spring', stiffness:50, damping:8 },
             }}
           />
         );
