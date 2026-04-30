@@ -1204,7 +1204,24 @@ const PerfectFor = () => {
   const handleBubbleClick = (ball: Ball) => {
     clearTimeout(travelTimer.current);
     ball.alive = false;
+
+    // Fly the astronaut to the clicked bubble
+    const dx = ball.x - avatarCurr.current.x;
+    const dy = ball.y - avatarCurr.current.y;
+    setAvatarAngle(Math.atan2(dy, dx) * 180 / Math.PI);
+    avatarCurr.current = { x: ball.x, y: ball.y };
+    setAvatarXY({ x: ball.x, y: ball.y });
+    setAvatarBiz(ball.biz);
+
     setPopup({ biz: ball.biz, cx: ball.x, cy: ball.y });
+
+    // After the astronaut arrives: pop burst + keep travelling between OTHER bubbles
+    // (triggerTravel sees popupRef.current !== null and won't replace the user popup)
+    travelTimer.current = setTimeout(() => {
+      setPopBurst({ x: ball.x, y: ball.y, color: ball.biz.color });
+      setTimeout(() => setPopBurst(null), 700);
+      travelTimer.current = setTimeout(triggerTravel, 1400);
+    }, TRAVEL_MS + 150);
   };
 
   const closePopup = () => {
