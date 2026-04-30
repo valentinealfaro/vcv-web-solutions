@@ -67,15 +67,22 @@ const POOL_N = 200;
 interface PSq { id:number; rx:number; ry:number; col:string; sz:number }
 type SpellPhase = 'idle'|'gather'|'pop'|'spread';
 
-// Deterministic spread — biased toward edges so squares don't crowd center content
+// Returns a random position in the 4 edge strips (avoids center content area)
+const genEdgePos = (cW:number, cH:number):{x:number;y:number} => {
+  const ew = Math.max(80, cW * 0.18);  // left / right strip width
+  const eh = Math.max(60, cH * 0.15);  // top / bottom strip height
+  const side = Math.floor(Math.random() * 4);
+  if (side === 0) return { x: Math.random() * ew,            y: Math.random() * cH };
+  if (side === 1) return { x: cW - Math.random() * ew,       y: Math.random() * cH };
+  if (side === 2) return { x: Math.random() * cW,            y: Math.random() * eh };
+  return                  { x: Math.random() * cW,            y: cH - Math.random() * eh };
+};
+
 const buildPool = (cW:number, cH:number): PSq[] =>
-  Array.from({length:POOL_N},(_,i)=>({
-    id:  i,
-    rx:  ((i*1618 + i*i*37) % Math.max(1, cW-70)) + 35,
-    ry:  ((i*971  + i*i*61) % Math.max(1, cH-70)) + 35,
-    col: HEX_PALETTE[i % HEX_PALETTE.length],
-    sz:  18 + (i % 4) * 5,          // 18 / 23 / 28 / 33 px — small enough to not crowd
-  }));
+  Array.from({length:POOL_N},(_,i)=>{
+    const {x,y}=genEdgePos(cW,cH);
+    return { id:i, rx:x, ry:y, col:HEX_PALETTE[i%HEX_PALETTE.length], sz:18+(i%4)*5 };
+  });
 
 const SquarePool = ({
   cW, cH, fading, cycle,
@@ -83,8 +90,9 @@ const SquarePool = ({
 
   const [sPhase,    setSPhase]    = useState<SpellPhase>('idle');
   const [assigns,   setAssigns]   = useState(new Map<number,{x:number;y:number;col:string;sz:number}>());
-  // Spread-landing positions: filled once at burst time, kept until next gather
   const [landPos,   setLandPos]   = useState(new Map<number,{x:number;y:number;rot:number}>());
+  // Drift: current edge-strip position for each square (updated periodically in idle)
+  const [driftPos,  setDriftPos]  = useState<Map<number,{x:number;y:number}>>(new Map());
   const pool = useMemo(()=>buildPool(cW,cH),[cW,cH]);
 
   const prevFading = useRef(false);
@@ -93,6 +101,29 @@ const SquarePool = ({
   const q = (fn:()=>void,ms:number)=>tids.current.push(setTimeout(fn,ms));
 
   useEffect(()=>()=>clearAll(),[]);
+
+  // Drift: move ~20 squares to new edge positions every 1.4 s (only while idle)
+  useEffect(()=>{
+    if(sPhase !== 'idle' || !cW || !cH) return;
+    // Initialise all drift positions to edge strips on first idle
+    setDriftPos(()=>{
+      const m=new Map<number,{x:number;y:number}>();
+      pool.forEach(sq=>m.set(sq.id,genEdgePos(cW,cH)));
+      return m;
+    });
+    const id=setInterval(()=>{
+      setDriftPos(prev=>{
+        const next=new Map(prev);
+        const count=Math.max(12,Math.floor(POOL_N*0.12));
+        for(let k=0;k<count;k++){
+          const sqId=Math.floor(Math.random()*POOL_N);
+          next.set(sqId,genEdgePos(cW,cH));
+        }
+        return next;
+      });
+    },1400);
+    return ()=>clearInterval(id);
+  },[sPhase,cW,cH,pool]);
 
   // Safety: staircase rebuilding — cancel timers but keep landPos so squares stay put
   useEffect(()=>{
@@ -158,8 +189,11 @@ const SquarePool = ({
         const spread = sPhase==='spread';
 
         // ── Target position ──────────────────────────────────
-        // idle & gather-unassigned: original rest position (never use landPos as rest)
-        let tx=sq.rx, ty=sq.ry, rot=0;
+        // idle / gather-unassigned: use driftPos (edge-strip), fall back to pool default
+        const dp = driftPos.get(sq.id);
+        let tx = dp ? dp.x : sq.rx;
+        let ty = dp ? dp.y : sq.ry;
+        let rot = 0;
         if(a && (gather||pop)){ tx=a.x; ty=a.y; }
         if(spread){
           tx = lp ? lp.x : sq.rx;
