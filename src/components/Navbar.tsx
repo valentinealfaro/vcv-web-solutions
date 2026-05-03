@@ -7,10 +7,11 @@ import { Menu, X, ArrowRight, Phone, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const LINKS = [
-  { name: 'Home',     path: '/' },
-  { name: 'Services', path: '/services' },
-  { name: 'Pricing',  path: '/pricing' },
-  { name: 'Contact',  path: '/contact' },
+  { name: 'Home',           path: '/' },
+  { name: 'Services',       path: '/services' },
+  { name: 'AI Receptionist',path: '/ai-receptionist' },
+  { name: 'Pricing',        path: '/pricing' },
+  { name: 'Contact',        path: '/contact' },
 ];
 
 const LOGO_SRC = 'https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FVCV%20Websolutions%20Logo.png?alt=media&token=aed21397-69ca-4846-a45d-267482b81acf';
