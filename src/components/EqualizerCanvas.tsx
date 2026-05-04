@@ -52,18 +52,34 @@ export const EqualizerCanvas = ({ opacity = 0.45 }: { opacity?: number }) => {
       const W = canvas.width, H = canvas.height;
       ctx.clearRect(0, 0, W, H);
 
+      /* ─── Voice activity envelope ──────────────────────────
+         Two cross-faded sine waves create natural "talking" rhythm:
+         loud bursts (words) interspersed with quieter pauses (breaths).
+         Range ≈ 0.25 (quiet) → 1.15 (loud peak)                 */
+      const env =
+        0.55 +
+        0.45 * Math.abs(Math.sin(t * 0.018) * Math.cos(t * 0.011 + 0.7)) +
+        0.15 * Math.sin(t * 0.07);
+
       bars.forEach(b => {
-        const h = Math.max(4, b.baseH + Math.sin(t * 0.035 * b.speed + b.phase) * 9);
+        // Fast voice-like oscillation (the rapid waveform jitter)
+        const fast   = Math.sin(t * 0.22 * b.speed + b.phase) * 16;
+        // Slower sub-rhythm
+        const slow   = Math.sin(t * 0.06 * b.speed + b.phase * 1.7) * 7;
+        // Random jitter — natural voice irregularity
+        const jitter = (Math.random() - 0.5) * 5;
+
+        const h = Math.max(3, b.baseH + (fast + slow + jitter) * env);
         const y = b.y - h / 2;
+
         ctx.globalAlpha = opacity;
         ctx.fillStyle   = b.color;
-        // Pill (rounded rect)
+
         const rad = BAR_W / 2;
         ctx.beginPath();
         if (typeof ctx.roundRect === 'function') {
           ctx.roundRect(b.x, y, BAR_W, h, rad);
         } else {
-          // Fallback for older browsers
           ctx.moveTo(b.x + rad, y);
           ctx.arcTo(b.x + BAR_W, y,         b.x + BAR_W, y + rad,   rad);
           ctx.arcTo(b.x + BAR_W, y + h,     b.x + BAR_W - rad, y+h, rad);
