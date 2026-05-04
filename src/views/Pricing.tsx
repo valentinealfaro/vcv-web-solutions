@@ -1,6 +1,6 @@
 'use client';
 import { motion, LayoutGroup, AnimatePresence } from 'motion/react';
-import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck, Loader2, Phone, Zap } from 'lucide-react';
+import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck, Loader2, Phone, Zap, Bot } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '../lib/utils';
 import { useState, useEffect, useRef } from 'react';
@@ -205,6 +205,7 @@ export default function Pricing() {
 
   const [modalIdx, setModalIdx] = useState<number | null>(null);
   const [novaModalTier, setNovaModalTier] = useState<NovaTier | null>(null);
+  const [bundleModalOpen, setBundleModalOpen] = useState(false);
 
   const handleBuy = (_pkg: typeof packages[0], idx: number) => {
     setModalIdx(idx);                  // open upsell modal first
@@ -296,6 +297,147 @@ export default function Pricing() {
       </section>
 
       <MarqueeBand />
+
+      {/* ══════════ MEGA BUNDLE — NOVA + WEBSITE (the headline deal) ══════════ */}
+      <section className="py-20 relative overflow-hidden"
+        style={{ background:'linear-gradient(180deg,#030712 0%,#0a0f1e 50%,#030712 100%)' }}>
+        <SectionOrbs variant="green"/>
+        <GridOverlay gridOp={0.18} dotOp={0.08}/>
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+          <motion.div
+            initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+            className="text-center mb-10">
+            <motion.div
+              animate={{ scale:[1, 1.04, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5"
+              style={{ background:'rgba(255,193,7,0.12)', border:'1px solid rgba(255,193,7,0.5)' }}>
+              <span className="text-yellow-300 font-bold text-xs tracking-widest">🎁 BEST VALUE BUNDLE</span>
+            </motion.div>
+            <h2 className="font-display text-5xl md:text-7xl text-white mb-4 leading-none"
+              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4), 0 0 80px rgba(6,182,212,0.25)' }}>
+              NOVA + <span className="gradient-text">LEAD WEBSITE</span>
+            </h2>
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+              Pair Nova with a high-converting website that captures leads even when she&apos;s not on a call.
+              <span className="block mt-2 text-gray-400 text-base">Two products, one bundled price, one setup fee.</span>
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity:0, y:30 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+            transition={{ delay: 0.1 }}
+            className="relative max-w-3xl mx-auto">
+            <div className="absolute -inset-4 rounded-[28px] pointer-events-none"
+              style={{ background:'linear-gradient(135deg,rgba(34,197,94,0.45),rgba(6,182,212,0.35),rgba(59,130,246,0.3))', filter:'blur(48px)', opacity:0.55 }}/>
+            <div className="relative p-px rounded-[24px]"
+              style={{ background:'linear-gradient(135deg,rgba(34,197,94,0.6),rgba(6,182,212,0.5),rgba(139,92,246,0.4))' }}>
+              <div className="rounded-[23px] p-7 md:p-9"
+                style={{ background:'rgba(5,12,22,0.97)', backdropFilter:'blur(24px)' }}>
+
+                {/* Two-column comparison */}
+                <div className="grid md:grid-cols-2 gap-5 mb-7">
+                  <div className="rounded-2xl p-5"
+                    style={{ background:'rgba(34,197,94,0.06)', border:'1px solid rgba(34,197,94,0.3)' }}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center"
+                        style={{ background:'rgba(34,197,94,0.18)', border:'1px solid rgba(34,197,94,0.4)' }}>
+                        <Bot className="w-5 h-5 text-green-400"/>
+                      </div>
+                      <p className="text-white font-bold">Nova Growth</p>
+                    </div>
+                    <p className="text-green-400 text-2xl font-display mb-1">$197<span className="text-sm text-gray-400">/mo</span></p>
+                    <ul className="space-y-1.5 text-xs text-gray-300">
+                      <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-green-400"/> Answers every call 24/7</li>
+                      <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-green-400"/> Books appointments + SMS</li>
+                      <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-green-400"/> Live transfer when you&apos;re free</li>
+                    </ul>
+                  </div>
+
+                  <div className="rounded-2xl p-5"
+                    style={{ background:'rgba(139,92,246,0.06)', border:'1px solid rgba(139,92,246,0.3)' }}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center"
+                        style={{ background:'rgba(139,92,246,0.18)', border:'1px solid rgba(139,92,246,0.4)' }}>
+                        <TrendingUp className="w-5 h-5 text-purple-400"/>
+                      </div>
+                      <p className="text-white font-bold">Lead Website</p>
+                    </div>
+                    <p className="text-purple-400 text-2xl font-display mb-1">$147<span className="text-sm text-gray-400">/mo</span></p>
+                    <ul className="space-y-1.5 text-xs text-gray-300">
+                      <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-purple-400"/> Custom-built lead-gen site</li>
+                      <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-purple-400"/> SEO + mobile optimized</li>
+                      <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-purple-400"/> Lead form connected to Nova</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center gap-3 mb-5 text-gray-500 text-sm flex-wrap">
+                  <span className="line-through">Separately: <span className="text-white font-bold">$344/mo</span></span>
+                  <span>·</span>
+                  <span className="text-green-400 font-bold">Bundle saves $47/mo</span>
+                </div>
+
+                <div className="text-center mb-6">
+                  <p className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-2">Bundle Price</p>
+                  <div className="flex items-end justify-center gap-2 mb-2">
+                    <span className="font-display text-7xl md:text-8xl text-white"
+                      style={{ textShadow:'0 0 40px rgba(34,197,94,0.5)' }}>
+                      $297
+                    </span>
+                    <span className="text-gray-400 text-2xl mb-3">/mo</span>
+                  </div>
+                  <p className="text-blue-400 text-sm font-semibold">+ $297 one-time setup (saves $97 vs. paying both setups)</p>
+                </div>
+
+                <motion.button
+                  onClick={() => setBundleModalOpen(true)}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2"
+                  animate={{
+                    backgroundImage:[
+                      'linear-gradient(135deg,#22c55e,#06b6d4)',
+                      'linear-gradient(135deg,#06b6d4,#3b82f6)',
+                      'linear-gradient(135deg,#3b82f6,#8b5cf6)',
+                      'linear-gradient(135deg,#8b5cf6,#22c55e)',
+                    ],
+                    boxShadow:[
+                      '0 0 24px rgba(34,197,94,0.55)',
+                      '0 0 24px rgba(6,182,212,0.55)',
+                      '0 0 24px rgba(59,130,246,0.55)',
+                      '0 0 24px rgba(139,92,246,0.55)',
+                    ],
+                  }}
+                  transition={{ duration: 4.2, repeat: Infinity, ease:'linear' }}>
+                  Get the Full Bundle — Save $144 <ArrowRight className="w-5 h-5"/>
+                </motion.button>
+
+                <div className="grid grid-cols-3 gap-2 mt-5">
+                  <div className="text-center text-xs text-gray-400 py-2 rounded-lg" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
+                    <span className="block text-green-400 font-bold mb-0.5">Save $97</span>
+                    setup fees
+                  </div>
+                  <div className="text-center text-xs text-gray-400 py-2 rounded-lg" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
+                    <span className="block text-green-400 font-bold mb-0.5">Save $47</span>
+                    /month
+                  </div>
+                  <div className="text-center text-xs text-gray-400 py-2 rounded-lg" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
+                    <span className="block text-green-400 font-bold mb-0.5">$564</span>
+                    saved Year 1
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <p className="text-center text-gray-500 text-xs mt-6">
+            Or scroll down for individual website / Nova plans
+          </p>
+        </div>
+      </section>
 
       {/* Pricing Cards — 2 columns with static electricity bg */}
       <div className="relative py-16 overflow-hidden bg-[#030712]">
@@ -586,6 +728,21 @@ export default function Pricing() {
           </motion.div>
         </div>
       </section>
+
+      {/* Mega Bundle modal */}
+      <CheckoutUpsellModal
+        open={bundleModalOpen}
+        onClose={() => setBundleModalOpen(false)}
+        context="bundle"
+        planName="Nova + Lead Website Bundle"
+        planAmount={29700}
+        planPriceLabel="$297/mo"
+        setupFeeCents={29700}
+        setupFeeName="One-Time Setup ($297) — phone, Nova training, website launch"
+        productName="Nova + Lead Website Bundle"
+        loading={loadingIdx === 999}
+        onConfirm={(payload) => submitToStripe(payload, 999)}
+      />
 
       {/* Nova upsell modal */}
       {novaModalTier && (
