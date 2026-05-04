@@ -62,22 +62,23 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4">
 
-          {/* ── Logo ── */}
+          {/* ── Logo (smaller on mobile per design) ── */}
           <Link href="/" className="group flex-shrink-0">
             <motion.div
-              className="flex flex-col items-center px-3 py-1.5 rounded-xl border-2 cursor-pointer select-none"
+              className="flex flex-col items-center px-2 md:px-3 py-1 md:py-1.5 rounded-xl border-2 cursor-pointer select-none"
               animate={{ borderColor: BORDER_CYCLE, boxShadow: BORDER_CYCLE.map(c => `0 0 16px ${c}60`) }}
               transition={{ duration: LOGO_DUR, repeat: Infinity, ease: 'linear' }}
               whileHover={{ scale: 1.06 }}>
-              <img src={LOGO_SRC} alt="VCV Web Solutions" className="w-9 h-9 object-contain mb-0.5" referrerPolicy="no-referrer" />
+              <img src={LOGO_SRC} alt="VCV Web Solutions"
+                className="w-7 h-7 md:w-9 md:h-9 object-contain mb-0.5" referrerPolicy="no-referrer" />
               <motion.span
-                className="text-sm font-black leading-none tracking-widest"
+                className="text-xs md:text-sm font-black leading-none tracking-widest"
                 animate={{ color: VCV_CYCLE }}
                 transition={{ duration: LOGO_DUR, repeat: Infinity, ease: 'linear' }}>
                 VCV
               </motion.span>
               <motion.span
-                className="text-[9px] font-bold leading-none tracking-widest uppercase mt-0.5"
+                className="text-[8px] md:text-[9px] font-bold leading-none tracking-widest uppercase mt-0.5"
                 animate={{ color: SUB_CYCLE }}
                 transition={{ duration: LOGO_DUR, repeat: Infinity, ease: 'linear' }}>
                 Web Solutions

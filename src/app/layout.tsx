@@ -66,7 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CustomCursor />
           <Navbar />
           <ErrorBoundary>
-            <main>{children}</main>
+            <main className="pb-20 md:pb-0">{children}</main>
           </ErrorBoundary>
           <Footer />
           <FloatingCTA />

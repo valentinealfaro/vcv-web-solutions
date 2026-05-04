@@ -106,12 +106,13 @@ const STACK = [
 interface Tier {
   id:        string;
   name:      string;
-  tag:       string;
+  tag:       string;        // popular badge text
+  positioning:string;       // "Best for ..." line
   price:     number;
-  priceMax?: number;       // for ranges like Pro $297–$397
-  priceCents:number;       // amount sent to Stripe
+  priceCents:number;
   callsLabel:string;
   features:  string[];
+  ctaLabel:  string;        // outcome-based CTA per tier
   color:     string;
   popular:   boolean;
 }
@@ -121,16 +122,19 @@ const TIERS: Tier[] = [
     id: 'starter',
     name: 'Starter',
     tag: 'Gets foot in door',
+    positioning: 'Best for small businesses that need basic call coverage',
     price: 97,
     priceCents: 9700,
     callsLabel: '50–100 calls / month',
     features: [
-      'Basic answering + lead capture',
-      'Local number in your area code',
-      'Instant text + email alerts',
+      'Never miss a call again',
+      'AI answers and captures lead details',
       'Missed-call auto-text reply',
-      '24/7 coverage',
+      'Instant text + email alerts',
+      'Local number in your area code',
+      '24/7 coverage while you work',
     ],
+    ctaLabel: 'Start Capturing Leads',
     color: '#3b82f6',
     popular: false,
   },
@@ -138,16 +142,19 @@ const TIERS: Tier[] = [
     id: 'growth',
     name: 'Growth',
     tag: 'MOST POPULAR',
+    positioning: 'Best for businesses that want booked appointments',
     price: 197,
     priceCents: 19700,
     callsLabel: '200–300 calls / month',
     features: [
       'Everything in Starter',
-      'Appointment booking',
-      'SMS conversations with callers',
-      'Live transfer when you\'re free',
-      'Custom call scripts for your business',
+      'Books appointments automatically',
+      'Texts leads after the call',
+      'Live transfers hot leads when you\'re free',
+      'Custom call script for your business',
+      'Helps turn callers into scheduled jobs',
     ],
+    ctaLabel: 'Activate Nova',
     color: '#10b981',
     popular: true,
   },
@@ -155,16 +162,19 @@ const TIERS: Tier[] = [
     id: 'pro',
     name: 'Pro',
     tag: 'Serious businesses',
+    positioning: 'Best for serious businesses that want automation',
     price: 297,
     priceCents: 29700,
     callsLabel: 'Unlimited / high volume',
     features: [
       'Everything in Growth',
-      'CRM system included',
-      'Day 1 / Day 3 / Day 7 follow-ups',
+      'Built-in CRM to track every lead',
+      'Day 1 / Day 3 / Day 7 follow-up automation',
+      'Estimate follow-up reminders',
       'Priority support',
-      'Custom integrations',
+      'Custom integrations and automations',
     ],
+    ctaLabel: 'Scale My Calls',
     color: '#a855f7',
     popular: false,
   },
@@ -757,14 +767,15 @@ export default function AIReceptionist() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-12">
-            <p className="neon-badge mb-5 mx-auto w-fit">Bundle Offer</p>
-            <h2 className="font-display text-5xl md:text-7xl text-white mb-4 leading-none"
+            <p className="neon-badge mb-5 mx-auto w-fit">Pricing</p>
+            <h2 className="font-display text-5xl md:text-7xl text-white mb-5 leading-[1.05]"
               style={{ textShadow:'0 0 60px rgba(34,197,94,0.4)' }}>
-              THE NEVER MISS<br/>
-              <span className="gradient-text">A CALL SYSTEM</span>
+              STOP LOSING JOBS<br/>
+              <span className="gradient-text">FROM MISSED CALLS</span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              AI Receptionist + Lead-Machine Website + Automation. One bundle. One price.
+            <p className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+              Nova answers calls, captures leads, books appointments, and follows up automatically
+              so small businesses can turn more calls into paying customers.
             </p>
           </motion.div>
 
@@ -780,13 +791,6 @@ export default function AIReceptionist() {
             ))}
           </motion.div>
 
-          {/* Pick a plan heading */}
-          <motion.div {...fade(0.15)} className="text-center mb-7">
-            <p className="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2">Pick Your Plan</p>
-            <h3 className="font-display text-3xl md:text-4xl text-white">
-              Start where you are. Scale as you grow.
-            </h3>
-          </motion.div>
 
           {/* Three-tier pricing grid */}
           {err && <p className="text-red-400 text-sm text-center mb-4">{err}</p>}
@@ -823,53 +827,52 @@ export default function AIReceptionist() {
                   </div>
                 )}
 
-                <div className="rounded-[21px] p-7 h-full flex flex-col"
+                <div className="rounded-[21px] p-6 md:p-7 h-full flex flex-col"
                   style={{
                     background: 'rgba(5,12,22,0.97)',
                     backdropFilter: 'blur(24px)',
                   }}>
 
                   {/* Plan name */}
-                  <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
+                  <p className="text-gray-300 text-xs font-bold uppercase tracking-widest mb-1">
                     {tier.name}
                   </p>
-                  {!tier.popular && (
-                    <p className="text-gray-500 text-xs mb-3">{tier.tag}</p>
-                  )}
-                  {tier.popular && <div className="mb-3"/>}
+                  {/* Positioning line — outcome focused */}
+                  <p className="text-gray-300 text-sm leading-snug mb-4 min-h-[44px]">
+                    {tier.positioning}
+                  </p>
 
                   {/* Price */}
                   <div className="flex items-end gap-1 mb-1">
-                    <span className="font-display text-5xl text-white"
+                    <span className="font-display text-6xl text-white"
                       style={{ textShadow:`0 0 25px ${tier.color}55` }}>
                       ${tier.price}
                     </span>
-                    {tier.priceMax && (
-                      <span className="text-gray-400 text-2xl mb-1">–${tier.priceMax}</span>
-                    )}
-                    <span className="text-gray-500 text-sm mb-2 ml-1">/mo</span>
+                    <span className="text-gray-300 text-sm mb-2 ml-1">/mo</span>
                   </div>
 
-                  <p className="text-blue-400 text-sm font-semibold mb-5">{tier.callsLabel}</p>
+                  <p className="text-sm font-semibold mb-5" style={{ color: tier.color }}>
+                    {tier.callsLabel}
+                  </p>
 
-                  {/* Features */}
-                  <ul className="space-y-2.5 mb-7 flex-1">
+                  {/* Features — brighter text + bigger line height */}
+                  <ul className="space-y-3 mb-7 flex-1">
                     {tier.features.map((f, j) => (
-                      <li key={j} className="flex items-start gap-2 text-sm">
-                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0"
+                      <li key={j} className="flex items-start gap-2.5 text-[15px] leading-relaxed">
+                        <CheckCircle2 className="w-4 h-4 mt-1 flex-shrink-0"
                           style={{ color: tier.color }}/>
-                        <span className="text-gray-300">{f}</span>
+                        <span className="text-gray-100">{f}</span>
                       </li>
                     ))}
                   </ul>
 
-                  {/* CTA */}
+                  {/* Outcome-based CTA */}
                   <motion.button
                     onClick={() => handleBuy(tier)}
                     disabled={loadingId !== null}
                     whileHover={{ scale: loadingId ? 1 : 1.03 }}
                     whileTap={{ scale: 0.97 }}
-                    className="w-full py-3.5 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 disabled:opacity-60"
+                    className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 disabled:opacity-60"
                     animate={tier.popular ? {
                       backgroundImage:[
                         'linear-gradient(135deg,#22c55e,#06b6d4)',
@@ -890,7 +893,7 @@ export default function AIReceptionist() {
                     style={!tier.popular ? { boxShadow: `0 0 18px ${tier.color}55` } : undefined}>
                     {loadingId === tier.id
                       ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
-                      : <>Buy Now <ArrowRight className="w-4 h-4"/></>}
+                      : <>{tier.ctaLabel} <ArrowRight className="w-4 h-4"/></>}
                   </motion.button>
 
                   {/* ── 30-day FREE trial — Growth plan only ─────────────── */}
@@ -929,14 +932,15 @@ export default function AIReceptionist() {
 
           {/* Setup fee + trust strip */}
           <motion.div {...fade(0.3)} className="max-w-3xl mx-auto">
-            <div className="rounded-2xl p-5 mb-5 text-center"
-              style={{ background:'rgba(255,193,7,0.08)', border:'1px solid rgba(255,193,7,0.3)' }}>
-              <p className="text-yellow-300 font-bold text-sm">
-                👉 One-time Setup Fee: <span className="text-white text-base">$197</span>
+            <div className="rounded-2xl p-5 md:p-6 mb-5 text-center"
+              style={{ background:'rgba(255,193,7,0.10)', border:'1.5px solid rgba(255,193,7,0.4)', boxShadow:'0 0 24px rgba(255,193,7,0.12)' }}>
+              <p className="text-yellow-300 font-bold text-base mb-2">
+                👉 One-Time Setup Fee: <span className="text-white text-xl">$197</span>
                 <span className="text-green-400 font-bold text-xs ml-2">· Auto-added at checkout</span>
-                <span className="block text-gray-400 font-normal text-xs mt-1">
-                  Includes phone number setup, Nova voice training, and assistant configuration
-                </span>
+              </p>
+              <p className="text-gray-200 text-sm leading-relaxed">
+                Includes phone number setup, Nova voice training, business script setup,
+                appointment rules, call routing, and assistant configuration.
               </p>
             </div>
 
@@ -953,6 +957,72 @@ export default function AIReceptionist() {
                 </div>
               ))}
             </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ══════════ COST OF A MISSED CALL ══════════ */}
+      <section className="py-20 relative overflow-hidden bg-[#040a16]">
+        <SectionOrbs variant="mixed"/>
+        <GridOverlay gridOp={0.18} dotOp={0.08}/>
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div {...fade()} className="text-center mb-10">
+            <p className="neon-badge mb-4 mx-auto w-fit"
+              style={{ borderColor:'rgba(239,68,68,0.5)', color:'#fca5a5' }}>
+              The Math
+            </p>
+            <h2 className="font-display text-4xl md:text-6xl text-white mb-4 leading-tight"
+              style={{ textShadow:'0 0 40px rgba(239,68,68,0.3)' }}>
+              WHAT IS ONE MISSED CALL<br/>
+              <span className="gradient-text-warm">COSTING YOU?</span>
+            </h2>
+            <p className="text-gray-200 text-lg max-w-2xl mx-auto">
+              Every unanswered phone call is money walking into a competitor&apos;s pocket.
+              Here&apos;s what one lost lead is really worth:
+            </p>
+          </motion.div>
+
+          {/* Cost cards */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 mb-10">
+            {[
+              { emoji:'🔨',  label:'Contractor job',         range:'$5,000–$20,000+' },
+              { emoji:'🏠',  label:'Roof replacement',       range:'$10,000+'        },
+              { emoji:'🚿',  label:'Bathroom remodel',       range:'$8,000–$15,000+' },
+              { emoji:'🦷',  label:'Dentist new patient',    range:'$500–$2,000+'    },
+              { emoji:'🍽️',  label:'Restaurant catering',    range:'$300–$2,500+'    },
+            ].map((c, i) => (
+              <motion.div key={i} {...fade(0.05 * i)}
+                className="rounded-2xl p-4 md:p-5 text-center"
+                style={{
+                  background: 'rgba(239,68,68,0.06)',
+                  border: '1px solid rgba(239,68,68,0.25)',
+                  boxShadow: '0 0 24px rgba(239,68,68,0.08)',
+                }}>
+                <div className="text-3xl mb-2">{c.emoji}</div>
+                <p className="text-gray-100 text-xs md:text-sm font-bold mb-2 leading-tight">{c.label}</p>
+                <p className="font-display text-base md:text-lg text-white whitespace-nowrap"
+                  style={{ textShadow:'0 0 12px rgba(239,68,68,0.5)' }}>
+                  {c.range}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Summary + CTA */}
+          <motion.div {...fade(0.2)} className="text-center max-w-3xl mx-auto">
+            <p className="text-gray-100 text-lg md:text-xl leading-relaxed mb-6">
+              If Nova helps you save just <span className="text-yellow-300 font-bold">one missed opportunity</span>,
+              it can pay for itself many times over.
+            </p>
+            <a href="#bundle"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-white text-base"
+              style={{
+                background:'linear-gradient(135deg,#22c55e,#06b6d4,#3b82f6)',
+                boxShadow:'0 0 28px rgba(34,197,94,0.55), 0 8px 24px rgba(0,0,0,0.4)',
+              }}>
+              Never Miss Another Lead <ArrowRight className="w-5 h-5"/>
+            </a>
           </motion.div>
         </div>
       </section>
@@ -1159,7 +1229,7 @@ export default function AIReceptionist() {
                   }}>
                   {loadingId === a.id
                     ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
-                    : <>Buy Now <ArrowRight className="w-4 h-4"/></>}
+                    : <>Add to Plan <ArrowRight className="w-4 h-4"/></>}
                 </motion.button>
               </motion.div>
             ))}
