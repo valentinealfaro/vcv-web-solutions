@@ -399,8 +399,17 @@ export default function AIReceptionist() {
 
           </motion.div>
 
-          <motion.p {...fade(0.2)} className="text-center text-gray-500 text-sm mb-10">
-            <span className="inline-block px-3 py-1 rounded-full" style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)' }}>
+          <motion.p {...fade(0.2)} className="text-center mb-10">
+            <span
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-semibold"
+              style={{
+                background: 'rgba(5,12,22,0.92)',
+                border: '1px solid rgba(34,197,94,0.45)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                boxShadow: '0 0 24px rgba(34,197,94,0.18), 0 8px 24px rgba(0,0,0,0.55)',
+              }}>
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"/>
               Pick whichever is easier — both connect you straight to Nova
             </span>
           </motion.p>
