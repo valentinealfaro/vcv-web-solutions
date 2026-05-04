@@ -36,7 +36,7 @@ const FEATURES = [
   { icon:<BellRing className="w-5 h-5"/>,     title:'Instant Owner Alerts',         desc:'Every lead → text + email to you within seconds of the call ending.',     color:'#06b6d4' },
   { icon:<Calendar className="w-5 h-5"/>,     title:'Books Appointments',           desc:'Optional calendar integration — Nova locks in jobs while you work.',      color:'#10b981' },
   { icon:<MessageSquare className="w-5 h-5"/>,title:'Missed-Call Auto-Text',        desc:'If a call slips through, customer gets an SMS in 30 seconds flat.',        color:'#f97316' },
-  { icon:<Smartphone className="w-5 h-5"/>,   title:'Local 580 Number',             desc:'Caller ID shows your local area code so prospects actually answer.',      color:'#ec4899' },
+  { icon:<Smartphone className="w-5 h-5"/>,   title:'Local Number for Your Area',   desc:'We pick a number in your area code so callers see a familiar number and pick up.', color:'#ec4899' },
   { icon:<Headphones className="w-5 h-5"/>,   title:'Live Transfer Option',         desc:'Hot leads can be patched straight to your cell when you\'re available.',  color:'#a855f7' },
   { icon:<Sparkles className="w-5 h-5"/>,     title:'7-Day Follow-Up SMS',          desc:'Day 1, Day 3, Day 7 reminders so leads never go cold.',                   color:'#22c55e' },
 ];
@@ -60,7 +60,7 @@ const STACK = [
     title:'AI Receptionist (Nova)',
     items:[
       'Answers every call instantly · 24/7',
-      'Local 580 area-code number',
+      'Local number in your area code',
       'Speaks naturally — not robotic',
       'Captures name, phone, job request',
       'Books appointments (optional)',
@@ -122,7 +122,7 @@ const TIERS: Tier[] = [
     callsLabel: '50–100 calls / month',
     features: [
       'Basic answering + lead capture',
-      'Local 580 area-code number',
+      'Local number in your area code',
       'Instant text + email alerts',
       'Missed-call auto-text reply',
       '24/7 coverage',
@@ -177,8 +177,10 @@ export default function AIReceptionist() {
       const res = await fetch('/api/create-checkout-session', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
-          productName: `Never Miss a Call — ${tier.name} Plan`,
-          amount:       tier.priceCents,
+          productName:  `Never Miss a Call — ${tier.name} Plan`,
+          amount:        tier.priceCents,
+          setupFee:      19700,                     // $197 auto-added at checkout
+          setupFeeName: 'One-Time Setup Fee ($197)',
         }),
       });
       const data = await res.json();
@@ -256,7 +258,7 @@ export default function AIReceptionist() {
               <div className="flex flex-wrap gap-4 mt-8 text-xs text-gray-400">
                 <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400"/> Setup in 24-48 hrs</span>
                 <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400"/> Cancel anytime</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400"/> Local 580 number</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400"/> Local number for your area</span>
               </div>
             </motion.div>
 
@@ -690,8 +692,9 @@ export default function AIReceptionist() {
               style={{ background:'rgba(255,193,7,0.08)', border:'1px solid rgba(255,193,7,0.3)' }}>
               <p className="text-yellow-300 font-bold text-sm">
                 👉 One-time Setup Fee: <span className="text-white text-base">$197</span>
-                <span className="text-gray-400 font-normal text-xs ml-2">
-                  · Includes phone setup, Nova training, website launch
+                <span className="text-green-400 font-bold text-xs ml-2">· Auto-added at checkout</span>
+                <span className="block text-gray-400 font-normal text-xs mt-1">
+                  Includes phone setup, Nova training, and website launch
                 </span>
               </p>
             </div>

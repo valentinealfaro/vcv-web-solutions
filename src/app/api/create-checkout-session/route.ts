@@ -10,21 +10,39 @@ export async function POST(req: NextRequest) {
   });
 
   try {
-    const { productName, amount } = await req.json();
+    const { productName, amount, setupFee, setupFeeName } = await req.json();
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://vcv-web-solutions.vercel.app';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const lineItems: any[] = [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: { name: productName || 'VCV Web Solutions Package' },
+          unit_amount: amount || 9700,
+        },
+        quantity: 1,
+      },
+    ];
+
+    // Optional one-time setup fee added as a separate line item
+    if (typeof setupFee === 'number' && setupFee > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: setupFeeName || 'One-Time Setup Fee',
+            description: 'Includes phone setup, Nova training, website launch',
+          },
+          unit_amount: setupFee,
+        },
+        quantity: 1,
+      });
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: { name: productName || 'VCV Web Solutions Package' },
-            unit_amount: amount || 9700, // cents
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: lineItems,
       mode: 'payment',
       success_url: `${baseUrl}/success`,
       cancel_url:  `${baseUrl}/pricing`,
