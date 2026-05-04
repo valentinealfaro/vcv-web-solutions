@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay, PricingBgCanvas, RainbowWavesCanvas } from '@/components/PageEffects';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { DottedSurface } from '@/components/ui/dotted-surface';
+import { CheckoutUpsellModal, CheckoutPayload } from '@/components/CheckoutUpsellModal';
 
 const RISK_ITEMS = [
   { id:'ri-a', icon:'🎯', title:'See It Before You Commit',  body:'We build a custom design preview of your site. You approve it, then we launch it.',     color:'#3b82f6', bg:'rgba(59,130,246,0.09)'  },
@@ -174,19 +175,18 @@ export default function Pricing() {
     return () => { clearInterval(shuffleId); clearInterval(shapeId); clearInterval(faqId); };
   }, []);
 
-  const handleBuy = async (pkg: typeof packages[0], idx: number) => {
+  const [modalIdx, setModalIdx] = useState<number | null>(null);
+
+  const handleBuy = (_pkg: typeof packages[0], idx: number) => {
+    setModalIdx(idx);                  // open upsell modal first
+  };
+
+  const submitToStripe = async (payload: CheckoutPayload, idx: number) => {
     setLoadingIdx(idx);
     try {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productName: `VCV Web Solutions — ${pkg.name} Plan`,
-          amount: pkg.amountCents,
-          ...(pkg.setupFeeCents > 0 && {
-            setupFee: pkg.setupFeeCents,
-            setupFeeName: 'One-Time Website Setup Fee ($297)',
-          }),
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error(data.error || 'Failed');
@@ -415,6 +415,26 @@ export default function Pricing() {
           </div>
         ))}
       </div>
+
+      {/* Upsell modal — opens before Stripe redirect */}
+      {modalIdx !== null && (() => {
+        const pkg = packages[modalIdx];
+        return (
+          <CheckoutUpsellModal
+            open={modalIdx !== null}
+            onClose={() => setModalIdx(null)}
+            context="website"
+            planName={`${pkg.name} Plan`}
+            planAmount={pkg.amountCents}
+            planPriceLabel={`${pkg.price}${pkg.period}`}
+            setupFeeCents={pkg.setupFeeCents}
+            setupFeeName="One-Time Website Setup Fee ($297)"
+            productName={`VCV Web Solutions — ${pkg.name} Plan`}
+            loading={loadingIdx === modalIdx}
+            onConfirm={(payload) => submitToStripe(payload, modalIdx!)}
+          />
+        );
+      })()}
 
       {/* Complexity disclaimer */}
       <div className="max-w-2xl mx-auto px-4 pb-10 text-center relative z-10">

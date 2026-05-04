@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   });
 
   try {
-    const { productName, amount, setupFee, setupFeeName } = await req.json();
+    const { productName, amount, setupFee, setupFeeName, addons } = await req.json();
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://vcv-web-solutions.vercel.app';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,6 +37,25 @@ export async function POST(req: NextRequest) {
           unit_amount: setupFee,
         },
         quantity: 1,
+      });
+    }
+
+    // Optional add-on line items (chosen via upsell modal)
+    if (Array.isArray(addons)) {
+      addons.forEach((a: { name?: string; description?: string; amount?: number }) => {
+        if (typeof a?.amount === 'number' && a.amount > 0 && a.name) {
+          lineItems.push({
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: a.name,
+                ...(a.description ? { description: a.description } : {}),
+              },
+              unit_amount: a.amount,
+            },
+            quantity: 1,
+          });
+        }
       });
     }
 

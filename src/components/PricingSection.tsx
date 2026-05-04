@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import Link from 'next/link';
 import { CheckCircle2, ArrowRight, Zap, Loader2, Tag } from 'lucide-react';
 import { PricingBgCanvas } from '@/components/PageEffects';
+import { CheckoutUpsellModal, CheckoutPayload } from '@/components/CheckoutUpsellModal';
 
 const SETUP_FEE_CENTS = 29700; // $297 — waived on annual
 
@@ -57,22 +58,20 @@ const plans = [
 
 const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => {
   const [loading, setLoading] = useState<'idle' | 'buy' | 'trial'>('idle');
-  const [error, setError]    = useState('');
+  const [error, setError]     = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const handleCheckout = async () => {
+  // Click "Buy Now" → open upsell modal (Stripe redirect happens after)
+  const handleCheckout = () => { setError(''); setModalOpen(true); };
+
+  // Modal "Continue to Checkout" → submit payload to Stripe
+  const submitToStripe = async (payload: CheckoutPayload) => {
     setLoading('buy'); setError('');
     try {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productName: `VCV Web Solutions — ${plan.name} Plan`,
-          amount: plan.amountCents,
-          ...(plan.setupFeeCents > 0 && {
-            setupFee: plan.setupFeeCents,
-            setupFeeName: 'One-Time Website Setup Fee ($297)',
-          }),
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
@@ -258,6 +257,21 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
       )}
 
       <p className="text-center text-gray-600 text-xs mt-3">Secure checkout · Powered by Stripe</p>
+
+      {/* Upsell modal — appears between Buy Now click and Stripe redirect */}
+      <CheckoutUpsellModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        context="website"
+        planName={`${plan.name} Plan`}
+        planAmount={plan.amountCents}
+        planPriceLabel={`$${plan.price.toLocaleString()}${plan.period}`}
+        setupFeeCents={plan.setupFeeCents}
+        setupFeeName="One-Time Website Setup Fee ($297)"
+        productName={`VCV Web Solutions — ${plan.name} Plan`}
+        loading={loading === 'buy'}
+        onConfirm={submitToStripe}
+      />
     </motion.div>
   );
 };

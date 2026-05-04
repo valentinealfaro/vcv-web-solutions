@@ -9,6 +9,7 @@ import {
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { TryNovaButton } from '@/components/TryNovaButton';
 import { EqualizerCanvas } from '@/components/EqualizerCanvas';
+import { CheckoutUpsellModal } from '@/components/CheckoutUpsellModal';
 import {
   ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay,
 } from '@/components/PageEffects';
@@ -173,18 +174,19 @@ const TIERS: Tier[] = [
 export default function AIReceptionist() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [err, setErr]             = useState('');
+  const [modalTier,    setModalTier]    = useState<Tier | null>(null);  // Nova tier modal
+  const [bundleModalOpen, setBundleModalOpen] = useState(false);        // Mega bundle modal
 
-  const handleBuy = async (tier: Tier) => {
-    setLoadingId(tier.id); setErr('');
+  // Click "Buy Now" on a tier → open upsell modal first
+  const handleBuy = (tier: Tier) => { setErr(''); setModalTier(tier); };
+
+  // Generic Stripe submitter used by every checkout flow on this page
+  const submitToStripe = async (payload: import('@/components/CheckoutUpsellModal').CheckoutPayload, loadId: string) => {
+    setLoadingId(loadId); setErr('');
     try {
       const res = await fetch('/api/create-checkout-session', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          productName:  `Never Miss a Call — ${tier.name} Plan`,
-          amount:        tier.priceCents,
-          setupFee:      19700,                     // $197 auto-added at checkout
-          setupFeeName: 'One-Time Setup Fee ($197)',
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
@@ -1052,26 +1054,7 @@ export default function AIReceptionist() {
 
                 {/* Buy button */}
                 <motion.button
-                  onClick={async () => {
-                    setLoadingId('bundle-mega'); setErr('');
-                    try {
-                      const res = await fetch('/api/create-checkout-session', {
-                        method:'POST', headers:{'Content-Type':'application/json'},
-                        body: JSON.stringify({
-                          productName:  'Nova + Lead Website Bundle',
-                          amount:        29700,
-                          setupFee:      29700,
-                          setupFeeName: 'One-Time Setup ($297) — phone, Nova training, website launch',
-                        }),
-                      });
-                      const data = await res.json();
-                      if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
-                      window.location.href = data.url;
-                    } catch (e:unknown) {
-                      setErr(e instanceof Error ? e.message : 'Something went wrong');
-                      setLoadingId(null);
-                    }
-                  }}
+                  onClick={() => { setErr(''); setBundleModalOpen(true); }}
                   disabled={loadingId !== null}
                   whileHover={{ scale: loadingId ? 1 : 1.03 }}
                   whileTap={{ scale: 0.97 }}
@@ -1238,6 +1221,38 @@ export default function AIReceptionist() {
           </motion.div>
         </div>
       </section>
+
+      {/* Upsell modal — Nova tiers */}
+      {modalTier && (
+        <CheckoutUpsellModal
+          open={modalTier !== null}
+          onClose={() => setModalTier(null)}
+          context="nova"
+          planName={`${modalTier.name} Plan`}
+          planAmount={modalTier.priceCents}
+          planPriceLabel={`$${modalTier.price}/mo`}
+          setupFeeCents={19700}
+          setupFeeName="One-Time Setup Fee ($197)"
+          productName={`Never Miss a Call — ${modalTier.name} Plan`}
+          loading={loadingId === modalTier.id}
+          onConfirm={(payload) => submitToStripe(payload, modalTier.id)}
+        />
+      )}
+
+      {/* Upsell modal — Mega bundle (Nova + Website) */}
+      <CheckoutUpsellModal
+        open={bundleModalOpen}
+        onClose={() => setBundleModalOpen(false)}
+        context="bundle"
+        planName="Nova + Lead Website Bundle"
+        planAmount={29700}
+        planPriceLabel="$297/mo"
+        setupFeeCents={29700}
+        setupFeeName="One-Time Setup ($297) — phone, Nova training, website launch"
+        productName="Nova + Lead Website Bundle"
+        loading={loadingId === 'bundle-mega'}
+        onConfirm={(payload) => submitToStripe(payload, 'bundle-mega')}
+      />
 
     </div>
   );
