@@ -123,8 +123,8 @@ const TIERS: Tier[] = [
     name: 'Starter',
     tag: 'Gets foot in door',
     positioning: 'Best for small businesses that need basic call coverage',
-    price: 97,
-    priceCents: 9700,
+    price: 147,
+    priceCents: 14700,
     callsLabel: '50–100 calls / month',
     features: [
       'Never miss a call again',
@@ -143,8 +143,8 @@ const TIERS: Tier[] = [
     name: 'Growth',
     tag: 'MOST POPULAR',
     positioning: 'Best for businesses that want booked appointments',
-    price: 197,
-    priceCents: 19700,
+    price: 297,
+    priceCents: 29700,
     callsLabel: '200–300 calls / month',
     features: [
       'Everything in Starter',
@@ -163,9 +163,9 @@ const TIERS: Tier[] = [
     name: 'Pro',
     tag: 'Serious businesses',
     positioning: 'Best for serious businesses that want automation',
-    price: 297,
-    priceCents: 29700,
-    callsLabel: 'Unlimited / high volume',
+    price: 497,
+    priceCents: 49700,
+    callsLabel: 'Up to 500 calls / mo',
     features: [
       'Everything in Growth',
       'Built-in CRM to track every lead',
@@ -206,7 +206,7 @@ export default function AIReceptionist() {
     }
   };
 
-  // 30-day free trial of Growth — customer pays only the $197 setup fee
+  // 30-day free trial — customer pays only the $297 setup fee, no monthly today
   const handleTrial = async (tier: Tier) => {
     setLoadingId(`${tier.id}-trial`); setErr('');
     try {
@@ -214,7 +214,7 @@ export default function AIReceptionist() {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           productName: `${tier.name} Plan — 30 Day FREE Trial (first month free, $${tier.price}/mo after)`,
-          amount:       19700,  // $197 setup only — no monthly charge today
+          amount:       29700,  // $297 setup only — no monthly charge today
         }),
       });
       const data = await res.json();
@@ -260,7 +260,7 @@ export default function AIReceptionist() {
                   className="inline-flex items-center gap-2 rounded-full px-4 py-1.5"
                   style={{ background:'rgba(255,193,7,0.12)', border:'1px solid rgba(255,193,7,0.5)' }}>
                   <span className="text-yellow-300 font-bold text-xs tracking-wide">
-                    🎁 Try Nova FREE for 30 Days · Just $197 Setup
+                    🎁 Try Nova FREE for 30 Days · Just $297 Setup
                   </span>
                 </motion.div>
               </div>
@@ -897,7 +897,7 @@ export default function AIReceptionist() {
                   </motion.button>
 
                   {/* ── 30-day FREE trial — Growth plan only ─────────────── */}
-                  {tier.id === 'growth' && (
+                  {(tier.id === 'starter' || tier.id === 'growth') && (
                     <>
                       <div className="flex items-center gap-2 my-3">
                         <div className="flex-1 h-px bg-white/10"/>
@@ -918,7 +918,7 @@ export default function AIReceptionist() {
                         }}>
                         {loadingId === `${tier.id}-trial`
                           ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
-                          : <>🎁 Try Free 30 Days — Only $197 Setup</>}
+                          : <>🎁 Try Free 30 Days — Only $297 Setup</>}
                       </motion.button>
                       <p className="text-center text-gray-500 text-[11px] mt-2 leading-relaxed">
                         First month FREE · No charge for 30 days · Cancel before day 30 = pay nothing further
@@ -935,7 +935,7 @@ export default function AIReceptionist() {
             <div className="rounded-2xl p-5 md:p-6 mb-5 text-center"
               style={{ background:'rgba(255,193,7,0.10)', border:'1.5px solid rgba(255,193,7,0.4)', boxShadow:'0 0 24px rgba(255,193,7,0.12)' }}>
               <p className="text-yellow-300 font-bold text-base mb-2">
-                👉 One-Time Setup Fee: <span className="text-white text-xl">$197</span>
+                👉 One-Time Setup Fee: <span className="text-white text-xl">$297</span>
                 <span className="text-green-400 font-bold text-xs ml-2">· Auto-added at checkout</span>
               </p>
               <p className="text-gray-200 text-sm leading-relaxed">
@@ -1074,7 +1074,7 @@ export default function AIReceptionist() {
                       </div>
                       <p className="text-white font-bold">Nova Growth</p>
                     </div>
-                    <p className="text-green-400 text-2xl font-display mb-1">$197<span className="text-sm text-gray-400">/mo</span></p>
+                    <p className="text-green-400 text-2xl font-display mb-1">$297<span className="text-sm text-gray-400">/mo</span></p>
                     <ul className="space-y-1.5 text-xs text-gray-300">
                       <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-green-400"/> Answers every call 24/7</li>
                       <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-green-400"/> Books appointments + SMS</li>
@@ -1092,7 +1092,7 @@ export default function AIReceptionist() {
                       </div>
                       <p className="text-white font-bold">Lead Website</p>
                     </div>
-                    <p className="text-purple-400 text-2xl font-display mb-1">$147<span className="text-sm text-gray-400">/mo</span></p>
+                    <p className="text-purple-400 text-2xl font-display mb-1">$197<span className="text-sm text-gray-400">/mo</span></p>
                     <ul className="space-y-1.5 text-xs text-gray-300">
                       <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-purple-400"/> Custom-built lead-gen site</li>
                       <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-purple-400"/> SEO + mobile optimized</li>
@@ -1103,9 +1103,9 @@ export default function AIReceptionist() {
 
                 {/* Plus equals */}
                 <div className="flex items-center justify-center gap-3 mb-6 text-gray-500 text-sm">
-                  <span className="line-through">Separately: <span className="text-white font-bold">$344/mo</span></span>
+                  <span className="line-through">Separately: <span className="text-white font-bold">$494/mo</span></span>
                   <span>·</span>
-                  <span className="text-green-400 font-bold">Bundle saves $47/mo</span>
+                  <span className="text-green-400 font-bold">Bundle saves $97/mo</span>
                 </div>
 
                 {/* Bundle price */}
@@ -1114,11 +1114,11 @@ export default function AIReceptionist() {
                   <div className="flex items-end justify-center gap-2 mb-2">
                     <span className="font-display text-7xl md:text-8xl text-white"
                       style={{ textShadow:'0 0 40px rgba(34,197,94,0.5)' }}>
-                      $297
+                      $397
                     </span>
                     <span className="text-gray-400 text-2xl mb-3">/mo</span>
                   </div>
-                  <p className="text-blue-400 text-sm font-semibold">+ $297 one-time setup (saves $97 vs. paying both setups)</p>
+                  <p className="text-blue-400 text-sm font-semibold">+ $397 one-time setup (saves $397 vs. paying both setups)</p>
                 </div>
 
                 {/* Buy button */}
@@ -1145,20 +1145,20 @@ export default function AIReceptionist() {
                   transition={{ duration: 4.2, repeat: Infinity, ease:'linear' }}>
                   {loadingId === 'bundle-mega'
                     ? <><Loader2 className="w-5 h-5 animate-spin"/> Redirecting...</>
-                    : <>Get the Full Bundle — Save $144 <ArrowRight className="w-5 h-5"/></>}
+                    : <>Get the Full Bundle — Save $1,561 Year 1 <ArrowRight className="w-5 h-5"/></>}
                 </motion.button>
 
                 <div className="grid grid-cols-3 gap-2 mt-5 text-center">
                   <div className="text-xs text-gray-400 py-2 rounded-lg" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
-                    <span className="block text-green-400 font-bold mb-0.5">Save $97</span>
+                    <span className="block text-green-400 font-bold mb-0.5">Save $397</span>
                     setup fees
                   </div>
                   <div className="text-xs text-gray-400 py-2 rounded-lg" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
-                    <span className="block text-green-400 font-bold mb-0.5">Save $47</span>
+                    <span className="block text-green-400 font-bold mb-0.5">Save $97</span>
                     /month
                   </div>
                   <div className="text-xs text-gray-400 py-2 rounded-lg" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
-                    <span className="block text-green-400 font-bold mb-0.5">$564</span>
+                    <span className="block text-green-400 font-bold mb-0.5">$1,561</span>
                     saved Year 1
                   </div>
                 </div>
@@ -1186,10 +1186,10 @@ export default function AIReceptionist() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
-              { id:'addon-volume', title:'Extra Call Volume', price:'+$50–100/mo', priceCents: 5000,  color:'#3b82f6', desc:'For high-traffic businesses pushing past the included minutes.' },
-              { id:'addon-crm',    title:'CRM System',         price:'+$97/mo',     priceCents: 9700,  color:'#8b5cf6', desc:'Pipeline, contact history, and task automation built-in.' },
-              { id:'addon-ads',    title:'Google Ads',         price:'+$300–1,000', priceCents: 30000, color:'#10b981', desc:'Pro ad management — pay-per-click campaigns we run for you.' },
-              { id:'addon-seo',    title:'SEO Pages',          price:'+$500',       priceCents: 50000, color:'#f97316', desc:'Niche-targeted landing pages that rank for local searches.' },
+              { id:'addon-volume', title:'Extra Call Volume', price:'+$97/mo',  priceCents: 9700,  color:'#3b82f6', desc:'200 extra calls/month for high-traffic businesses pushing past the included minutes.' },
+              { id:'addon-crm',    title:'CRM System',         price:'+$147/mo', priceCents: 14700, color:'#8b5cf6', desc:'Pipeline, contact history, and task automation built-in.' },
+              { id:'addon-ads',    title:'Google Ads',         price:'+$497/mo', priceCents: 49700, color:'#10b981', desc:'Pro ad management — pay-per-click campaigns we run for you.' },
+              { id:'addon-seo',    title:'SEO Pages',          price:'+$997',    priceCents: 99700, color:'#f97316', desc:'Niche-targeted landing pages that rank for local searches.' },
             ].map((a, i) => (
               <motion.div key={a.id} {...fade(0.06 * i)}
                 whileHover={{ y:-3 }}
@@ -1300,8 +1300,8 @@ export default function AIReceptionist() {
           planName={`${modalTier.name} Plan`}
           planAmount={modalTier.priceCents}
           planPriceLabel={`$${modalTier.price}/mo`}
-          setupFeeCents={19700}
-          setupFeeName="One-Time Setup Fee ($197)"
+          setupFeeCents={29700}
+          setupFeeName="One-Time Setup Fee ($297)"
           productName={`Never Miss a Call — ${modalTier.name} Plan`}
           loading={loadingId === modalTier.id}
           onConfirm={(payload) => submitToStripe(payload, modalTier.id)}
@@ -1314,10 +1314,10 @@ export default function AIReceptionist() {
         onClose={() => setBundleModalOpen(false)}
         context="bundle"
         planName="Nova + Lead Website Bundle"
-        planAmount={29700}
-        planPriceLabel="$297/mo"
-        setupFeeCents={29700}
-        setupFeeName="One-Time Setup ($297) — phone, Nova training, website launch"
+        planAmount={39700}
+        planPriceLabel="$397/mo"
+        setupFeeCents={39700}
+        setupFeeName="One-Time Setup ($397) — phone, Nova training, website launch"
         productName="Nova + Lead Website Bundle"
         loading={loadingId === 'bundle-mega'}
         onConfirm={(payload) => submitToStripe(payload, 'bundle-mega')}

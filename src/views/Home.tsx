@@ -668,7 +668,7 @@ const Hero = () => (
           </div>
 
           <div className="flex flex-wrap gap-6 text-sm text-gray-400">
-            {['From $147/mo', '3-7 day launch', '30-day results guarantee'].map((t, i) => (
+            {['From $197/mo', '3-7 day launch', '30-day results guarantee'].map((t, i) => (
               <span key={i} className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" /> {t}
               </span>
@@ -2206,7 +2206,7 @@ const CTASection = () => (
           No risk. No commitment. Just a professional preview of your business's future — built for free.
         </p>
         <FreeDemoButton size="xl" label="Build My Free Demo" />
-        <p className="text-gray-500 text-sm mt-6">Starts at $97/mo · 30-day results guarantee · Cancel anytime</p>
+        <p className="text-gray-500 text-sm mt-6">Starts at $147/mo · 30-day results guarantee · Cancel anytime</p>
       </motion.div>
     </div>
   </section>

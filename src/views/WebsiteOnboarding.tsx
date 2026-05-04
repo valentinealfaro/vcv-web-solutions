@@ -151,8 +151,8 @@ export default function WebsiteOnboarding() {
             <Field label="Plan Purchased">
               <select {...inp('planPurchased')} className={inputCls}>
                 <option value="">Select...</option>
-                <option>Monthly — $147/mo</option>
-                <option>Annual — $1,497/yr</option>
+                <option>Monthly — $197/mo</option>
+                <option>Annual — $1,997/yr</option>
                 <option>Custom Quote</option>
               </select>
             </Field>

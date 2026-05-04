@@ -146,9 +146,9 @@ export default function Terms() {
                 <Section title="3. Payment Terms" accent="#06b6d4">
                   <H>Subscription Plans</H>
                   <Ul>
-                    <Li>Monthly Plan: $147/month, billed monthly, no long-term commitment</Li>
-                    <Li>Annual Plan: $1,497/year, billed annually, setup fee waived</Li>
-                    <Li>Regular (non-promotional) rates: $297/month or $2,970/year</Li>
+                    <Li>Monthly Plan: $197/month + one-time $497 setup fee, no long-term commitment</Li>
+                    <Li>Annual Plan: $1,997/year, billed annually, $497 setup fee waived</Li>
+                    <Li>Regular (non-promotional) rates: $397/month or $3,970/year</Li>
                   </Ul>
                   <H>Billing</H>
                   <P>Payments are processed securely through Stripe. By purchasing a plan you authorize recurring charges at the agreed rate on your billing cycle date. All prices are in USD.</P>

@@ -613,7 +613,7 @@ export const WhatHappensNextSection = () => {
           transition={{ delay: 0.3 }}
           viewport={{ once: true }}>
           <FreeDemoButton size="lg" label="Start Step 1 — Request Preview" />
-          <p className="text-gray-600 text-xs mt-3">Starts at $97/mo · 30-day results guarantee · Cancel anytime</p>
+          <p className="text-gray-600 text-xs mt-3">Starts at $147/mo · 30-day results guarantee · Cancel anytime</p>
         </motion.div>
 
       </div>

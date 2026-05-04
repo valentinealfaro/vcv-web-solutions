@@ -89,7 +89,7 @@ const RiskParticlesCanvas = () => {
 };
 
 const FAQ_DATA = [
-  { q:'What do I pay to get started?',  a:'Monthly plan is $147/mo — no setup fee, no contract, cancel anytime. Annual plan is $1,497 for the full year with the setup fee waived (saves you an extra $297). Either way, you see your custom design preview and approve it before your first payment is due.', color:'#3b82f6' },
+  { q:'What do I pay to get started?',  a:'Monthly plan is $197/mo + $497 one-time setup. Annual plan is $1,997 for the full year with the setup fee waived (saves you the full $497). Either way, you see your custom design preview and approve it before your first payment is due.', color:'#3b82f6' },
   { q:'Why is there a 50% discount?',       a:'We are in a growth phase and taking on select new clients at half price in exchange for a testimonial. Once we reach capacity the discount ends — no fake countdown, just limited spots.', color:'#8b5cf6' },
   { q:'What if my project is more complex?', a:'Standard local business sites fit the prices above. If you need e-commerce, booking systems, or custom integrations we will quote you separately — usually $1,500 to $5,000+ one-time depending on scope.', color:'#06b6d4' },
   { q:'Do you handle everything?',          a:'Yes — design, development, copywriting guidance, SEO setup, hosting, and ongoing support. You focus on running your business, we handle your online presence.', color:'#22c55e' },
@@ -143,10 +143,10 @@ const FAQItem = ({ question, answer, color, isOpen, onToggle }: {
 );
 
 const packages = [
-  { name:"Monthly", price:"$147", origPrice:"$297", period:"/mo", amountCents:14700, setupFeeCents:29700, setup:"No long-term commitment", isPopular:false,
+  { name:"Monthly", price:"$197", origPrice:"$397", period:"/mo", amountCents:19700, setupFeeCents:49700, setup:"No long-term commitment", isPopular:false,
     features:["Custom website design","Mobile-responsive layout","Basic SEO setup","Contact & lead forms","Hosting & maintenance","Monthly updates","Email support"] },
-  { name:"Annual",  price:"$1,497", origPrice:"$2,970", period:"/yr", amountCents:149700, setupFeeCents:0, setup:"Best value — save $1,473", isPopular:true,
-    features:["Everything in Monthly","Advanced SEO optimization","Google Ads landing page ready","Blog & content system","Analytics dashboard","Priority 24hr support","Quarterly strategy calls","Google My Business setup","Setup fee waived ($297 value)"] },
+  { name:"Annual",  price:"$1,997", origPrice:"$3,970", period:"/yr", amountCents:199700, setupFeeCents:0, setup:"Best value — save $1,973", isPopular:true,
+    features:["Everything in Monthly","Advanced SEO optimization","Google Ads landing page ready","Blog & content system","Analytics dashboard","Priority 24hr support","Quarterly strategy calls","Google My Business setup","Setup fee waived ($497 value)"] },
 ];
 
 interface NovaTier {
@@ -159,20 +159,20 @@ interface NovaTier {
 const NOVA_TIERS: NovaTier[] = [
   {
     id: 'starter', name: 'Starter', tag: 'Gets foot in door',
-    price: 97, priceCents: 9700, callsLabel: '50–100 calls / month',
+    price: 147, priceCents: 14700, callsLabel: '50–100 calls / month',
     features: ['Basic answering + lead capture','Local number in your area code','Instant text + email alerts','Missed-call auto-text reply','24/7 coverage'],
     color: '#3b82f6', popular: false,
   },
   {
     id: 'growth', name: 'Growth', tag: 'MOST POPULAR',
-    price: 197, priceCents: 19700, callsLabel: '200–300 calls / month',
-    features: ['Everything in Starter','Appointment booking','SMS conversations with callers',"Live transfer when you're free",'Custom call scripts for your business'],
+    price: 297, priceCents: 29700, callsLabel: '200–300 calls / month',
+    features: ['Everything in Starter','Books appointments automatically','Texts leads after the call',"Live transfers hot leads when you're free",'Custom call script for your business'],
     color: '#10b981', popular: true,
   },
   {
     id: 'pro', name: 'Pro', tag: 'Serious businesses',
-    price: 297, priceCents: 29700, callsLabel: 'Unlimited / high volume',
-    features: ['Everything in Growth','CRM system included','Day 1 / Day 3 / Day 7 follow-ups','Priority support','Custom integrations'],
+    price: 497, priceCents: 49700, callsLabel: 'Up to 500 calls / mo',
+    features: ['Everything in Growth','Built-in CRM to track every lead','Day 1 / Day 3 / Day 7 follow-up automation','Priority support','Custom integrations and automations'],
     color: '#a855f7', popular: false,
   },
 ];
@@ -259,7 +259,7 @@ export default function Pricing() {
               PRICING THAT<br /><span className="gradient-text">PAYS FOR ITSELF</span>
             </h1>
             <p className="text-gray-400 text-xl mb-6 max-w-2xl mx-auto">
-              Professional lead-generating websites starting at $97/mo — backed by our 30-day results guarantee.
+              Professional lead-generating websites starting at $147/mo — backed by our 30-day results guarantee.
             </p>
 
             {/* Limited-time banner */}
@@ -288,7 +288,7 @@ export default function Pricing() {
                 ],
               }}
               transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}>
-              <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> From $147/mo</span>
+              <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> From $197/mo</span>
               <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Built in 3-7 days</span>
               <span className="flex items-center gap-2 text-gray-200"><CheckCircle2 className="w-4 h-4 text-blue-400" /> 30-day results guarantee</span>
             </motion.div>
@@ -348,7 +348,7 @@ export default function Pricing() {
                       </div>
                       <p className="text-white font-bold">Nova Growth</p>
                     </div>
-                    <p className="text-green-400 text-2xl font-display mb-1">$197<span className="text-sm text-gray-400">/mo</span></p>
+                    <p className="text-green-400 text-2xl font-display mb-1">$297<span className="text-sm text-gray-400">/mo</span></p>
                     <ul className="space-y-1.5 text-xs text-gray-300">
                       <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-green-400"/> Answers every call 24/7</li>
                       <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-green-400"/> Books appointments + SMS</li>
@@ -365,7 +365,7 @@ export default function Pricing() {
                       </div>
                       <p className="text-white font-bold">Lead Website</p>
                     </div>
-                    <p className="text-purple-400 text-2xl font-display mb-1">$147<span className="text-sm text-gray-400">/mo</span></p>
+                    <p className="text-purple-400 text-2xl font-display mb-1">$197<span className="text-sm text-gray-400">/mo</span></p>
                     <ul className="space-y-1.5 text-xs text-gray-300">
                       <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-purple-400"/> Custom-built lead-gen site</li>
                       <li className="flex items-start gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-purple-400"/> SEO + mobile optimized</li>
@@ -375,9 +375,9 @@ export default function Pricing() {
                 </div>
 
                 <div className="flex items-center justify-center gap-3 mb-5 text-gray-500 text-sm flex-wrap">
-                  <span className="line-through">Separately: <span className="text-white font-bold">$344/mo</span></span>
+                  <span className="line-through">Separately: <span className="text-white font-bold">$494/mo</span></span>
                   <span>·</span>
-                  <span className="text-green-400 font-bold">Bundle saves $47/mo</span>
+                  <span className="text-green-400 font-bold">Bundle saves $97/mo</span>
                 </div>
 
                 <div className="text-center mb-6">
@@ -385,11 +385,11 @@ export default function Pricing() {
                   <div className="flex items-end justify-center gap-2 mb-2">
                     <span className="font-display text-7xl md:text-8xl text-white"
                       style={{ textShadow:'0 0 40px rgba(34,197,94,0.5)' }}>
-                      $297
+                      $397
                     </span>
                     <span className="text-gray-400 text-2xl mb-3">/mo</span>
                   </div>
-                  <p className="text-blue-400 text-sm font-semibold">+ $297 one-time setup (saves $97 vs. paying both setups)</p>
+                  <p className="text-blue-400 text-sm font-semibold">+ $397 one-time setup (saves $397 vs. paying both setups)</p>
                 </div>
 
                 <motion.button
@@ -412,20 +412,20 @@ export default function Pricing() {
                     ],
                   }}
                   transition={{ duration: 4.2, repeat: Infinity, ease:'linear' }}>
-                  Get the Full Bundle — Save $144 <ArrowRight className="w-5 h-5"/>
+                  Get the Full Bundle — Save $1,561 Year 1 <ArrowRight className="w-5 h-5"/>
                 </motion.button>
 
                 <div className="grid grid-cols-3 gap-2 mt-5">
                   <div className="text-center text-xs text-gray-400 py-2 rounded-lg" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
-                    <span className="block text-green-400 font-bold mb-0.5">Save $97</span>
+                    <span className="block text-green-400 font-bold mb-0.5">Save $397</span>
                     setup fees
                   </div>
                   <div className="text-center text-xs text-gray-400 py-2 rounded-lg" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
-                    <span className="block text-green-400 font-bold mb-0.5">Save $47</span>
+                    <span className="block text-green-400 font-bold mb-0.5">Save $97</span>
                     /month
                   </div>
                   <div className="text-center text-xs text-gray-400 py-2 rounded-lg" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
-                    <span className="block text-green-400 font-bold mb-0.5">$564</span>
+                    <span className="block text-green-400 font-bold mb-0.5">$1,561</span>
                     saved Year 1
                   </div>
                 </div>
@@ -491,13 +491,13 @@ export default function Pricing() {
               <div className="inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/25 rounded-full px-3 py-1">
                 <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse inline-block" />
                 <span className="text-green-400 text-xs font-bold">
-                  You save {pkg.isPopular ? '$1,473/yr' : '$150/mo'}
+                  You save {pkg.isPopular ? '$1,973/yr' : '$200/mo'}
                 </span>
               </div>
               {pkg.setupFeeCents > 0 ? (
                 <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
                   style={{ background:'rgba(255,193,7,0.10)', border:'1px solid rgba(255,193,7,0.35)' }}>
-                  <span className="text-yellow-300 text-xs font-bold">+ $297 setup · auto-added</span>
+                  <span className="text-yellow-300 text-xs font-bold">+ $497 setup · auto-added</span>
                 </div>
               ) : (
                 <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
@@ -574,7 +574,7 @@ export default function Pricing() {
                   }}>
                   {loadingIdx === 100 + idx
                     ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
-                    : <>🎁 Try Free 30 Days — Only $297 Setup</>}
+                    : <>🎁 Try Free 30 Days — Only $497 Setup</>}
                 </motion.button>
                 <p className="text-center text-gray-500 text-[11px] mt-2 leading-relaxed">
                   First month FREE · No charge for 30 days · Cancel before day 30 = pay nothing further
@@ -599,7 +599,7 @@ export default function Pricing() {
             planAmount={pkg.amountCents}
             planPriceLabel={`${pkg.price}${pkg.period}`}
             setupFeeCents={pkg.setupFeeCents}
-            setupFeeName="One-Time Website Setup Fee ($297)"
+            setupFeeName="One-Time Website Setup Fee ($497)"
             productName={`VCV Web Solutions — ${pkg.name} Plan`}
             loading={loadingIdx === modalIdx}
             onConfirm={(payload) => submitToStripe(payload, modalIdx!)}
@@ -694,7 +694,7 @@ export default function Pricing() {
                   </ul>
 
                   <div className="text-yellow-300 text-xs font-bold text-center mb-3">
-                    + $197 setup · auto-added at checkout
+                    + $297 setup · auto-added at checkout
                   </div>
 
                   <motion.button
@@ -735,10 +735,10 @@ export default function Pricing() {
         onClose={() => setBundleModalOpen(false)}
         context="bundle"
         planName="Nova + Lead Website Bundle"
-        planAmount={29700}
-        planPriceLabel="$297/mo"
-        setupFeeCents={29700}
-        setupFeeName="One-Time Setup ($297) — phone, Nova training, website launch"
+        planAmount={39700}
+        planPriceLabel="$397/mo"
+        setupFeeCents={39700}
+        setupFeeName="One-Time Setup ($397) — phone, Nova training, website launch"
         productName="Nova + Lead Website Bundle"
         loading={loadingIdx === 999}
         onConfirm={(payload) => submitToStripe(payload, 999)}
@@ -753,8 +753,8 @@ export default function Pricing() {
           planName={`${novaModalTier.name} Plan`}
           planAmount={novaModalTier.priceCents}
           planPriceLabel={`$${novaModalTier.price}/mo`}
-          setupFeeCents={19700}
-          setupFeeName="One-Time Setup Fee ($197)"
+          setupFeeCents={29700}
+          setupFeeName="One-Time Setup Fee ($297)"
           productName={`Never Miss a Call — ${novaModalTier.name} Plan`}
           loading={loadingIdx === 200 + NOVA_TIERS.findIndex(t => t.id === novaModalTier.id)}
           onConfirm={(payload) => submitToStripe(payload, 200 + NOVA_TIERS.findIndex(t => t.id === novaModalTier.id))}
@@ -937,7 +937,7 @@ export default function Pricing() {
                 color: ['#ffffff','#e0d4ff','#ccf5ff','#d4ffe8','#ffd4f0','#ffffff'],
               }}
               transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}>
-              From $147/mo &nbsp;·&nbsp; 30-day results guarantee &nbsp;·&nbsp; Cancel anytime
+              From $197/mo &nbsp;·&nbsp; 30-day results guarantee &nbsp;·&nbsp; Cancel anytime
             </motion.p>
           </motion.div>
         </div>

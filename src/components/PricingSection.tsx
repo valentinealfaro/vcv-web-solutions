@@ -6,15 +6,15 @@ import { CheckCircle2, ArrowRight, Zap, Loader2, Tag } from 'lucide-react';
 import { PricingBgCanvas } from '@/components/PageEffects';
 import { CheckoutUpsellModal, CheckoutPayload } from '@/components/CheckoutUpsellModal';
 
-const SETUP_FEE_CENTS = 29700; // $297 — waived on annual
+const SETUP_FEE_CENTS = 49700; // $497 — waived on annual
 
 const plans = [
   {
     name: 'Monthly',
-    price: 147,
-    origPrice: 297,
+    price: 197,
+    origPrice: 397,
     period: '/mo',
-    amountCents: 14700,
+    amountCents: 19700,
     setupFeeCents: SETUP_FEE_CENTS,        // monthly pays the setup fee
     setup: 'No long-term commitment',
     description: 'Get a professional lead-generating website with no annual contract.',
@@ -32,13 +32,13 @@ const plans = [
   },
   {
     name: 'Annual',
-    price: 1497,
-    origPrice: 2970,
+    price: 1997,
+    origPrice: 3970,
     period: '/yr',
-    amountCents: 149700,
+    amountCents: 199700,
     setupFeeCents: 0,                       // annual: setup fee waived
-    setup: 'Best value — save $1,473',
-    badge: 'Best Value — Save $1,473',
+    setup: 'Best value — save $1,973',
+    badge: 'Best Value — Save $1,973',
     description: 'The full lead machine. Everything you need to dominate your local market.',
     features: [
       'Everything in Monthly',
@@ -49,7 +49,7 @@ const plans = [
       'Priority 24hr support',
       'Quarterly strategy calls',
       'Google My Business setup',
-      'Setup fee waived ($297 value)',
+      'Setup fee waived ($497 value)',
     ],
     cta: 'Buy Now',
     popular: true,
@@ -168,7 +168,7 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
       {plan.setupFeeCents > 0 ? (
         <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 mb-4 ml-2"
           style={{ background:'rgba(255,193,7,0.10)', border:'1px solid rgba(255,193,7,0.35)' }}>
-          <span className="text-yellow-300 text-xs font-bold">+ $297 setup · auto-added at checkout</span>
+          <span className="text-yellow-300 text-xs font-bold">+ $497 setup · auto-added at checkout</span>
         </div>
       ) : (
         <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 mb-4 ml-2"
@@ -248,7 +248,7 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
             }}>
             {loading === 'trial'
               ? <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting...</>
-              : <>🎁 Try Free 30 Days — Only $297 Setup</>}
+              : <>🎁 Try Free 30 Days — Only $497 Setup</>}
           </motion.button>
           <p className="text-center text-gray-500 text-[11px] mt-2 leading-relaxed">
             First month FREE · No charge for 30 days · Cancel before day 30 = pay nothing further
@@ -267,7 +267,7 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
         planAmount={plan.amountCents}
         planPriceLabel={`$${plan.price.toLocaleString()}${plan.period}`}
         setupFeeCents={plan.setupFeeCents}
-        setupFeeName="One-Time Website Setup Fee ($297)"
+        setupFeeName="One-Time Website Setup Fee ($497)"
         productName={`VCV Web Solutions — ${plan.name} Plan`}
         loading={loading === 'buy'}
         onConfirm={submitToStripe}

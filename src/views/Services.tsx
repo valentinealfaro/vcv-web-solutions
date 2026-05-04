@@ -412,11 +412,11 @@ export default function Services() {
                 style={{ background:'rgba(34,197,94,0.06)', border:'1px solid rgba(34,197,94,0.3)' }}>
                 <p className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-2">From</p>
                 <div className="flex items-baseline gap-2 mb-1">
-                  <span className="font-display text-4xl text-white">$97</span>
-                  <span className="text-gray-400 text-sm">/mo + $197 setup</span>
+                  <span className="font-display text-4xl text-white">$147</span>
+                  <span className="text-gray-400 text-sm">/mo + $297 setup</span>
                 </div>
                 <p className="text-green-400 text-sm font-bold">
-                  🎁 Try Nova FREE for 30 days · Just $197 setup
+                  🎁 Try Nova FREE for 30 days · Just $297 setup
                 </p>
               </div>
 
@@ -455,9 +455,9 @@ export default function Services() {
             <h2 className="font-display text-6xl md:text-8xl text-white mb-6 leading-none">
               GET YOUR<br/><span className="gradient-text">FREE DEMO</span><br/>TODAY
             </h2>
-            <p className="text-gray-400 text-xl mb-10 max-w-xl mx-auto">Professional websites starting at $97/mo — see your custom design first, then we launch it.</p>
+            <p className="text-gray-400 text-xl mb-10 max-w-xl mx-auto">Professional websites starting at $147/mo — see your custom design first, then we launch it.</p>
             <FreeDemoButton size="xl" label="Build My Free Demo" />
-            <p className="text-gray-600 text-sm mt-6">Starts at $97/mo · 30-day results guarantee · Cancel anytime</p>
+            <p className="text-gray-600 text-sm mt-6">Starts at $147/mo · 30-day results guarantee · Cancel anytime</p>
           </motion.div>
         </div>
       </section>
