@@ -414,21 +414,31 @@ export default function AIReceptionist() {
             </span>
           </motion.p>
 
-          {/* What to ask */}
+          {/* What to ask — each card calls Nova on tap */}
           <motion.div {...fade(0.25)} className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
             {NICHES.map((n, i) => (
-              <motion.div key={i} {...fade(0.05 * i)}
-                className="glass-card p-5 text-left">
+              <motion.a key={i} {...fade(0.05 * i)}
+                href={`tel:${NOVA_NUMBER_RAW}`}
+                whileHover={{ y: -4, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="glass-card p-5 text-center group cursor-pointer"
+                style={{ transition: 'border-color 0.3s ease' }}>
                 <div className="aspect-video rounded-xl overflow-hidden mb-4 relative">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={n.img} alt={n.label} loading="lazy"
-                    className="w-full h-full object-cover"/>
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"/>
                   <div className="absolute inset-0" style={{ background:'linear-gradient(to top, rgba(5,15,25,0.85), transparent)' }}/>
                 </div>
                 <p className="text-blue-400 text-xs font-bold uppercase tracking-wider mb-1">If you&apos;re a</p>
                 <p className="text-white font-bold text-lg mb-1">{n.label}</p>
-                <p className="text-gray-400 text-sm">Roleplay: {n.copy}</p>
-              </motion.div>
+                <p className="text-gray-400 text-sm mb-3">Roleplay: {n.copy}</p>
+                {/* Call-Nova CTA */}
+                <span
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-green-400"
+                  style={{ background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.4)' }}>
+                  <Phone className="w-3 h-3"/> Call Nova
+                </span>
+              </motion.a>
             ))}
           </motion.div>
         </div>
