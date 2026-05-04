@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Layout, Search, BarChart3, CheckCircle2, ArrowRight, X, Rocket, Zap, Shield, Star, Users } from 'lucide-react';
+import { Layout, Search, BarChart3, CheckCircle2, ArrowRight, X, Rocket, Zap, Shield, Star, Users, Phone, Bot, Mic, Calendar, BellRing, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay } from '@/components/PageEffects';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
@@ -331,6 +331,115 @@ export default function Services() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════ AI RECEPTIONIST — NOVA ══════════ */}
+      <section className="py-24 relative overflow-hidden"
+        style={{ background:'linear-gradient(180deg,#030712 0%,#0a1622 50%,#030712 100%)' }}>
+        <SectionOrbs variant="green" />
+        <GridOverlay gridOp={0.22} dotOp={0.08} />
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div {...fade()} className="text-center mb-12">
+            <motion.div
+              animate={{ scale:[1, 1.04, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5"
+              style={{ background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.5)' }}>
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"/>
+              <span className="text-green-400 font-bold text-xs tracking-widest">NEW · AI RECEPTIONIST</span>
+            </motion.div>
+            <h2 className="font-display text-5xl md:text-7xl text-white mb-4 leading-none"
+              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4), 0 0 80px rgba(6,182,212,0.25)' }}>
+              MEET <span className="gradient-text">NOVA</span>
+            </h2>
+            <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+              Our AI receptionist answers every call — day, night, weekends — books jobs and texts you the lead instantly.
+              <span className="block mt-2 text-gray-400 text-base">Add Nova to any website plan, or pair them in our bundle.</span>
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-10 items-center mb-10">
+
+            {/* Left: image */}
+            <motion.div {...fade(0.1)} className="relative">
+              <div className="absolute -inset-4 rounded-3xl"
+                style={{ background:'linear-gradient(135deg,rgba(34,197,94,0.4),rgba(6,182,212,0.3),rgba(59,130,246,0.25))', filter:'blur(48px)' }}/>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/nova/nova-hero.png" alt="Nova — AI receptionist" loading="lazy"
+                className="relative rounded-3xl w-full"
+                style={{ border:'2px solid rgba(34,197,94,0.3)', boxShadow:'0 20px 60px rgba(0,0,0,0.5)' }}/>
+              {/* floating live badge */}
+              <motion.div className="absolute -bottom-5 -left-4 glass-card p-3 flex items-center gap-2.5"
+                animate={{ y:[0,-6,0] }} transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}>
+                <div className="w-9 h-9 rounded-full bg-green-500/20 border border-green-500/50 flex items-center justify-center">
+                  <Phone className="w-4 h-4 text-green-400"/>
+                </div>
+                <div>
+                  <p className="text-white font-bold text-xs">Live Right Now</p>
+                  <p className="text-green-400 text-[10px]">Answering calls 24/7</p>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Right: features */}
+            <motion.div {...fade(0.15)}>
+              <div className="grid grid-cols-2 gap-3 mb-7">
+                {[
+                  { icon:<Phone className="w-4 h-4"/>,        label:'24/7 Coverage',     color:'#22c55e' },
+                  { icon:<Mic className="w-4 h-4"/>,          label:'Sounds Human',      color:'#06b6d4' },
+                  { icon:<Calendar className="w-4 h-4"/>,     label:'Books Appointments',color:'#3b82f6' },
+                  { icon:<BellRing className="w-4 h-4"/>,     label:'Instant Lead Alerts', color:'#a855f7' },
+                  { icon:<MessageSquare className="w-4 h-4"/>,label:'Auto-Text Missed Calls', color:'#f97316' },
+                  { icon:<Bot className="w-4 h-4"/>,          label:'Custom Call Scripts', color:'#ec4899' },
+                ].map((f, i) => (
+                  <motion.div key={i} {...fade(0.04 * i)}
+                    className="flex items-center gap-2.5 p-3 rounded-xl"
+                    style={{ background:'rgba(255,255,255,0.03)', border:`1px solid ${f.color}30` }}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ background:`${f.color}18`, color:f.color, border:`1px solid ${f.color}40` }}>
+                      {f.icon}
+                    </div>
+                    <span className="text-white text-sm font-semibold leading-tight">{f.label}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Pricing strip */}
+              <div className="rounded-xl p-4 mb-5"
+                style={{ background:'rgba(34,197,94,0.06)', border:'1px solid rgba(34,197,94,0.3)' }}>
+                <p className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-2">From</p>
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="font-display text-4xl text-white">$97</span>
+                  <span className="text-gray-400 text-sm">/mo + $197 setup</span>
+                </div>
+                <p className="text-green-400 text-sm font-bold">
+                  🎁 Try Nova FREE for 30 days · Just $197 setup
+                </p>
+              </div>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link href="/ai-receptionist"
+                  className="flex-1 px-6 py-3.5 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 group"
+                  style={{
+                    background:'linear-gradient(135deg,#22c55e,#06b6d4)',
+                    boxShadow:'0 0 24px rgba(34,197,94,0.45), inset 0 1px 0 rgba(255,255,255,0.2)',
+                  }}>
+                  Learn More <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
+                </Link>
+                <a href="tel:+15806569429"
+                  className="flex-1 glass-card text-white px-6 py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:border-green-500/40 transition-all">
+                  <Phone className="w-4 h-4 text-green-400"/> Call Nova: (580) 656-9429
+                </a>
+              </div>
+
+              <p className="text-gray-600 text-xs mt-4">
+                Setup in 24-48 hrs · Cancel anytime · No credit card to test the demo
+              </p>
+            </motion.div>
           </div>
         </div>
       </section>
