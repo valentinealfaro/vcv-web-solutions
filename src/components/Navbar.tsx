@@ -10,6 +10,7 @@ const LINKS = [
   { name: 'Home',           path: '/' },
   { name: 'Services',       path: '/services' },
   { name: 'AI Receptionist',path: '/ai-receptionist' },
+  { name: 'Our Work',       path: '/our-work' },
   { name: 'Pricing',        path: '/pricing' },
   { name: 'Contact',        path: '/contact' },
 ];

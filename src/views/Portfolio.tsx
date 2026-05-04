@@ -1,205 +1,330 @@
 'use client';
-import { motion } from 'motion/react';
-import { ExternalLink, Globe, Layout, Search, ArrowRight, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
-import { cn } from '../lib/utils';
+import { motion } from 'motion/react';
+import { ExternalLink, Layout, CheckCircle2, Sparkles, Phone } from 'lucide-react';
+import { INDUSTRIES } from '@/data/industries';
+import {
+  ParticleCanvas, MarqueeBand, SectionOrbs, GridOverlay,
+} from '@/components/PageEffects';
+import { FreeDemoButton } from '@/components/FreeDemoButton';
 
-const PortfolioItem = ({ title, category, image, description, tags, demoUrl }: any) => {
-  const handleBuyNow = async () => {
-    try {
-      const response = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productName: title }),
-      });
+const fade = (d=0) => ({ initial:{opacity:0,y:24}, whileInView:{opacity:1,y:0}, transition:{delay:d,duration:0.55}, viewport:{once:true} });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Server error:", errorData);
-        alert(`Failed to initiate payment: ${errorData.details || errorData.error || "Unknown error"}`);
-        return;
-      }
-
-      const { url } = await response.json();
-      if (url) {
-        window.location.href = url;
-      } else {
-        throw new Error("No checkout URL returned from server.");
-      }
-    } catch (error) {
-      console.error("Error in handleBuyNow:", error);
-      alert(`An unexpected error occurred: ${error instanceof Error ? error.message : String(error)}`);
-    }
-  };
+/* Stylised browser-frame mockup — CSS-only, takes the industry's accent color */
+const SiteMockup = ({ color, emoji, name }: { color: string; emoji: string; name: string }) => {
+  const tagline =
+    name.includes('Roofers')   ? 'Storm Calls' :
+    name.includes('Plumbers')  ? '3am Calls' :
+    name.includes('Dentists')  ? 'New Patients' :
+    name.includes('Lawyers')   ? 'Consults' :
+    name.includes('Real')      ? 'Showings' :
+    name.includes('Restaurant')? 'Reservations' :
+    name.includes('Med')       ? 'Bookings' :
+    name.includes('Salon')     ? 'Appointments' :
+    name.includes('Wedding')   ? 'Tour Requests' :
+    'Jobs';
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="group bg-gray-900 border border-white/5 rounded-3xl overflow-hidden hover:border-blue-500/30 transition-all flex flex-col"
-    >
-      <a 
-        href={demoUrl} 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="aspect-video relative overflow-hidden block"
-      >
-        <img
-          src={image}
-          alt={title}
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <div className="flex flex-col items-center space-y-2">
-            <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-xl shadow-blue-600/40">
-              <ExternalLink className="w-6 h-6" />
-            </div>
-            <span className="text-white text-xs font-bold uppercase tracking-widest">View Live Demo</span>
-          </div>
+    <div className="relative aspect-[4/3] rounded-xl overflow-hidden"
+      style={{
+        background: `linear-gradient(135deg, ${color}28, ${color}08)`,
+        border: `1px solid ${color}50`,
+      }}>
+      {/* Browser chrome */}
+      <div className="absolute top-0 left-0 right-0 h-7 flex items-center gap-1.5 px-3"
+        style={{ background:'rgba(0,0,0,0.55)', borderBottom:`1px solid ${color}30` }}>
+        <span className="w-2.5 h-2.5 rounded-full bg-red-500/70"/>
+        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70"/>
+        <span className="w-2.5 h-2.5 rounded-full bg-green-500/70"/>
+        <span className="ml-2 text-[9px] text-gray-400 font-mono truncate">vcvwebsolutions.com/ai-receptionist/...</span>
+      </div>
+
+      {/* Page content */}
+      <div className="absolute inset-x-0 top-7 bottom-0 flex flex-col items-center justify-center text-center px-4">
+        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full mb-2 text-[9px] font-bold tracking-widest"
+          style={{ background:`${color}22`, border:`1px solid ${color}55`, color }}>
+          {emoji} {name.toUpperCase()}
+        </span>
+        <div className="font-display text-white text-base md:text-lg leading-tight mb-2"
+          style={{ textShadow:`0 0 18px ${color}80` }}>
+          Stop Losing<br/>
+          <span style={{ color }}>{tagline}</span>
         </div>
-      </a>
-      <div className="p-8 flex flex-col flex-grow">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-xs font-black uppercase tracking-widest text-blue-500">{category}</span>
-          <div className="flex space-x-2">
-            {tags.map((tag: string, idx: number) => (
-              <span key={idx} className="text-[10px] font-bold bg-white/5 text-gray-400 px-2 py-0.5 rounded-full uppercase tracking-tighter">
-                {tag}
+        <div className="flex gap-1.5 mt-1">
+          <span className="text-[8px] font-bold px-2 py-1 rounded text-white" style={{ background: color }}>
+            Try Free
+          </span>
+          <span className="text-[8px] font-bold px-2 py-1 rounded text-gray-300"
+            style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)' }}>
+            Call Demo
+          </span>
+        </div>
+
+        {/* Faux content blocks */}
+        <div className="absolute bottom-3 left-3 right-3 flex gap-1.5">
+          {[0,1,2].map(i => (
+            <div key={i} className="flex-1 rounded h-2"
+              style={{ background:`${color}${i===1?'40':'20'}` }}/>
+          ))}
+        </div>
+      </div>
+
+      {/* Subtle inner glow */}
+      <motion.div
+        animate={{ opacity:[0.3, 0.6, 0.3] }}
+        transition={{ duration: 3, repeat: Infinity }}
+        className="absolute inset-0 rounded-xl pointer-events-none"
+        style={{ boxShadow:`inset 0 0 40px ${color}30` }}
+      />
+    </div>
+  );
+};
+
+/* Featured 9 — chosen for visual diversity (different colors / industries) */
+const FEATURED_SLUGS = [
+  'roofers', 'dentists', 'restaurants',
+  'plumbers', 'real-estate', 'med-spa',
+  'salons', 'lawyers', 'wedding-venues',
+];
+
+export default function Portfolio() {
+  const featured = FEATURED_SLUGS
+    .map(slug => INDUSTRIES.find(i => i.slug === slug))
+    .filter((x): x is typeof INDUSTRIES[number] => Boolean(x));
+
+  return (
+    <div className="bg-[#030712] min-h-screen">
+
+      {/* ══════════ HERO ══════════ */}
+      <section className="relative pt-28 pb-16 overflow-hidden">
+        <ParticleCanvas/>
+        <SectionOrbs variant="purple"/>
+        <GridOverlay gridOp={0.22} dotOp={0.1}/>
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
+            <p className="neon-badge mb-5 mx-auto w-fit">Our Work</p>
+            <h1 className="font-display text-5xl md:text-7xl text-white leading-[1.05] mb-5"
+              style={{ textShadow:'0 0 60px rgba(37,99,235,0.5), 0 0 120px rgba(124,58,237,0.25)' }}>
+              REAL SITES.<br/>
+              <span className="gradient-text">REAL CONVERSIONS.</span>
+            </h1>
+            <p className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-3">
+              Every site below is a <strong className="text-white">live, working website</strong> we designed and built.
+              Click any one to see it in action — fully responsive, mobile-perfect,
+              and engineered to convert.
+            </p>
+            <p className="text-gray-400 text-base">
+              <strong className="text-white">35+ live sites.</strong> All conversion-focused.
+              All built with the same Stripe checkout, AI receptionist integration, and 24-48 hr launch timeline you&apos;ll get.
+            </p>
+          </motion.div>
+
+          {/* Spec strip */}
+          <div className="flex flex-wrap gap-2 justify-center mt-7 text-xs">
+            {[
+              { e:'🚀', t:'Built in 24-48 hrs',    c:'59,130,246' },
+              { e:'⚡', t:'Sub-2s page load',       c:'34,197,94'  },
+              { e:'📱', t:'Mobile-perfect',         c:'168,85,247' },
+              { e:'🎯', t:'SEO-optimized',          c:'245,158,11' },
+              { e:'💳', t:'Live Stripe checkout',   c:'6,182,212'  },
+            ].map((p,i) => (
+              <span key={i} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold"
+                style={{ color:`rgb(${p.c})`, background:`rgba(${p.c},0.12)`, border:`1px solid rgba(${p.c},0.4)` }}>
+                {p.e} {p.t}
               </span>
             ))}
           </div>
         </div>
-        <h3 className="text-2xl font-bold text-white mb-4">{title}</h3>
-        <p className="text-gray-400 text-sm leading-relaxed mb-8 line-clamp-2">{description}</p>
-        
-        <div className="mt-auto flex flex-col space-y-4 pt-6 border-t border-white/5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-xs font-bold text-gray-500">
-                <Layout className="w-4 h-4" />
-                <span>UX/UI</span>
+      </section>
+
+      <MarqueeBand/>
+
+      {/* ══════════ EXHIBIT A — THIS SITE ══════════ */}
+      <section className="py-16 bg-[#040a16] relative overflow-hidden">
+        <SectionOrbs variant="mixed"/>
+        <GridOverlay gridOp={0.18} dotOp={0.08}/>
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div {...fade()} className="text-center mb-8">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-3"
+              style={{ background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.4)', color:'#4ade80' }}>
+              <Sparkles className="w-3 h-3"/> EXHIBIT A — THIS SITE
+            </span>
+            <h2 className="font-display text-3xl md:text-5xl text-white mb-3 leading-tight">
+              You&apos;re looking at one <span className="gradient-text">right now</span>
+            </h2>
+            <p className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto">
+              Animated waves, AI receptionist demo, ROI calculator, working Stripe checkout, 9 upsells, exit-intent popup,
+              and 34 industry-specific landing pages. <strong className="text-white">All custom-built.</strong>
+            </p>
+          </motion.div>
+
+          <motion.div {...fade(0.1)} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-5xl mx-auto">
+            {[
+              { label:'Animated bg canvas',     color:'#3b82f6' },
+              { label:'Live AI demo (browser)', color:'#22c55e' },
+              { label:'ROI calculator',         color:'#fbbf24' },
+              { label:'Stripe upsell modal',    color:'#a855f7' },
+              { label:'Mobile-perfect',         color:'#06b6d4' },
+              { label:'Theme switcher (9 modes)',color:'#ec4899' },
+              { label:'Exit-intent popup',      color:'#f97316' },
+              { label:'34 industry pages',      color:'#10b981' },
+            ].map((f, i) => (
+              <div key={i} className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm"
+                style={{ background:`${f.color}10`, border:`1px solid ${f.color}35` }}>
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: f.color }}/>
+                <span className="text-gray-100 font-semibold">{f.label}</span>
               </div>
-              <div className="flex items-center space-x-2 text-xs font-bold text-gray-500">
-                <Search className="w-4 h-4" />
-                <span>SEO</span>
-              </div>
-            </div>
-            <a 
-              href={demoUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-500 font-bold text-sm flex items-center space-x-2 group/link"
-            >
-              <span>Live Demo</span>
-              <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-            </a>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ══════════ FEATURED SHOWCASE ══════════ */}
+      <section className="py-20 bg-[#030712] relative overflow-hidden">
+        <SectionOrbs variant="blue"/>
+        <GridOverlay gridOp={0.18} dotOp={0.08}/>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div {...fade()} className="text-center mb-10">
+            <p className="neon-badge mb-4 mx-auto w-fit">9 Featured · 34 Total</p>
+            <h2 className="font-display text-3xl md:text-5xl text-white mb-3 leading-tight">
+              Live <span className="gradient-text">industry sites</span> we built
+            </h2>
+            <p className="text-gray-300 text-base max-w-2xl mx-auto">
+              Each one is a fully working site with custom copy, conversion design, and Nova integrated.
+              Click any thumbnail to view the live page.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {featured.map((ind, i) => (
+              <motion.div key={ind.slug} {...fade(0.04 * i)}>
+                <Link href={`/ai-receptionist/${ind.slug}`}
+                  className="group block rounded-2xl overflow-hidden p-3 transition-transform hover:-translate-y-1"
+                  style={{
+                    background:'rgba(5,12,22,0.97)',
+                    border:`1px solid ${ind.color}30`,
+                    boxShadow:`0 8px 32px rgba(0,0,0,0.5), 0 0 24px ${ind.color}15`,
+                  }}>
+                  <SiteMockup color={ind.color} emoji={ind.emoji} name={ind.name}/>
+
+                  <div className="p-4">
+                    <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: ind.color }}>
+                      Live Site · {ind.name}
+                    </p>
+                    <h3 className="text-white font-bold text-lg leading-tight mb-2">
+                      {ind.heroHeadline.replace(/\n/g, ' ')}
+                    </h3>
+                    <p className="text-gray-400 text-sm leading-snug mb-3 line-clamp-2">
+                      {ind.heroSubhead.split('.').slice(0, 1).join('.') + '.'}
+                    </p>
+                    <span className="inline-flex items-center gap-1.5 text-sm font-bold group-hover:gap-2 transition-all"
+                      style={{ color: ind.color }}>
+                      View Live Site <ExternalLink className="w-3.5 h-3.5"/>
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
           </div>
-          <button
-            onClick={handleBuyNow}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center space-x-2 transition-all shadow-lg shadow-blue-600/20"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            <span>Buy Now ($497)</span>
-          </button>
+
+          {/* The other 25 industries — pill grid */}
+          <motion.div {...fade(0.4)}
+            className="mt-10 rounded-2xl p-6 text-center max-w-4xl mx-auto"
+            style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)' }}>
+            <p className="text-white font-bold text-lg mb-2">
+              👀 We have {INDUSTRIES.length - 9} more live industry sites
+            </p>
+            <p className="text-gray-300 text-sm mb-4">
+              From locksmiths and tutors to commercial cleaners and wedding venues —
+              every category below has its own custom-built page.
+            </p>
+            <div className="flex flex-wrap gap-1.5 justify-center">
+              {INDUSTRIES.filter(i => !FEATURED_SLUGS.includes(i.slug)).map(ind => (
+                <Link key={ind.slug} href={`/ai-receptionist/${ind.slug}`}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold hover:scale-105 transition-transform"
+                  style={{
+                    background:`${ind.color}10`,
+                    border:`1px solid ${ind.color}40`,
+                    color:'#e5e7eb',
+                  }}>
+                  {ind.emoji} {ind.name}
+                </Link>
+              ))}
+            </div>
+          </motion.div>
         </div>
-      </div>
-    </motion.div>
-  );
-};
+      </section>
 
-export default function Portfolio() {
-  const [activeCategory, setActiveCategory] = useState('all');
+      {/* ══════════ HOW WE BUILD ══════════ */}
+      <section className="py-16 bg-[#040a16] relative overflow-hidden">
+        <SectionOrbs variant="cyan"/>
+        <GridOverlay gridOp={0.18} dotOp={0.08}/>
 
-  const categories = [
-    { id: 'all', name: 'All Projects' },
-    { id: 'home', name: 'Home Services' },
-    { id: 'professional', name: 'Professional Services' },
-    { id: 'food', name: 'Food & Dining' }
-  ];
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div {...fade()} className="text-center mb-10">
+            <p className="neon-badge mb-3 mx-auto w-fit">The Stack</p>
+            <h2 className="font-display text-3xl md:text-5xl text-white leading-tight">
+              How we build sites that <span className="gradient-text">actually convert</span>
+            </h2>
+          </motion.div>
 
-  const projects = [
-    { title: "Plumbers", category: "home", image: "https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FDemo%20Screenshots%2FPlumbing%20Website%20Demo.png?alt=media&token=92ab3636-87bb-429d-b362-907386e1bc2a", description: "High-converting website for plumbing services.", tags: ["Lead Gen", "SEO"], demoUrl: "https://plumbflow-high-converting-plumber-template-204626754103.us-west1.run.app" },
-    { title: "Electricians", category: "home", image: "https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FDemo%20Screenshots%2FElectrican%20Website%20Demo.png?alt=media&token=73cc1d73-3dfa-424f-93c8-7d1653985f17", description: "Professional site for electrical contractors.", tags: ["Lead Gen", "SEO"], demoUrl: "https://voltmaster-electrician-template-204626754103.us-west1.run.app" },
-    { title: "HVAC", category: "home", image: "https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FDemo%20Screenshots%2FHVAC%20Screenshot%20for%20Demo%20Website.png?alt=media&token=51900686-0453-473c-85a2-bcfd627fc236", description: "Heating and air conditioning service website.", tags: ["Lead Gen", "SEO"], demoUrl: "https://arcticfire-hvac-204626754103.us-west1.run.app" },
-    { title: "Roofing", category: "home", image: "https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FDemo%20Screenshots%2FRoofing%20Website%20Demo.png?alt=media&token=270d5d1f-0950-456d-bca0-94de3c29e3dc", description: "Roofing company lead generation site.", tags: ["Lead Gen", "SEO"], demoUrl: "https://roofmaster-pro-template-204626754103.us-west1.run.app" },
-    { title: "Concrete", category: "home", image: "https://picsum.photos/seed/concrete/800/600", description: "Concrete contractor website.", tags: ["Lead Gen", "SEO"], demoUrl: "https://solidbuild-concrete-204626754103.us-west1.run.app" },
-    { title: "Fencing", category: "home", image: "https://picsum.photos/seed/fence/800/600", description: "Fence installation service site.", tags: ["Lead Gen", "SEO"], demoUrl: "https://ironwood-fencing-gates-204626754103.us-west1.run.app" },
-    { title: "Handyman", category: "home", image: "https://picsum.photos/seed/handyman/800/600", description: "Handyman services website.", tags: ["Lead Gen", "SEO"], demoUrl: "https://premium-handyman-lawton-204626754103.us-west1.run.app" },
-    { title: "Pressure Washing", category: "home", image: "https://picsum.photos/seed/pressure/800/600", description: "Pressure washing service site.", tags: ["Lead Gen", "SEO"], demoUrl: "https://aquaflow-pressure-washing-204626754103.us-west1.run.app" },
-    { title: "Gutter Cleaning", category: "home", image: "https://picsum.photos/seed/gutter/800/600", description: "Gutter cleaning service site.", tags: ["Lead Gen", "SEO"], demoUrl: "https://leafyclean-premium-gutter-cleaning-204626754103.us-west1.run.app" },
-    { title: "Tree Services", category: "home", image: "https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FDemo%20Screenshots%2FTree%20Removal%20Website%20Demo.png?alt=media&token=6a8beddd-81f9-49e8-a397-09e74c17dfe1", description: "Tree trimming and removal site.", tags: ["Lead Gen", "SEO"], demoUrl: "https://timberguard-tree-services-204626754103.us-west1.run.app" },
-    { title: "Junk Removal", category: "home", image: "https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FDemo%20Screenshots%2FJunk%20Removal%20Demo%20Website.png?alt=media&token=09098f4e-1cc0-487a-a471-1cade9459223", description: "Junk removal service site.", tags: ["Lead Gen", "SEO"], demoUrl: "https://junkaway-fast-affordable-junk-removal-204626754103.us-west1.run.app" },
-    { title: "Mortgage", category: "professional", image: "https://picsum.photos/seed/mortgage/800/600", description: "Mortgage broker professional site.", tags: ["Lead Gen", "SEO"], demoUrl: "https://mortgage-broker-pro-template-204626754103.us-west1.run.app" },
-    { title: "Mobile Detailing", category: "home", image: "https://picsum.photos/seed/detailing/800/600", description: "Mobile car detailing service site.", tags: ["Lead Gen", "SEO"], demoUrl: "https://luxury-mobile-detailing-template-204626754103.us-west1.run.app" },
-    { title: "House Cleaning", category: "home", image: "https://picsum.photos/seed/cleaning/800/600", description: "House cleaning service site.", tags: ["Lead Gen", "SEO"], demoUrl: "https://clean-calm-cleaning-template-204626754103.us-west1.run.app" },
-    { title: "Food Trucks", category: "food", image: "https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FDemo%20Screenshots%2FFood%20Truck%20Demo%20Website.png?alt=media&token=e05f2706-9a26-4073-8c8a-7c6513b11dd2", description: "Food truck business website.", tags: ["Lead Gen", "SEO"], demoUrl: "https://street-eats-food-truck-template-204626754103.us-west1.run.app" }
-  ];
-
-  const filteredProjects = activeCategory === 'all'
-    ? projects
-    : projects.filter(p => p.category === activeCategory);
-
-  return (
-    <div className="bg-black pt-32 pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-extrabold text-white mb-6"
-          >
-            Our <span className="text-blue-500">Portfolio</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-xl text-gray-400 max-w-2xl mx-auto"
-          >
-            Real results for real businesses. Browse our latest high-converting projects.
-          </motion.p>
+          <div className="grid md:grid-cols-3 gap-5">
+            {[
+              { icon:'⚡', title:'Next.js + React',  desc:'Same tech Vercel, TikTok, and Stripe use. Sub-2s loads, server-side rendering, perfect SEO.' },
+              { icon:'🎨', title:'Custom Design',    desc:'Every site is bespoke — not a template. Animations, glass morphism, and conversion-focused layouts.' },
+              { icon:'💳', title:'Live Checkout',    desc:'Real Stripe payment processing, not a contact form. Customers can pay you the moment they land.' },
+              { icon:'🤖', title:'Nova Integration', desc:'Every site we build connects directly to Nova so calls + form fills become leads instantly.' },
+              { icon:'📱', title:'Mobile-First',     desc:'Built for iPhone first. 60% of leads come from mobile — your site has to convert there.' },
+              { icon:'🔍', title:'SEO Built-In',     desc:'Sitemaps, meta tags, OpenGraph, structured data — Google indexes you correctly out of the gate.' },
+            ].map((c, i) => (
+              <motion.div key={i} {...fade(0.05*i)}
+                className="rounded-2xl p-5"
+                style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.08)' }}>
+                <div className="text-3xl mb-3">{c.icon}</div>
+                <h3 className="text-white font-bold text-base mb-2">{c.title}</h3>
+                <p className="text-gray-300 text-sm leading-relaxed">{c.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
+      </section>
 
-        <div className="flex flex-wrap justify-center gap-4 mb-16">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={cn(
-                "px-6 py-2 rounded-full text-sm font-bold transition-all",
-                activeCategory === cat.id
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                  : "bg-gray-900 text-gray-400 hover:text-white border border-white/5"
-              )}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
+      {/* ══════════ FINAL CTA ══════════ */}
+      <section className="py-20 bg-[#030712] relative overflow-hidden">
+        <SectionOrbs variant="green"/>
+        <GridOverlay gridOp={0.22} dotOp={0.1}/>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project, idx) => (
-            <PortfolioItem key={idx} {...project} />
-          ))}
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+          <motion.div {...fade()}>
+            <p className="neon-badge mb-4 mx-auto w-fit">Your Turn</p>
+            <h2 className="font-display text-4xl md:text-7xl text-white mb-5 leading-tight"
+              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4)' }}>
+              Want one like<br/><span className="gradient-text">these for your biz?</span>
+            </h2>
+            <p className="text-gray-200 text-lg mb-8 max-w-2xl mx-auto">
+              We&apos;ll build a custom design preview for your business <strong className="text-white">free</strong> — see it before you commit to anything.
+              Approved? Live in 24-48 hrs.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+              <FreeDemoButton size="lg" label="Get My Free Design Preview" rounded="full"/>
+              <a href="tel:+15806569429"
+                className="glass-card text-white px-8 py-4 rounded-full font-semibold text-base inline-flex items-center justify-center gap-2 w-full sm:w-auto">
+                <Phone className="w-5 h-5 text-green-400"/> Call (580) 656-9429
+              </a>
+            </div>
+            <p className="text-gray-500 text-xs mt-5 flex flex-wrap justify-center gap-x-3 gap-y-1">
+              <span><Layout className="w-3 h-3 inline-block mr-1"/> Custom design first</span>
+              <span>·</span>
+              <span>30-day money-back</span>
+              <span>·</span>
+              <span>Cancel anytime</span>
+            </p>
+          </motion.div>
         </div>
-
-        <div className="mt-24 p-12 bg-gray-950 border border-white/5 rounded-3xl text-center">
-          <h2 className="text-3xl font-bold text-white mb-6">Want to see your business here?</h2>
-          <p className="text-gray-400 mb-10 max-w-xl mx-auto">
-            We're ready to build your next growth engine. Get a free demo of what we can do for you.
-          </p>
-          <Link
-            href="/free-demo"
-            className="inline-flex items-center space-x-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-2xl"
-          >
-            <span>Request Your Free Demo</span>
-            <ArrowRight className="w-5 h-5" />
-          </Link>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }
