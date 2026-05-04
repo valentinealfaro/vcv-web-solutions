@@ -555,28 +555,25 @@ export default function AIReceptionist() {
             </p>
           </motion.div>
 
-          {/* Stack of value */}
-          <div className="grid md:grid-cols-3 gap-5 mb-12">
+          {/* Compact "what's inside" row — 3 icons, no card clutter */}
+          <motion.div {...fade(0.1)} className="flex flex-wrap items-center justify-center gap-3 md:gap-6 mb-10 max-w-3xl mx-auto">
             {STACK.map((s, i) => (
-              <motion.div key={i} {...fade(0.08 * i)}
-                className="glass-card p-7"
-                style={{ borderColor:`${s.color}30` }}>
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background:`${s.color}20`, color:s.color, border:`1px solid ${s.color}50` }}>
-                  {s.icon}
-                </div>
-                <h3 className="text-white font-bold text-lg mb-4">{s.title}</h3>
-                <ul className="space-y-2.5">
-                  {s.items.map((item, j) => (
-                    <li key={j} className="flex items-start gap-2 text-sm text-gray-300">
-                      <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color:s.color }}/>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
+              <div key={i} className="flex items-center gap-2.5 px-4 py-2 rounded-full"
+                style={{ background:`${s.color}12`, border:`1px solid ${s.color}35` }}>
+                <span style={{ color: s.color }}>{s.icon}</span>
+                <span className="text-white font-semibold text-sm whitespace-nowrap">{s.title}</span>
+                {i < STACK.length - 1 && <span className="text-gray-600 ml-1 hidden md:inline">+</span>}
+              </div>
             ))}
-          </div>
+          </motion.div>
+
+          {/* Pick a plan heading */}
+          <motion.div {...fade(0.15)} className="text-center mb-7">
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2">Pick Your Plan</p>
+            <h3 className="font-display text-3xl md:text-4xl text-white">
+              Start where you are. Scale as you grow.
+            </h3>
+          </motion.div>
 
           {/* Three-tier pricing grid */}
           {err && <p className="text-red-400 text-sm text-center mb-4">{err}</p>}
