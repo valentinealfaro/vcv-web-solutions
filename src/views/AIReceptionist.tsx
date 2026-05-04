@@ -11,6 +11,7 @@ import { TryNovaButton } from '@/components/TryNovaButton';
 import { EqualizerCanvas } from '@/components/EqualizerCanvas';
 import { CheckoutUpsellModal } from '@/components/CheckoutUpsellModal';
 import { ROICalculator } from '@/components/ROICalculator';
+import { CountdownTimer } from '@/components/CountdownTimer';
 import {
   ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay,
 } from '@/components/PageEffects';
@@ -191,6 +192,8 @@ export default function AIReceptionist() {
                     🎁 Try Nova FREE for 30 Days · Just $297 Setup
                   </span>
                 </motion.div>
+
+                <CountdownTimer message="Free trial offer ends today" variant="banner"/>
               </div>
 
               <h1 className="font-display leading-none text-white mb-6"

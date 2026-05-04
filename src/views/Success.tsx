@@ -2,8 +2,21 @@
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useEffect } from 'react';
+import { trackPurchase } from '@/components/Analytics';
 
 export default function Success() {
+  /* Fire conversion events for GA4 + Meta Pixel on success page load.
+     Stripe doesn't send back the amount client-side, so we use a generic
+     "purchase complete" signal. For accurate revenue attribution, set up
+     a Stripe webhook + server-side conversion API later. */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const amount = Number(params.get('amount')) || 297;
+    const product = params.get('product') || 'VCV Web Solutions Plan';
+    trackPurchase(amount, product);
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black px-4">
       <motion.div

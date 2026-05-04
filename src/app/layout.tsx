@@ -10,6 +10,8 @@ import { MobileStickyBar } from '@/components/MobileStickyBar';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { ExitIntentPopup } from '@/components/ExitIntentPopup';
+import { Analytics } from '@/components/Analytics';
+import Script from 'next/script';
 
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 const OG_DESC  = 'High-converting websites built in 3-7 days for local service businesses. SEO-optimized, mobile-ready, and engineered to generate leads — not just look pretty.';
@@ -63,6 +65,56 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        {/* Analytics: GA4 + Meta Pixel + Microsoft Clarity */}
+        <Analytics />
+
+        {/* Schema.org JSON-LD — helps Google show rich results */}
+        <Script id="ld-organization" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'VCV Web Solutions',
+            url: SITE_URL,
+            logo: 'https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FVCV%20Websolutions%20Logo.png?alt=media&token=aed21397-69ca-4846-a45d-267482b81acf',
+            description: OG_DESC,
+            sameAs: [],
+            contactPoint: {
+              '@type': 'ContactPoint',
+              telephone: '+1-580-919-1386',
+              contactType: 'sales',
+              areaServed: 'US',
+              availableLanguage: ['English'],
+            },
+          })}
+        </Script>
+        <Script id="ld-localbusiness" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'LocalBusiness',
+            name: 'VCV Web Solutions',
+            url: SITE_URL,
+            telephone: '+1-580-919-1386',
+            priceRange: '$97-$1497',
+            description: OG_DESC,
+            address: { '@type': 'PostalAddress', addressCountry: 'US' },
+            openingHours: 'Mo-Sa 09:00-18:00',
+          })}
+        </Script>
+        <Script id="ld-service-nova" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Service',
+            serviceType: 'AI Receptionist & Lead Capture',
+            provider: { '@type': 'Organization', name: 'VCV Web Solutions' },
+            description: 'Nova AI receptionist answers every call 24/7, captures leads, books appointments, and follows up automatically.',
+            offers: [
+              { '@type': 'Offer', name: 'Starter', price: '147', priceCurrency: 'USD' },
+              { '@type': 'Offer', name: 'Growth',  price: '297', priceCurrency: 'USD' },
+              { '@type': 'Offer', name: 'Pro',     price: '497', priceCurrency: 'USD' },
+            ],
+          })}
+        </Script>
+
         <ThemeProvider>
           <CustomCursor />
           <Navbar />

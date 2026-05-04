@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ArrowRight, Loader2, CheckCircle2, Plus } from 'lucide-react';
+import { trackInitiateCheckout } from '@/components/Analytics';
 
 /* ─── Add-on catalogue ──────────────────────────────────────────
    Each add-on flags which contexts it should be offered in.
@@ -162,6 +163,9 @@ export const CheckoutUpsellModal = ({
     const chosenAddons = visibleAddons
       .filter(a => selected.has(a.id))
       .map(a => ({ name: `${a.title} (Add-on)`, description: a.desc, amount: a.priceCents }));
+
+    /* Fire InitiateCheckout for GA4 + Meta Pixel — value in dollars */
+    trackInitiateCheckout(total / 100, productName);
 
     onConfirm({
       productName,
