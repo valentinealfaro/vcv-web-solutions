@@ -268,9 +268,11 @@ export default function AIReceptionist() {
                 </span>
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 items-stretch">
+
+                {/* ── CALL NOVA — primary, two-line ───────────────────── */}
                 <motion.a href={`tel:${NOVA_NUMBER_RAW}`}
-                  whileHover={{ scale:1.04 }} whileTap={{ scale:0.97 }}
+                  whileHover={{ scale:1.03, y:-2 }} whileTap={{ scale:0.97 }}
                   animate={{
                     backgroundImage:[
                       'linear-gradient(135deg,#22c55e,#06b6d4)',
@@ -279,20 +281,88 @@ export default function AIReceptionist() {
                       'linear-gradient(135deg,#8b5cf6,#22c55e)',
                     ],
                     boxShadow:[
-                      '0 0 24px rgba(34,197,94,0.55)',
-                      '0 0 24px rgba(6,182,212,0.55)',
-                      '0 0 24px rgba(59,130,246,0.55)',
-                      '0 0 24px rgba(139,92,246,0.55)',
+                      '0 8px 28px rgba(34,197,94,0.45),  inset 0 1px 0 rgba(255,255,255,0.25)',
+                      '0 8px 28px rgba(6,182,212,0.45),  inset 0 1px 0 rgba(255,255,255,0.25)',
+                      '0 8px 28px rgba(59,130,246,0.45), inset 0 1px 0 rgba(255,255,255,0.25)',
+                      '0 8px 28px rgba(139,92,246,0.45), inset 0 1px 0 rgba(255,255,255,0.25)',
                     ],
                   }}
-                  transition={{ duration:5, repeat:Infinity, ease:'linear' }}
-                  className="px-8 py-4 rounded-full font-bold text-white text-base inline-flex items-center justify-center gap-2">
-                  <Phone className="w-5 h-5"/> Call Nova: {NOVA_NUMBER}
+                  transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
+                  className="relative px-7 py-3.5 rounded-2xl flex items-center gap-3.5 overflow-hidden"
+                  style={{ minWidth: 260 }}>
+                  {/* shine sweep */}
+                  <motion.span
+                    className="absolute inset-0 pointer-events-none"
+                    initial={{ x: '-110%' }}
+                    animate={{ x: '110%' }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1.5 }}
+                    style={{ background:'linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)', width:'40%' }}
+                  />
+                  {/* phone icon — pulsing white circle */}
+                  <motion.div
+                    animate={{ scale:[1, 1.12, 1], boxShadow:[
+                      '0 0 0 rgba(255,255,255,0.4)',
+                      '0 0 18px rgba(255,255,255,0.6)',
+                      '0 0 0 rgba(255,255,255,0.4)',
+                    ]}}
+                    transition={{ duration: 1.6, repeat: Infinity, ease:'easeInOut' }}
+                    className="relative z-10 w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ background:'rgba(255,255,255,0.18)', border:'1.5px solid rgba(255,255,255,0.4)' }}>
+                    <Phone className="w-5 h-5 text-white"/>
+                  </motion.div>
+                  {/* two-line label */}
+                  <div className="relative z-10 text-left leading-tight">
+                    <p className="text-white/85 text-[11px] font-bold uppercase tracking-widest">Call Nova</p>
+                    <p className="text-white text-xl font-display tracking-wide" style={{ textShadow:'0 1px 6px rgba(0,0,0,0.35)' }}>
+                      {NOVA_NUMBER}
+                    </p>
+                  </div>
                 </motion.a>
-                <a href="#try-it-live"
-                  className="glass-card text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 hover:border-blue-500/40 transition-all">
-                  <Mic className="w-4 h-4 text-blue-400"/> Try Nova Now <ArrowRight className="w-4 h-4"/>
-                </a>
+
+                {/* ── TRY NOVA NOW — secondary, mic-themed, two-line ────── */}
+                <motion.a href="#try-it-live"
+                  whileHover={{ scale:1.03, y:-2 }} whileTap={{ scale:0.97 }}
+                  className="relative px-7 py-3.5 rounded-2xl flex items-center gap-3.5 overflow-hidden group"
+                  style={{
+                    minWidth: 260,
+                    background: 'linear-gradient(135deg, rgba(15,23,42,0.95), rgba(20,30,50,0.95))',
+                    border: '1.5px solid rgba(139,92,246,0.45)',
+                    boxShadow: '0 8px 28px rgba(139,92,246,0.18), inset 0 1px 0 rgba(255,255,255,0.05)',
+                  }}>
+                  {/* animated purple/pink gradient on hover */}
+                  <motion.span
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                    style={{ background:'linear-gradient(135deg,rgba(139,92,246,0.25),rgba(236,72,153,0.18))' }}
+                  />
+                  {/* mic icon with pulse rings */}
+                  <div className="relative z-10 w-11 h-11 flex-shrink-0">
+                    <motion.div
+                      animate={{ scale:[1, 1.6], opacity:[0.5, 0] }}
+                      transition={{ duration: 1.8, repeat: Infinity, ease:'easeOut' }}
+                      className="absolute inset-0 rounded-full pointer-events-none"
+                      style={{ border:'2px solid rgba(139,92,246,0.5)' }}
+                    />
+                    <motion.div
+                      animate={{ boxShadow:[
+                        '0 0 12px rgba(139,92,246,0.5)',
+                        '0 0 22px rgba(236,72,153,0.7)',
+                        '0 0 12px rgba(139,92,246,0.5)',
+                      ]}}
+                      transition={{ duration: 2, repeat: Infinity, ease:'easeInOut' }}
+                      className="relative w-11 h-11 rounded-full flex items-center justify-center"
+                      style={{ background:'linear-gradient(135deg,#8b5cf6,#ec4899)' }}>
+                      <Mic className="w-5 h-5 text-white"/>
+                    </motion.div>
+                  </div>
+                  {/* two-line label */}
+                  <div className="relative z-10 text-left leading-tight">
+                    <p className="text-purple-300 text-[11px] font-bold uppercase tracking-widest">Talk in Browser</p>
+                    <p className="text-white text-xl font-display tracking-wide flex items-center gap-1.5">
+                      Try Nova Now
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
+                    </p>
+                  </div>
+                </motion.a>
               </div>
 
               <div className="flex flex-wrap gap-4 mt-8 text-xs text-gray-400">
