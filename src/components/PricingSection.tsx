@@ -56,11 +56,11 @@ const plans = [
 ];
 
 const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<'idle' | 'buy' | 'trial'>('idle');
   const [error, setError]    = useState('');
 
   const handleCheckout = async () => {
-    setLoading(true); setError('');
+    setLoading('buy'); setError('');
     try {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
@@ -79,7 +79,28 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
       window.location.href = data.url;
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Something went wrong');
-      setLoading(false);
+      setLoading('idle');
+    }
+  };
+
+  // 30-day FREE trial — Monthly only — customer pays only the $297 setup fee
+  const handleTrial = async () => {
+    setLoading('trial'); setError('');
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productName: `${plan.name} Plan — 30 Day FREE Trial (first month free, $${plan.price}/mo after)`,
+          amount:       SETUP_FEE_CENTS,    // $297 setup only — no monthly charge today
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
+      window.location.href = data.url;
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Something went wrong');
+      setLoading('idle');
     }
   };
 
@@ -173,7 +194,7 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
 
       <motion.button
         onClick={handleCheckout}
-        disabled={loading}
+        disabled={loading !== 'idle'}
         className="w-full py-3.5 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed"
         animate={{
           backgroundImage:[
@@ -198,13 +219,43 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
           ],
         }}
         transition={{ duration: plan.popular ? 3.5 : 4.5, repeat: Infinity, ease:'linear' }}
-        whileHover={{ scale: loading ? 1 : 1.03 }}
+        whileHover={{ scale: loading !== 'idle' ? 1 : 1.03 }}
         whileTap={{ scale: 0.97 }}>
-        {loading
+        {loading === 'buy'
           ? <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting...</>
           : <>{plan.cta} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
         }
       </motion.button>
+
+      {/* ── 30-day FREE trial — Monthly plan only ──────────────── */}
+      {plan.setupFeeCents > 0 && (
+        <>
+          <div className="flex items-center gap-2 my-3">
+            <div className="flex-1 h-px bg-white/10"/>
+            <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">or</span>
+            <div className="flex-1 h-px bg-white/10"/>
+          </div>
+          <motion.button
+            onClick={handleTrial}
+            disabled={loading !== 'idle'}
+            whileHover={{ scale: loading !== 'idle' ? 1 : 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-60"
+            style={{
+              background: 'rgba(255,193,7,0.12)',
+              border: '1.5px solid rgba(255,193,7,0.5)',
+              color: '#fde68a',
+              boxShadow: '0 0 14px rgba(255,193,7,0.18)',
+            }}>
+            {loading === 'trial'
+              ? <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting...</>
+              : <>🎁 Try Free 30 Days — Only $297 Setup</>}
+          </motion.button>
+          <p className="text-center text-gray-500 text-[11px] mt-2 leading-relaxed">
+            First month FREE · No charge for 30 days · Cancel before day 30 = pay nothing further
+          </p>
+        </>
+      )}
 
       <p className="text-center text-gray-600 text-xs mt-3">Secure checkout · Powered by Stripe</p>
     </motion.div>

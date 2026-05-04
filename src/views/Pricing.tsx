@@ -194,6 +194,23 @@ export default function Pricing() {
     } catch { setLoadingIdx(null); }
   };
 
+  // 30-day FREE trial — Monthly plan only — pay only the $297 setup fee
+  const handleTrial = async (pkg: typeof packages[0], idx: number) => {
+    setLoadingIdx(100 + idx);   // offset so trial spinner is distinct from buy spinner
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productName: `${pkg.name} Plan — 30 Day FREE Trial (first month free, ${pkg.price}/mo after)`,
+          amount:       pkg.setupFeeCents,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Failed');
+      window.location.href = data.url;
+    } catch { setLoadingIdx(null); }
+  };
+
   return (
     <div className="bg-[#030712] min-h-screen">
 
@@ -363,6 +380,37 @@ export default function Pricing() {
                 ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
                 : <>Buy Now <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/></>}
             </motion.button>
+
+            {/* 30-day FREE trial — Monthly only */}
+            {pkg.setupFeeCents > 0 && (
+              <>
+                <div className="flex items-center gap-2 my-3">
+                  <div className="flex-1 h-px bg-white/10"/>
+                  <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">or</span>
+                  <div className="flex-1 h-px bg-white/10"/>
+                </div>
+                <motion.button
+                  onClick={() => handleTrial(pkg, idx)}
+                  disabled={loadingIdx !== null}
+                  whileHover={{ scale: loadingIdx !== null ? 1 : 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-60"
+                  style={{
+                    background: 'rgba(255,193,7,0.12)',
+                    border: '1.5px solid rgba(255,193,7,0.5)',
+                    color: '#fde68a',
+                    boxShadow: '0 0 14px rgba(255,193,7,0.18)',
+                  }}>
+                  {loadingIdx === 100 + idx
+                    ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
+                    : <>🎁 Try Free 30 Days — Only $297 Setup</>}
+                </motion.button>
+                <p className="text-center text-gray-500 text-[11px] mt-2 leading-relaxed">
+                  First month FREE · No charge for 30 days · Cancel before day 30 = pay nothing further
+                </p>
+              </>
+            )}
+
             <p className="text-center text-gray-600 text-xs mt-3">Secure checkout · Powered by Stripe</p>
           </div>
         ))}
