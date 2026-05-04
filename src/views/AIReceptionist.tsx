@@ -228,28 +228,30 @@ export default function AIReceptionist() {
 
             {/* Left copy */}
             <motion.div {...slideL()}>
-              <motion.div
-                animate={{ scale: [1, 1.04, 1] }}
-                transition={{ duration: 2.2, repeat: Infinity }}
-                className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/40 rounded-full px-4 py-1.5 mb-3">
-                <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse"/>
-                <span className="text-red-400 font-bold text-xs tracking-wide">ONLY 10 SPOTS THIS MONTH</span>
-              </motion.div>
+              {/* Both pills — left-aligned, wrap on small screens */}
+              <div className="flex flex-wrap items-center gap-2 mb-5">
+                <motion.div
+                  animate={{ scale: [1, 1.04, 1] }}
+                  transition={{ duration: 2.2, repeat: Infinity }}
+                  className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/40 rounded-full px-4 py-1.5">
+                  <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse"/>
+                  <span className="text-red-400 font-bold text-xs tracking-wide">ONLY 10 SPOTS THIS MONTH</span>
+                </motion.div>
 
-              {/* Free trial pill */}
-              <motion.div
-                animate={{ boxShadow:[
-                  '0 0 14px rgba(255,193,7,0.3)',
-                  '0 0 24px rgba(255,193,7,0.55)',
-                  '0 0 14px rgba(255,193,7,0.3)',
-                ]}}
-                transition={{ duration: 2.4, repeat: Infinity }}
-                className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5 ml-2"
-                style={{ background:'rgba(255,193,7,0.12)', border:'1px solid rgba(255,193,7,0.5)' }}>
-                <span className="text-yellow-300 font-bold text-xs tracking-wide">
-                  🎁 Try Nova FREE for 30 Days · Just $197 Setup
-                </span>
-              </motion.div>
+                <motion.div
+                  animate={{ boxShadow:[
+                    '0 0 14px rgba(255,193,7,0.3)',
+                    '0 0 24px rgba(255,193,7,0.55)',
+                    '0 0 14px rgba(255,193,7,0.3)',
+                  ]}}
+                  transition={{ duration: 2.4, repeat: Infinity }}
+                  className="inline-flex items-center gap-2 rounded-full px-4 py-1.5"
+                  style={{ background:'rgba(255,193,7,0.12)', border:'1px solid rgba(255,193,7,0.5)' }}>
+                  <span className="text-yellow-300 font-bold text-xs tracking-wide">
+                    🎁 Try Nova FREE for 30 Days · Just $197 Setup
+                  </span>
+                </motion.div>
+              </div>
 
               <h1 className="font-display leading-none text-white mb-6"
                 style={{ fontSize:'clamp(3rem, 8vw, 6.5rem)', textShadow:'0 0 60px rgba(37,99,235,0.5), 0 0 120px rgba(124,58,237,0.25)' }}>
@@ -286,9 +288,9 @@ export default function AIReceptionist() {
                   className="px-8 py-4 rounded-full font-bold text-white text-base inline-flex items-center justify-center gap-2">
                   <Phone className="w-5 h-5"/> Call Nova: {NOVA_NUMBER}
                 </motion.a>
-                <a href="#bundle"
+                <a href="#try-it-live"
                   className="glass-card text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 hover:border-blue-500/40 transition-all">
-                  See the Bundle <ArrowRight className="w-4 h-4"/>
+                  <Mic className="w-4 h-4 text-blue-400"/> Try Nova Now <ArrowRight className="w-4 h-4"/>
                 </a>
               </div>
 
@@ -329,7 +331,7 @@ export default function AIReceptionist() {
       <MarqueeBand />
 
       {/* ══════════ TRY IT LIVE — DEMO SECTION ══════════ */}
-      <section className="py-24 bg-[#040a16] relative overflow-hidden">
+      <section id="try-it-live" className="py-24 bg-[#040a16] relative overflow-hidden">
         <SectionOrbs variant="purple"/>
         <GridOverlay gridOp={0.18} dotOp={0.08}/>
         <EqualizerCanvas opacity={0.42}/>
