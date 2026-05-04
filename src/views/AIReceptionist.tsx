@@ -192,6 +192,26 @@ export default function AIReceptionist() {
     }
   };
 
+  // 30-day free trial of Growth — customer pays only the $197 setup fee
+  const handleTrial = async (tier: Tier) => {
+    setLoadingId(`${tier.id}-trial`); setErr('');
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          productName: `${tier.name} Plan — 30 Day FREE Trial (first month free, $${tier.price}/mo after)`,
+          amount:       19700,  // $197 setup only — no monthly charge today
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
+      window.location.href = data.url;
+    } catch (e:unknown) {
+      setErr(e instanceof Error ? e.message : 'Something went wrong');
+      setLoadingId(null);
+    }
+  };
+
   return (
     <div className="bg-[#030712] min-h-screen">
 
@@ -209,9 +229,24 @@ export default function AIReceptionist() {
               <motion.div
                 animate={{ scale: [1, 1.04, 1] }}
                 transition={{ duration: 2.2, repeat: Infinity }}
-                className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/40 rounded-full px-4 py-1.5 mb-5">
+                className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/40 rounded-full px-4 py-1.5 mb-3">
                 <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse"/>
                 <span className="text-red-400 font-bold text-xs tracking-wide">ONLY 10 SPOTS THIS MONTH</span>
+              </motion.div>
+
+              {/* Free trial pill */}
+              <motion.div
+                animate={{ boxShadow:[
+                  '0 0 14px rgba(255,193,7,0.3)',
+                  '0 0 24px rgba(255,193,7,0.55)',
+                  '0 0 14px rgba(255,193,7,0.3)',
+                ]}}
+                transition={{ duration: 2.4, repeat: Infinity }}
+                className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5 ml-2"
+                style={{ background:'rgba(255,193,7,0.12)', border:'1px solid rgba(255,193,7,0.5)' }}>
+                <span className="text-yellow-300 font-bold text-xs tracking-wide">
+                  🎁 Try Nova FREE for 30 Days · Just $197 Setup
+                </span>
               </motion.div>
 
               <h1 className="font-display leading-none text-white mb-6"
@@ -681,6 +716,36 @@ export default function AIReceptionist() {
                       ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
                       : <>Buy Now <ArrowRight className="w-4 h-4"/></>}
                   </motion.button>
+
+                  {/* ── 30-day FREE trial — Growth plan only ─────────────── */}
+                  {tier.id === 'growth' && (
+                    <>
+                      <div className="flex items-center gap-2 my-3">
+                        <div className="flex-1 h-px bg-white/10"/>
+                        <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">or</span>
+                        <div className="flex-1 h-px bg-white/10"/>
+                      </div>
+                      <motion.button
+                        onClick={() => handleTrial(tier)}
+                        disabled={loadingId !== null}
+                        whileHover={{ scale: loadingId ? 1 : 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-60"
+                        style={{
+                          background: 'rgba(255,193,7,0.12)',
+                          border: '1.5px solid rgba(255,193,7,0.5)',
+                          color: '#fde68a',
+                          boxShadow: '0 0 14px rgba(255,193,7,0.18)',
+                        }}>
+                        {loadingId === `${tier.id}-trial`
+                          ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
+                          : <>🎁 Try Free 30 Days — Only $197 Setup</>}
+                      </motion.button>
+                      <p className="text-center text-gray-500 text-[11px] mt-2 leading-relaxed">
+                        First month FREE · No charge for 30 days · Cancel before day 30 = pay nothing further
+                      </p>
+                    </>
+                  )}
                 </div>
               </motion.div>
             ))}
