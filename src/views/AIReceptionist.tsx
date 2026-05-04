@@ -10,6 +10,7 @@ import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { TryNovaButton } from '@/components/TryNovaButton';
 import { EqualizerCanvas } from '@/components/EqualizerCanvas';
 import { CheckoutUpsellModal } from '@/components/CheckoutUpsellModal';
+import { ROICalculator } from '@/components/ROICalculator';
 import {
   ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay,
 } from '@/components/PageEffects';
@@ -376,10 +377,23 @@ export default function AIReceptionist() {
                 </motion.a>
               </div>
 
-              <div className="flex flex-wrap gap-4 mt-8 text-xs text-gray-400">
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400"/> Setup in 24-48 hrs</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400"/> Cancel anytime</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400"/> Local number for your area</span>
+              <div className="flex flex-wrap gap-2 mt-8">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-green-400"
+                  style={{ background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.4)' }}>
+                  💰 30-Day Money-Back Guarantee
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-blue-300"
+                  style={{ background:'rgba(59,130,246,0.12)', border:'1px solid rgba(59,130,246,0.4)' }}>
+                  ⚡ Live in 24-48 hrs
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-purple-300"
+                  style={{ background:'rgba(168,85,247,0.12)', border:'1px solid rgba(168,85,247,0.4)' }}>
+                  🔒 Cancel anytime
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-cyan-300"
+                  style={{ background:'rgba(6,182,212,0.12)', border:'1px solid rgba(6,182,212,0.4)' }}>
+                  📞 Local number, your area
+                </span>
               </div>
             </motion.div>
 
@@ -1024,6 +1038,172 @@ export default function AIReceptionist() {
               Never Miss Another Lead <ArrowRight className="w-5 h-5"/>
             </a>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ══════════ ROI CALCULATOR + COMPARISON ══════════ */}
+      <section className="py-20 bg-[#030712] relative overflow-hidden">
+        <SectionOrbs variant="green"/>
+        <GridOverlay gridOp={0.18} dotOp={0.08}/>
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div {...fade()} className="text-center mb-10">
+            <p className="neon-badge mb-4 mx-auto w-fit">Run the Numbers</p>
+            <h2 className="font-display text-4xl md:text-6xl text-white mb-3 leading-tight">
+              SEE EXACTLY <span className="gradient-text">WHAT NOVA</span><br/>
+              WILL MAKE YOU
+            </h2>
+          </motion.div>
+
+          <ROICalculator/>
+        </div>
+      </section>
+
+      {/* ══════════ NOVA vs HUMAN vs VOICEMAIL ══════════ */}
+      <section className="py-20 bg-[#040a16] relative overflow-hidden">
+        <SectionOrbs variant="blue"/>
+        <GridOverlay gridOp={0.18} dotOp={0.08}/>
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div {...fade()} className="text-center mb-10">
+            <p className="neon-badge mb-4 mx-auto w-fit">The Comparison</p>
+            <h2 className="font-display text-4xl md:text-6xl text-white mb-3 leading-tight">
+              NOVA vs THE <span className="gradient-text">ALTERNATIVES</span>
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+            {[
+              { title:'Voicemail',          tag:'Free, but expensive',     price:'$0/mo',
+                rows:[
+                  { label:'Answers calls',         val:false },
+                  { label:'Captures lead info',    val:false },
+                  { label:'Books appointments',    val:false },
+                  { label:'Follows up after',      val:false },
+                  { label:'Available 24/7',        val:false },
+                  { label:'Lost revenue',          val:'Massive', bad:true },
+                ],
+                color:'#ef4444', popular:false,
+              },
+              { title:'Nova AI',          tag:'You',                    price:'$147–$497/mo',
+                rows:[
+                  { label:'Answers calls',         val:true },
+                  { label:'Captures lead info',    val:true },
+                  { label:'Books appointments',    val:true },
+                  { label:'Follows up after',      val:true },
+                  { label:'Available 24/7',        val:true },
+                  { label:'Lost revenue',          val:'Near zero' },
+                ],
+                color:'#22c55e', popular:true,
+              },
+              { title:'Human Receptionist', tag:'The old way',             price:'$3,500+/mo',
+                rows:[
+                  { label:'Answers calls',         val:true },
+                  { label:'Captures lead info',    val:true },
+                  { label:'Books appointments',    val:true },
+                  { label:'Follows up after',      val:'Sometimes' },
+                  { label:'Available 24/7',        val:false },
+                  { label:'Lost revenue',          val:'Some', bad:true },
+                ],
+                color:'#a855f7', popular:false,
+              },
+            ].map((col, i) => (
+              <motion.div key={i} {...fade(0.08 * i)}
+                className="relative p-px rounded-2xl"
+                style={{
+                  background: col.popular
+                    ? `linear-gradient(135deg,${col.color}cc,${col.color}66,#06b6d488)`
+                    : `linear-gradient(135deg,${col.color}55,rgba(255,255,255,0.05))`,
+                  boxShadow: col.popular ? `0 0 50px ${col.color}40` : 'none',
+                  transform: col.popular ? 'scale(1.04)' : 'scale(1)',
+                }}>
+                {col.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 text-white text-[10px] font-black px-3 py-1 rounded-full whitespace-nowrap"
+                    style={{ background:`linear-gradient(135deg,${col.color},#06b6d4)`, boxShadow:`0 0 14px ${col.color}99` }}>
+                    👇 YOUR BEST OPTION
+                  </div>
+                )}
+                <div className="rounded-[15px] p-6"
+                  style={{ background:'rgba(5,12,22,0.97)' }}>
+                  <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">{col.tag}</p>
+                  <h3 className="font-display text-3xl text-white mb-1">{col.title}</h3>
+                  <p className="text-sm font-bold mb-5" style={{ color: col.color }}>{col.price}</p>
+
+                  <ul className="space-y-2.5">
+                    {col.rows.map((r, j) => (
+                      <li key={j} className="flex items-center justify-between text-sm gap-2">
+                        <span className="text-gray-300">{r.label}</span>
+                        <span className="font-bold text-right flex-shrink-0">
+                          {r.val === true && <span className="text-green-400">✓</span>}
+                          {r.val === false && <span className="text-red-400">✗</span>}
+                          {typeof r.val === 'string' && (
+                            <span className={r.bad ? 'text-red-400 text-xs' : 'text-green-400 text-xs'}>
+                              {r.val}
+                            </span>
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <p className="text-center text-gray-300 text-base mt-8 max-w-2xl mx-auto">
+            A human receptionist costs <strong className="text-white">$3,500+/month</strong> and goes home at 5 pm.
+            Nova works <strong className="text-white">24/7 for ~10% of the price.</strong>
+          </p>
+        </div>
+      </section>
+
+      {/* ══════════ SOCIAL PROOF / TESTIMONIALS ══════════ */}
+      <section className="py-16 bg-[#030712] relative overflow-hidden">
+        <SectionOrbs variant="cyan"/>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div {...fade()} className="text-center mb-10">
+            <p className="neon-badge mb-3 mx-auto w-fit">Real Results</p>
+            <h2 className="font-display text-3xl md:text-5xl text-white leading-tight">
+              BUSINESSES <span className="gradient-text">USING NOVA</span>
+            </h2>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto">
+            {[
+              { quote:'Nova caught 14 calls our voicemail would have lost in the first week. Booked 3 jobs that night.', name:'Mike R.', role:'Roofing Contractor · Tulsa, OK', stars:5, color:'#22c55e' },
+              { quote:'Cancelled my answering service ($425/mo) the day Nova went live. Better quality calls, fraction of the cost.', name:'Sarah L.', role:'Dental Practice · Austin, TX', stars:5, color:'#3b82f6' },
+              { quote:'Customers told us they thought Nova was a real receptionist. Pays for itself with a single estimate booking.', name:'Jorge M.', role:'HVAC · Phoenix, AZ', stars:5, color:'#a855f7' },
+            ].map((t, i) => (
+              <motion.div key={i} {...fade(0.08 * i)}
+                className="rounded-2xl p-6"
+                style={{ background:`${t.color}10`, border:`1px solid ${t.color}30`, boxShadow:`0 0 24px ${t.color}10` }}>
+                <div className="flex gap-0.5 mb-3">
+                  {Array.from({ length: t.stars }).map((_, k) => (
+                    <span key={k} className="text-yellow-400 text-lg">★</span>
+                  ))}
+                </div>
+                <p className="text-gray-100 text-base leading-relaxed mb-4">&ldquo;{t.quote}&rdquo;</p>
+                <p className="text-white font-bold text-sm">{t.name}</p>
+                <p className="text-gray-400 text-xs">{t.role}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Trust strip */}
+          <div className="flex flex-wrap items-center justify-center gap-3 md:gap-5 mt-10 text-xs text-gray-300">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)' }}>
+              ✅ <strong>30-Day Money-Back Guarantee</strong>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background:'rgba(59,130,246,0.1)', border:'1px solid rgba(59,130,246,0.3)' }}>
+              ⚡ <strong>Live in 24-48 hrs</strong>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background:'rgba(168,85,247,0.1)', border:'1px solid rgba(168,85,247,0.3)' }}>
+              🔒 <strong>Cancel anytime</strong>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background:'rgba(251,191,36,0.1)', border:'1px solid rgba(251,191,36,0.3)' }}>
+              💳 <strong>Secure Stripe checkout</strong>
+            </span>
+          </div>
         </div>
       </section>
 
