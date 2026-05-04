@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { TryNovaButton } from '@/components/TryNovaButton';
+import { EqualizerCanvas } from '@/components/EqualizerCanvas';
 import {
   ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay,
 } from '@/components/PageEffects';
@@ -330,7 +331,10 @@ export default function AIReceptionist() {
       {/* ══════════ TRY IT LIVE — DEMO SECTION ══════════ */}
       <section className="py-24 bg-[#040a16] relative overflow-hidden">
         <SectionOrbs variant="purple"/>
-        <GridOverlay gridOp={0.25} dotOp={0.1}/>
+        <GridOverlay gridOp={0.18} dotOp={0.08}/>
+        <EqualizerCanvas opacity={0.42}/>
+        {/* dim scrim so cards stay readable over bars */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'rgba(4,10,22,0.55)', zIndex:1 }}/>
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <motion.div {...fade()}>
@@ -346,36 +350,46 @@ export default function AIReceptionist() {
             </p>
           </motion.div>
 
-          {/* TWO ways to demo: phone call OR browser mic */}
-          <motion.div {...fade(0.15)} className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto mb-8">
+          {/* TWO ways to demo: phone call OR browser mic — equal-height cards */}
+          <motion.div {...fade(0.15)} className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto mb-8 items-stretch">
 
             {/* OPTION 1 — Phone call */}
-            <motion.a href={`tel:${NOVA_NUMBER_RAW}`}
-              whileHover={{ scale:1.02 }} whileTap={{ scale:0.98 }}
-              className="relative block p-6 md:p-8 rounded-[22px] text-center"
-              style={{ background:'rgba(5,15,25,0.95)', border:'2px solid rgba(34,197,94,0.5)',
-                boxShadow:'0 0 50px rgba(34,197,94,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }}>
+            <div className="relative h-full">
+              {/* Outer glow to match TryNovaButton */}
+              <div className="absolute -inset-3 rounded-[28px] pointer-events-none"
+                style={{ background:'linear-gradient(135deg,rgba(34,197,94,0.4),rgba(6,182,212,0.3),rgba(59,130,246,0.25))', filter:'blur(28px)', opacity:0.55 }}/>
+              <motion.a href={`tel:${NOVA_NUMBER_RAW}`}
+                whileHover={{ scale:1.02 }} whileTap={{ scale:0.98 }}
+                className="relative block w-full h-full p-6 md:p-8 rounded-[22px] text-center flex flex-col items-center justify-center"
+                style={{
+                  minHeight: 320,
+                  background:'rgba(5,15,25,0.95)',
+                  border:'2px solid rgba(34,197,94,0.5)',
+                  boxShadow:'0 0 50px rgba(34,197,94,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+                  backdropFilter:'blur(24px)',
+                }}>
 
-              <motion.div
-                animate={{ scale:[1,1.06,1], boxShadow:[
-                  '0 0 25px rgba(34,197,94,0.5)',
-                  '0 0 40px rgba(34,197,94,0.7)',
-                  '0 0 25px rgba(34,197,94,0.5)',
-                ]}}
-                transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-                className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center"
-                style={{ background:'linear-gradient(135deg,#22c55e,#06b6d4)' }}>
-                <Phone className="w-9 h-9 text-white"/>
-              </motion.div>
+                <motion.div
+                  animate={{ scale:[1,1.06,1], boxShadow:[
+                    '0 0 25px rgba(34,197,94,0.5)',
+                    '0 0 40px rgba(34,197,94,0.7)',
+                    '0 0 25px rgba(34,197,94,0.5)',
+                  ]}}
+                  transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                  className="w-20 h-20 mb-4 rounded-full flex items-center justify-center"
+                  style={{ background:'linear-gradient(135deg,#22c55e,#06b6d4)' }}>
+                  <Phone className="w-9 h-9 text-white"/>
+                </motion.div>
 
-              <p className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-2">📞 Call from Your Phone</p>
-              <p className="font-display text-3xl md:text-4xl text-white mb-2"
-                style={{ textShadow:'0 0 25px rgba(34,197,94,0.5)' }}>
-                {NOVA_NUMBER}
-              </p>
-              <p className="text-green-400 text-sm font-bold mb-2">⚡ Answers in 1 Ring</p>
-              <p className="text-gray-500 text-xs">Tap to call · Standard rates apply</p>
-            </motion.a>
+                <p className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-2">📞 Call from Your Phone</p>
+                <p className="font-display text-3xl md:text-4xl text-white mb-2"
+                  style={{ textShadow:'0 0 25px rgba(34,197,94,0.5)' }}>
+                  {NOVA_NUMBER}
+                </p>
+                <p className="text-green-400 text-sm font-bold mb-2">⚡ Answers in 1 Ring</p>
+                <p className="text-gray-500 text-xs">Tap to call · Standard rates apply</p>
+              </motion.a>
+            </div>
 
             {/* OPTION 2 — Browser mic via Vapi */}
             <TryNovaButton />

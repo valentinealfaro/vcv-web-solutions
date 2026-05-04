@@ -78,7 +78,7 @@ export const TryNovaButton = () => {
   const fmtTime = (s: number) => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       {/* Outer glow ring */}
       <motion.div
         animate={
@@ -104,8 +104,9 @@ export const TryNovaButton = () => {
         disabled={state === 'connecting'}
         whileHover={{ scale: state === 'connecting' ? 1 : 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="relative w-full p-6 md:p-8 rounded-[22px] text-center cursor-pointer disabled:cursor-wait"
+        className="relative w-full h-full p-6 md:p-8 rounded-[22px] text-center cursor-pointer disabled:cursor-wait flex flex-col items-center justify-center"
         style={{
+          minHeight: 320,
           background: 'rgba(5,15,25,0.95)',
           border: state === 'active'
             ? '2px solid rgba(239,68,68,0.65)'
