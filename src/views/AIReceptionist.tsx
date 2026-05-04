@@ -99,19 +99,86 @@ const STACK = [
   },
 ];
 
-export default function AIReceptionist() {
-  const [billing, setBilling] = useState<'monthly'|'annual'>('monthly');
-  const [loading, setLoading] = useState(false);
-  const [err, setErr]         = useState('');
+interface Tier {
+  id:        string;
+  name:      string;
+  tag:       string;
+  price:     number;
+  priceMax?: number;       // for ranges like Pro $297–$397
+  priceCents:number;       // amount sent to Stripe
+  callsLabel:string;
+  features:  string[];
+  color:     string;
+  popular:   boolean;
+}
 
-  const handleBuy = async () => {
-    setLoading(true); setErr('');
+const TIERS: Tier[] = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    tag: 'Gets foot in door',
+    price: 97,
+    priceCents: 9700,
+    callsLabel: '50–100 calls / month',
+    features: [
+      'Basic answering + lead capture',
+      'Local 580 area-code number',
+      'Instant text + email alerts',
+      'Missed-call auto-text reply',
+      '24/7 coverage',
+    ],
+    color: '#3b82f6',
+    popular: false,
+  },
+  {
+    id: 'growth',
+    name: 'Growth',
+    tag: 'MOST POPULAR',
+    price: 197,
+    priceCents: 19700,
+    callsLabel: '200–300 calls / month',
+    features: [
+      'Everything in Starter',
+      'Appointment booking',
+      'SMS conversations with callers',
+      'Live transfer when you\'re free',
+      'Lead-capture website included',
+    ],
+    color: '#10b981',
+    popular: true,
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    tag: 'Serious businesses',
+    price: 297,
+    priceMax: 397,
+    priceCents: 29700,
+    callsLabel: 'Unlimited / high volume',
+    features: [
+      'Everything in Growth',
+      'CRM system included',
+      'Day 1 / Day 3 / Day 7 follow-ups',
+      'Priority support',
+      'Custom integrations',
+    ],
+    color: '#a855f7',
+    popular: false,
+  },
+];
+
+export default function AIReceptionist() {
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [err, setErr]             = useState('');
+
+  const handleBuy = async (tier: Tier) => {
+    setLoadingId(tier.id); setErr('');
     try {
       const res = await fetch('/api/create-checkout-session', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
-          productName: `Never Miss a Call System — ${billing === 'annual' ? 'Annual' : 'Monthly'}`,
-          amount:       billing === 'annual' ? 299700 : 29700,
+          productName: `Never Miss a Call — ${tier.name} Plan`,
+          amount:       tier.priceCents,
         }),
       });
       const data = await res.json();
@@ -119,7 +186,7 @@ export default function AIReceptionist() {
       window.location.href = data.url;
     } catch (e:unknown) {
       setErr(e instanceof Error ? e.message : 'Something went wrong');
-      setLoading(false);
+      setLoadingId(null);
     }
   };
 
@@ -511,87 +578,128 @@ export default function AIReceptionist() {
             ))}
           </div>
 
-          {/* Pricing card */}
-          <motion.div {...fade(0.2)} className="max-w-3xl mx-auto">
-            <div className="relative p-px rounded-[24px]"
-              style={{ background:'linear-gradient(135deg,rgba(34,197,94,0.5),rgba(6,182,212,0.4),rgba(59,130,246,0.3))',
-                boxShadow:'0 0 80px rgba(34,197,94,0.15)' }}>
-              <div className="rounded-[23px] p-8 md:p-10 text-center"
-                style={{ background:'rgba(5,12,22,0.97)', backdropFilter:'blur(24px)' }}>
+          {/* Three-tier pricing grid */}
+          {err && <p className="text-red-400 text-sm text-center mb-4">{err}</p>}
 
-                {/* Toggle */}
-                <div className="inline-flex p-1 rounded-full mb-6"
-                  style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)' }}>
-                  {(['monthly','annual'] as const).map(b => (
-                    <button key={b} onClick={() => setBilling(b)}
-                      className={`px-5 py-2 rounded-full text-sm font-bold transition-all ${
-                        billing === b ? 'bg-white text-gray-900' : 'text-gray-400 hover:text-white'
-                      }`}>
-                      {b === 'monthly' ? 'Monthly' : 'Annual (save $600)'}
-                    </button>
-                  ))}
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {TIERS.map((tier, i) => (
+              <motion.div key={tier.id} {...fade(0.08 * i)}
+                whileHover={{ y: -6 }}
+                className="relative p-px rounded-[22px]"
+                style={{
+                  background: tier.popular
+                    ? `linear-gradient(135deg,${tier.color}cc,${tier.color}66,#06b6d488)`
+                    : `linear-gradient(135deg,${tier.color}55,rgba(255,255,255,0.06))`,
+                  boxShadow: tier.popular
+                    ? `0 0 60px ${tier.color}40, 0 0 100px ${tier.color}20`
+                    : `0 0 30px rgba(0,0,0,0.4)`,
+                  transform: tier.popular ? 'scale(1.04)' : 'scale(1)',
+                }}>
 
-                <div className="flex items-center justify-center gap-3 mb-2">
-                  <span className="text-gray-600 text-2xl font-bold line-through decoration-red-500/70">
-                    {billing === 'annual' ? '$5,964' : '$497'}
-                  </span>
-                  <span className="text-xs font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
-                    50% OFF LAUNCH
-                  </span>
-                </div>
-
-                <div className="flex items-end justify-center gap-2 mb-3">
-                  <span className="font-display text-7xl md:text-8xl text-white"
-                    style={{ textShadow:'0 0 40px rgba(34,197,94,0.5)' }}>
-                    ${billing === 'annual' ? '2,997' : '297'}
-                  </span>
-                  <span className="text-gray-400 text-2xl mb-3">{billing === 'annual' ? '/yr' : '/mo'}</span>
-                </div>
-
-                {billing === 'monthly' && (
-                  <p className="text-blue-400 text-sm font-semibold mb-4">+ $197 one-time setup fee</p>
-                )}
-                {billing === 'annual' && (
-                  <p className="text-green-400 text-sm font-bold mb-4">✓ Save $600 · Setup fee waived</p>
+                {/* Popular badge */}
+                {tier.popular && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                    <motion.div
+                      animate={{ boxShadow:[
+                        `0 0 14px ${tier.color}99`,
+                        `0 0 28px ${tier.color}cc`,
+                        `0 0 14px ${tier.color}99`,
+                      ]}}
+                      transition={{ duration:2, repeat:Infinity }}
+                      className="text-white text-xs font-black px-4 py-1.5 rounded-full inline-flex items-center gap-1.5 whitespace-nowrap"
+                      style={{ background:`linear-gradient(135deg,${tier.color},#06b6d4)` }}>
+                      <Zap className="w-3 h-3"/> {tier.tag}
+                    </motion.div>
+                  </div>
                 )}
 
-                {err && <p className="text-red-400 text-xs mb-3">{err}</p>}
+                <div className="rounded-[21px] p-7 h-full flex flex-col"
+                  style={{
+                    background: 'rgba(5,12,22,0.97)',
+                    backdropFilter: 'blur(24px)',
+                  }}>
 
-                <motion.button onClick={handleBuy} disabled={loading}
-                  whileHover={{ scale: loading ? 1 : 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 disabled:opacity-60 mb-3"
-                  animate={{
-                    backgroundImage:[
-                      'linear-gradient(135deg,#22c55e,#06b6d4)',
-                      'linear-gradient(135deg,#06b6d4,#3b82f6)',
-                      'linear-gradient(135deg,#3b82f6,#8b5cf6)',
-                      'linear-gradient(135deg,#8b5cf6,#ec4899)',
-                      'linear-gradient(135deg,#ec4899,#22c55e)',
-                    ],
-                    boxShadow:[
-                      '0 0 24px rgba(34,197,94,0.55)',
-                      '0 0 24px rgba(6,182,212,0.55)',
-                      '0 0 24px rgba(59,130,246,0.55)',
-                      '0 0 24px rgba(139,92,246,0.55)',
-                      '0 0 24px rgba(236,72,153,0.55)',
-                    ],
-                  }}
-                  transition={{ duration: 4.5, repeat: Infinity, ease:'linear' }}>
-                  {loading
-                    ? <><Loader2 className="w-5 h-5 animate-spin"/> Redirecting...</>
-                    : <>Get Set Up — Live in 24-48hrs <ArrowRight className="w-5 h-5"/></>}
-                </motion.button>
+                  {/* Plan name */}
+                  <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
+                    {tier.name}
+                  </p>
+                  {!tier.popular && (
+                    <p className="text-gray-500 text-xs mb-3">{tier.tag}</p>
+                  )}
+                  {tier.popular && <div className="mb-3"/>}
 
-                <p className="text-gray-500 text-xs">
-                  Secure checkout · Powered by Stripe · Cancel anytime
-                </p>
-              </div>
+                  {/* Price */}
+                  <div className="flex items-end gap-1 mb-1">
+                    <span className="font-display text-5xl text-white"
+                      style={{ textShadow:`0 0 25px ${tier.color}55` }}>
+                      ${tier.price}
+                    </span>
+                    {tier.priceMax && (
+                      <span className="text-gray-400 text-2xl mb-1">–${tier.priceMax}</span>
+                    )}
+                    <span className="text-gray-500 text-sm mb-2 ml-1">/mo</span>
+                  </div>
+
+                  <p className="text-blue-400 text-sm font-semibold mb-5">{tier.callsLabel}</p>
+
+                  {/* Features */}
+                  <ul className="space-y-2.5 mb-7 flex-1">
+                    {tier.features.map((f, j) => (
+                      <li key={j} className="flex items-start gap-2 text-sm">
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0"
+                          style={{ color: tier.color }}/>
+                        <span className="text-gray-300">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA */}
+                  <motion.button
+                    onClick={() => handleBuy(tier)}
+                    disabled={loadingId !== null}
+                    whileHover={{ scale: loadingId ? 1 : 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="w-full py-3.5 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 disabled:opacity-60"
+                    animate={tier.popular ? {
+                      backgroundImage:[
+                        'linear-gradient(135deg,#22c55e,#06b6d4)',
+                        'linear-gradient(135deg,#06b6d4,#3b82f6)',
+                        'linear-gradient(135deg,#3b82f6,#8b5cf6)',
+                        'linear-gradient(135deg,#8b5cf6,#22c55e)',
+                      ],
+                      boxShadow:[
+                        '0 0 22px rgba(34,197,94,0.55)',
+                        '0 0 22px rgba(6,182,212,0.55)',
+                        '0 0 22px rgba(59,130,246,0.55)',
+                        '0 0 22px rgba(139,92,246,0.55)',
+                      ],
+                    } : { backgroundImage: `linear-gradient(135deg,${tier.color},${tier.color}cc)` }}
+                    transition={tier.popular
+                      ? { duration: 4.2, repeat: Infinity, ease:'linear' }
+                      : { duration: 0.3 }}
+                    style={!tier.popular ? { boxShadow: `0 0 18px ${tier.color}55` } : undefined}>
+                    {loadingId === tier.id
+                      ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
+                      : <>Buy Now <ArrowRight className="w-4 h-4"/></>}
+                  </motion.button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Setup fee + trust strip */}
+          <motion.div {...fade(0.3)} className="max-w-3xl mx-auto">
+            <div className="rounded-2xl p-5 mb-5 text-center"
+              style={{ background:'rgba(255,193,7,0.08)', border:'1px solid rgba(255,193,7,0.3)' }}>
+              <p className="text-yellow-300 font-bold text-sm">
+                👉 One-time Setup Fee: <span className="text-white text-base">$197</span>
+                <span className="text-gray-400 font-normal text-xs ml-2">
+                  · Includes phone setup, Nova training, website launch
+                </span>
+              </p>
             </div>
 
-            {/* Trust badges */}
-            <div className="grid grid-cols-3 gap-3 mt-6">
+            <div className="grid grid-cols-3 gap-3">
               {[
                 { icon:<Zap className="w-4 h-4"/>,    text:'Setup in 24-48 hrs' },
                 { icon:<Shield className="w-4 h-4"/>, text:'Cancel anytime'     },
