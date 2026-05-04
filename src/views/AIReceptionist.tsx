@@ -7,6 +7,7 @@ import {
   PhoneOff, Mic, BellRing, Smartphone, Headphones, Loader2,
 } from 'lucide-react';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
+import { TryNovaButton } from '@/components/TryNovaButton';
 import {
   ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay,
 } from '@/components/PageEffects';
@@ -345,35 +346,47 @@ export default function AIReceptionist() {
             </p>
           </motion.div>
 
-          {/* Big phone number card */}
-          <motion.div {...fade(0.15)} className="relative max-w-2xl mx-auto mb-10">
-            <div className="absolute -inset-4 rounded-[28px]"
-              style={{ background:'linear-gradient(135deg,rgba(34,197,94,0.4),rgba(6,182,212,0.3),rgba(59,130,246,0.3))',
-                filter:'blur(40px)' }}/>
+          {/* TWO ways to demo: phone call OR browser mic */}
+          <motion.div {...fade(0.15)} className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto mb-8">
+
+            {/* OPTION 1 — Phone call */}
             <motion.a href={`tel:${NOVA_NUMBER_RAW}`}
               whileHover={{ scale:1.02 }} whileTap={{ scale:0.98 }}
-              className="relative block p-10 md:p-14 rounded-[24px] text-center"
+              className="relative block p-6 md:p-8 rounded-[22px] text-center"
               style={{ background:'rgba(5,15,25,0.95)', border:'2px solid rgba(34,197,94,0.5)',
-                boxShadow:'0 0 60px rgba(34,197,94,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }}>
+                boxShadow:'0 0 50px rgba(34,197,94,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }}>
 
               <motion.div
-                animate={{ scale:[1,1.1,1] }}
-                transition={{ duration:1.5, repeat:Infinity, ease:'easeInOut' }}
-                className="w-20 h-20 mx-auto mb-5 rounded-full flex items-center justify-center"
-                style={{ background:'linear-gradient(135deg,#22c55e,#06b6d4)',
-                  boxShadow:'0 0 40px rgba(34,197,94,0.6)' }}>
+                animate={{ scale:[1,1.06,1], boxShadow:[
+                  '0 0 25px rgba(34,197,94,0.5)',
+                  '0 0 40px rgba(34,197,94,0.7)',
+                  '0 0 25px rgba(34,197,94,0.5)',
+                ]}}
+                transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center"
+                style={{ background:'linear-gradient(135deg,#22c55e,#06b6d4)' }}>
                 <Phone className="w-9 h-9 text-white"/>
               </motion.div>
 
-              <p className="text-gray-400 text-sm uppercase tracking-widest font-bold mb-3">📞 Call Nova Now</p>
-              <p className="font-display text-5xl md:text-7xl text-white mb-4"
-                style={{ textShadow:'0 0 30px rgba(34,197,94,0.6)' }}>
+              <p className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-2">📞 Call from Your Phone</p>
+              <p className="font-display text-3xl md:text-4xl text-white mb-2"
+                style={{ textShadow:'0 0 25px rgba(34,197,94,0.5)' }}>
                 {NOVA_NUMBER}
               </p>
-              <p className="text-green-400 font-bold text-base mb-2">⚡ Live Demo · Answers in 1 Ring</p>
-              <p className="text-gray-500 text-sm">Tap the number to call from your phone</p>
+              <p className="text-green-400 text-sm font-bold mb-2">⚡ Answers in 1 Ring</p>
+              <p className="text-gray-500 text-xs">Tap to call · Standard rates apply</p>
             </motion.a>
+
+            {/* OPTION 2 — Browser mic via Vapi */}
+            <TryNovaButton />
+
           </motion.div>
+
+          <motion.p {...fade(0.2)} className="text-center text-gray-500 text-sm mb-10">
+            <span className="inline-block px-3 py-1 rounded-full" style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)' }}>
+              Pick whichever is easier — both connect you straight to Nova
+            </span>
+          </motion.p>
 
           {/* What to ask */}
           <motion.div {...fade(0.25)} className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
