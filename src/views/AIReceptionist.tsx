@@ -55,7 +55,7 @@ const STEPS = [
   { n:2, title:'Asks About Your Biz',   desc:'"What kind of business do you run?" — then roleplays a customer.' },
   { n:3, title:'Roleplays Live',        desc:'Acts like a real customer — estimate request, booking, etc.' },
   { n:4, title:'Captures Your Info',    desc:'Grabs your name + phone before ending the call.' },
-  { n:5, title:'Soft Close',            desc:'"Valentine will reach out within 1 business day to get you set up."' },
+  { n:5, title:'Soft Close',            desc:'"Our team will reach out within 1 business day to get you set up."' },
 ];
 
 const STACK = [
