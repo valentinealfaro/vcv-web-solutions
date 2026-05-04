@@ -1,6 +1,6 @@
 'use client';
 import { motion, LayoutGroup, AnimatePresence } from 'motion/react';
-import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck, Loader2 } from 'lucide-react';
+import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck, Loader2, Phone, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '../lib/utils';
 import { useState, useEffect, useRef } from 'react';
@@ -149,6 +149,34 @@ const packages = [
     features:["Everything in Monthly","Advanced SEO optimization","Google Ads landing page ready","Blog & content system","Analytics dashboard","Priority 24hr support","Quarterly strategy calls","Google My Business setup","Setup fee waived ($297 value)"] },
 ];
 
+interface NovaTier {
+  id: string; name: string; tag: string;
+  price: number; priceCents: number;
+  callsLabel: string; features: string[];
+  color: string; popular: boolean;
+}
+
+const NOVA_TIERS: NovaTier[] = [
+  {
+    id: 'starter', name: 'Starter', tag: 'Gets foot in door',
+    price: 97, priceCents: 9700, callsLabel: '50–100 calls / month',
+    features: ['Basic answering + lead capture','Local number in your area code','Instant text + email alerts','Missed-call auto-text reply','24/7 coverage'],
+    color: '#3b82f6', popular: false,
+  },
+  {
+    id: 'growth', name: 'Growth', tag: 'MOST POPULAR',
+    price: 197, priceCents: 19700, callsLabel: '200–300 calls / month',
+    features: ['Everything in Starter','Appointment booking','SMS conversations with callers',"Live transfer when you're free",'Custom call scripts for your business'],
+    color: '#10b981', popular: true,
+  },
+  {
+    id: 'pro', name: 'Pro', tag: 'Serious businesses',
+    price: 297, priceCents: 29700, callsLabel: 'Unlimited / high volume',
+    features: ['Everything in Growth','CRM system included','Day 1 / Day 3 / Day 7 follow-ups','Priority support','Custom integrations'],
+    color: '#a855f7', popular: false,
+  },
+];
+
 export default function Pricing() {
   const [loadingIdx, setLoadingIdx] = useState<number|null>(null);
   const [riskOrder, setRiskOrder]   = useState([0,1,2,3]);
@@ -176,6 +204,7 @@ export default function Pricing() {
   }, []);
 
   const [modalIdx, setModalIdx] = useState<number | null>(null);
+  const [novaModalTier, setNovaModalTier] = useState<NovaTier | null>(null);
 
   const handleBuy = (_pkg: typeof packages[0], idx: number) => {
     setModalIdx(idx);                  // open upsell modal first
@@ -444,6 +473,136 @@ export default function Pricing() {
         </p>
       </div>
       </div>{/* end static electricity wrapper */}
+
+      {/* ══════════ NOVA — AI RECEPTIONIST TIERS ══════════ */}
+      <section className="py-24 relative overflow-hidden"
+        style={{ background:'linear-gradient(180deg,#030712 0%,#0a1622 50%,#030712 100%)' }}>
+        <SectionOrbs variant="green" />
+        <GridOverlay gridOp={0.2} dotOp={0.08} />
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+          <motion.div
+            initial={{ opacity:0, y:30 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+            className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5"
+              style={{ background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.5)' }}>
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"/>
+              <span className="text-green-400 font-bold text-xs tracking-widest">AI RECEPTIONIST · NOVA</span>
+            </div>
+            <h2 className="font-display text-5xl md:text-7xl text-white mb-4 leading-none"
+              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4), 0 0 80px rgba(6,182,212,0.25)' }}>
+              NEVER MISS<br/><span className="gradient-text">ANOTHER CALL</span>
+            </h2>
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
+              Add Nova — our AI receptionist that answers every call 24/7, books jobs, and texts you the lead instantly.
+              <span className="block mt-2 text-gray-400 text-base">Each plan also unlocks the upgrade modal at checkout.</span>
+            </p>
+          </motion.div>
+
+          {/* 3 Nova tier cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            {NOVA_TIERS.map((tier, i) => (
+              <motion.div key={tier.id}
+                initial={{ opacity:0, y:30 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ y:-5 }}
+                className="relative p-px rounded-[22px]"
+                style={{
+                  background: tier.popular
+                    ? `linear-gradient(135deg,${tier.color}cc,${tier.color}66,#06b6d488)`
+                    : `linear-gradient(135deg,${tier.color}55,rgba(255,255,255,0.06))`,
+                  boxShadow: tier.popular
+                    ? `0 0 60px ${tier.color}40, 0 0 100px ${tier.color}20`
+                    : '0 0 30px rgba(0,0,0,0.4)',
+                  transform: tier.popular ? 'scale(1.04)' : 'scale(1)',
+                }}>
+
+                {tier.popular && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                    <div className="text-white text-xs font-black px-4 py-1.5 rounded-full inline-flex items-center gap-1.5 whitespace-nowrap"
+                      style={{ background:`linear-gradient(135deg,${tier.color},#06b6d4)`, boxShadow:`0 0 18px ${tier.color}99` }}>
+                      <Zap className="w-3 h-3"/> {tier.tag}
+                    </div>
+                  </div>
+                )}
+
+                <div className="rounded-[21px] p-7 h-full flex flex-col"
+                  style={{ background:'rgba(5,12,22,0.97)', backdropFilter:'blur(24px)' }}>
+
+                  <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">{tier.name}</p>
+                  {!tier.popular && <p className="text-gray-500 text-xs mb-3">{tier.tag}</p>}
+                  {tier.popular && <div className="mb-3"/>}
+
+                  <div className="flex items-end gap-1 mb-1">
+                    <span className="font-display text-5xl text-white" style={{ textShadow:`0 0 25px ${tier.color}55` }}>
+                      ${tier.price}
+                    </span>
+                    <span className="text-gray-500 text-sm mb-2 ml-1">/mo</span>
+                  </div>
+                  <p className="text-blue-400 text-sm font-semibold mb-5">{tier.callsLabel}</p>
+
+                  <ul className="space-y-2.5 mb-6 flex-1">
+                    {tier.features.map((f, j) => (
+                      <li key={j} className="flex items-start gap-2 text-sm">
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: tier.color }}/>
+                        <span className="text-gray-300">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="text-yellow-300 text-xs font-bold text-center mb-3">
+                    + $197 setup · auto-added at checkout
+                  </div>
+
+                  <motion.button
+                    onClick={() => setNovaModalTier(tier)}
+                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                    className="w-full py-3.5 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2"
+                    style={tier.popular
+                      ? { backgroundImage:'linear-gradient(135deg,#22c55e,#06b6d4)', boxShadow:'0 0 22px rgba(34,197,94,0.55)' }
+                      : { backgroundImage:`linear-gradient(135deg,${tier.color},${tier.color}cc)`, boxShadow:`0 0 18px ${tier.color}55` }}>
+                    Buy Now <ArrowRight className="w-4 h-4"/>
+                  </motion.button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Sub-CTAs */}
+          <motion.div
+            initial={{ opacity:0 }} whileInView={{ opacity:1 }} viewport={{ once:true }}
+            className="flex flex-col sm:flex-row gap-3 justify-center items-center max-w-2xl mx-auto">
+            <Link href="/ai-receptionist"
+              className="flex-1 px-5 py-3 rounded-xl font-semibold text-sm text-center text-gray-300 hover:text-white transition-colors"
+              style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)' }}>
+              See full Nova details →
+            </Link>
+            <a href="tel:+15806569429"
+              className="flex-1 px-5 py-3 rounded-xl font-semibold text-sm text-center text-white inline-flex items-center justify-center gap-2"
+              style={{ background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.4)' }}>
+              <Phone className="w-4 h-4 text-green-400"/> Test Nova: (580) 656-9429
+            </a>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Nova upsell modal */}
+      {novaModalTier && (
+        <CheckoutUpsellModal
+          open={novaModalTier !== null}
+          onClose={() => setNovaModalTier(null)}
+          context="nova"
+          planName={`${novaModalTier.name} Plan`}
+          planAmount={novaModalTier.priceCents}
+          planPriceLabel={`$${novaModalTier.price}/mo`}
+          setupFeeCents={19700}
+          setupFeeName="One-Time Setup Fee ($197)"
+          productName={`Never Miss a Call — ${novaModalTier.name} Plan`}
+          loading={loadingIdx === 200 + NOVA_TIERS.findIndex(t => t.id === novaModalTier.id)}
+          onConfirm={(payload) => submitToStripe(payload, 200 + NOVA_TIERS.findIndex(t => t.id === novaModalTier.id))}
+        />
+      )}
 
       {/* ROI Section */}
       <section className="py-20 relative overflow-hidden bg-[#040a16]">

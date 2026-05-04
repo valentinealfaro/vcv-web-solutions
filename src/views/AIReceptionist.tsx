@@ -156,7 +156,6 @@ const TIERS: Tier[] = [
     name: 'Pro',
     tag: 'Serious businesses',
     price: 297,
-    priceMax: 397,
     priceCents: 29700,
     callsLabel: 'Unlimited / high volume',
     features: [
