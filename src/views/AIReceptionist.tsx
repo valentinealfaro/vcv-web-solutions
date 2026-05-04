@@ -19,13 +19,14 @@ const VCV_NUMBER       = '+15809191386';
 
 /* ─── Local image assets in /public/nova ─────────────────────── */
 const IMG = {
-  hero:        '/nova/nova-hero.png',
-  novaPortrait:'/nova/nova-waiting.png',
-  problem:     '/nova/before-nova.png',
-  solution:    '/nova/after-nova.png',
-  contractor:  '/nova/construction-lead.png',
-  dental:      '/nova/dentist-lead.png',
-  restaurant:  '/nova/restaurant-lead.png',
+  hero:         '/nova/nova-hero.png',
+  novaPortrait: '/nova/nova-waiting.png',
+  problem:      '/nova/missed-call-revenue.png',
+  beforeNova:   '/nova/before-nova.png',
+  solution:     '/nova/after-nova.png',
+  contractor:   '/nova/construction-lead.png',
+  dental:       '/nova/dentist-lead.png',
+  restaurant:   '/nova/restaurant-lead.png',
 };
 
 const fade   = (d=0) => ({ initial:{opacity:0,y:30}, whileInView:{opacity:1,y:0}, transition:{delay:d,duration:0.6}, viewport:{once:true} });
@@ -502,7 +503,7 @@ export default function AIReceptionist() {
                 <span className="text-red-400 text-xs font-black uppercase tracking-wider">Before Nova</span>
               </div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={IMG.problem} alt="Before Nova — missed calls and lost leads" loading="lazy"
+              <img src={IMG.beforeNova} alt="Before Nova — missed calls and lost leads" loading="lazy"
                 className="w-full h-auto block"/>
               <div className="p-5 bg-[#0a0f1e]">
                 <p className="text-white font-bold mb-1">Calls go to voicemail. Leads go to competitors.</p>
