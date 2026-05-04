@@ -894,18 +894,51 @@ export default function AIReceptionist() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
-              { title:'Extra Call Volume', price:'+$50–100/mo', desc:'For high-traffic businesses pushing past the included minutes.' },
-              { title:'CRM System',         price:'+$97/mo',     desc:'Pipeline, contact history, and task automation built-in.' },
-              { title:'Google Ads',         price:'+$300–1,000', desc:'Pro ad management — pay-per-click campaigns we run for you.' },
-              { title:'SEO Pages',          price:'+$500',       desc:'Niche-targeted landing pages that rank for local searches.' },
+              { id:'addon-volume', title:'Extra Call Volume', price:'+$50–100/mo', priceCents: 5000,  color:'#3b82f6', desc:'For high-traffic businesses pushing past the included minutes.' },
+              { id:'addon-crm',    title:'CRM System',         price:'+$97/mo',     priceCents: 9700,  color:'#8b5cf6', desc:'Pipeline, contact history, and task automation built-in.' },
+              { id:'addon-ads',    title:'Google Ads',         price:'+$300–1,000', priceCents: 30000, color:'#10b981', desc:'Pro ad management — pay-per-click campaigns we run for you.' },
+              { id:'addon-seo',    title:'SEO Pages',          price:'+$500',       priceCents: 50000, color:'#f97316', desc:'Niche-targeted landing pages that rank for local searches.' },
             ].map((a, i) => (
-              <motion.div key={i} {...fade(0.06 * i)}
+              <motion.div key={a.id} {...fade(0.06 * i)}
                 whileHover={{ y:-3 }}
-                className="glass-card p-6 text-center">
+                className="glass-card p-6 text-center flex flex-col"
+                style={{ borderColor: `${a.color}30` }}>
                 <p className="text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">Add-on</p>
                 <h4 className="text-white font-bold text-lg mb-2">{a.title}</h4>
                 <p className="font-display text-3xl gradient-text mb-3">{a.price}</p>
-                <p className="text-gray-400 text-sm leading-relaxed">{a.desc}</p>
+                <p className="text-gray-400 text-sm leading-relaxed mb-5 flex-1">{a.desc}</p>
+
+                <motion.button
+                  onClick={async () => {
+                    setLoadingId(a.id); setErr('');
+                    try {
+                      const res = await fetch('/api/create-checkout-session', {
+                        method:'POST', headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({
+                          productName: `${a.title} — Add-on`,
+                          amount:       a.priceCents,
+                        }),
+                      });
+                      const data = await res.json();
+                      if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
+                      window.location.href = data.url;
+                    } catch (e:unknown) {
+                      setErr(e instanceof Error ? e.message : 'Something went wrong');
+                      setLoadingId(null);
+                    }
+                  }}
+                  disabled={loadingId !== null}
+                  whileHover={{ scale: loadingId ? 1 : 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  className="w-full py-2.5 rounded-lg font-bold text-white text-sm flex items-center justify-center gap-2 disabled:opacity-60"
+                  style={{
+                    background: `linear-gradient(135deg, ${a.color}, ${a.color}cc)`,
+                    boxShadow: `0 0 16px ${a.color}55`,
+                  }}>
+                  {loadingId === a.id
+                    ? <><Loader2 className="w-4 h-4 animate-spin"/> Redirecting...</>
+                    : <>Buy Now <ArrowRight className="w-4 h-4"/></>}
+                </motion.button>
               </motion.div>
             ))}
           </div>
