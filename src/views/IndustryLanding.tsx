@@ -12,31 +12,11 @@ import { ROICalculator } from '@/components/ROICalculator';
 import { CheckoutUpsellModal } from '@/components/CheckoutUpsellModal';
 import { ParticleCanvas, MarqueeBand, SectionOrbs, GridOverlay } from '@/components/PageEffects';
 import type { IndustryData } from '@/data/industries';
+import { NOVA_TIERS as TIERS, type NovaTier as Tier } from '@/data/novaTiers';
+import { BillingToggle, type Billing } from '@/components/BillingToggle';
 
 const NOVA_NUMBER     = '(580) 656-9429';
 const NOVA_NUMBER_RAW = '+15806569429';
-
-interface Tier {
-  id: string; name: string; positioning: string;
-  price: number; priceCents: number;
-  callsLabel: string; features: string[];
-  ctaLabel: string; color: string; popular: boolean;
-}
-
-const TIERS: Tier[] = [
-  { id:'starter', name:'Starter', positioning:'Best for small businesses that need basic call coverage',
-    price:147, priceCents:14700, callsLabel:'50–100 calls / month',
-    features:['Never miss a call again','AI answers + captures leads','Missed-call auto-text','Instant text + email alerts','Local number, your area code','24/7 coverage'],
-    ctaLabel:'Start Capturing Leads', color:'#3b82f6', popular:false },
-  { id:'growth', name:'Growth', positioning:'Best for businesses that want booked appointments',
-    price:297, priceCents:29700, callsLabel:'200–300 calls / month',
-    features:['Everything in Starter','Books appointments automatically','Texts leads after the call',"Live transfer hot leads when you're free",'Custom call script for your business','Helps turn callers into scheduled jobs'],
-    ctaLabel:'Activate Nova', color:'#10b981', popular:true },
-  { id:'pro', name:'Pro', positioning:'Best for serious businesses that want automation',
-    price:497, priceCents:49700, callsLabel:'Up to 500 calls / mo',
-    features:['Everything in Growth','Built-in CRM to track every lead','Day 1 / 3 / 7 follow-up automation','Estimate follow-up reminders','Priority support','Custom integrations'],
-    ctaLabel:'Scale My Calls', color:'#a855f7', popular:false },
-];
 
 const fade   = (d=0) => ({ initial:{opacity:0,y:24}, whileInView:{opacity:1,y:0}, transition:{delay:d,duration:0.55}, viewport:{once:true} });
 const slideL = (d=0) => ({ initial:{opacity:0,x:-30}, whileInView:{opacity:1,x:0}, transition:{delay:d,duration:0.6}, viewport:{once:true} });
@@ -47,6 +27,7 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
   const [err, setErr] = useState('');
   const [modalTier, setModalTier] = useState<Tier | null>(null);
   const [openFaq, setOpenFaq] = useState(0);
+  const [billing, setBilling] = useState<Billing>('monthly');
 
   const handleBuy = (tier: Tier) => { setErr(''); setModalTier(tier); };
 
@@ -420,6 +401,9 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
             </h2>
           </motion.div>
 
+          {/* Monthly / Annual toggle */}
+          <BillingToggle value={billing} onChange={setBilling} className="mb-7"/>
+
           {err && <p className="text-red-400 text-sm text-center mb-4">{err}</p>}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-7">
@@ -450,10 +434,18 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
                   <p className="text-gray-300 text-sm leading-snug mb-3 min-h-[40px]">{tier.positioning}</p>
                   <div className="flex items-end gap-1 mb-1">
                     <span className="font-display text-5xl text-white" style={{ textShadow:`0 0 22px ${tier.color}55` }}>
-                      ${tier.price}
+                      ${billing === 'annual' ? tier.priceAnnual.toLocaleString() : tier.price}
                     </span>
-                    <span className="text-gray-300 text-sm mb-2 ml-1">/mo</span>
+                    <span className="text-gray-300 text-sm mb-2 ml-1">
+                      {billing === 'annual' ? '/yr' : '/mo'}
+                    </span>
                   </div>
+                  {billing === 'annual' && (
+                    <div className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 mb-1.5"
+                      style={{ background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.35)' }}>
+                      <span className="text-green-400 text-xs font-bold">Save ${tier.annualSavings} · 2 months free</span>
+                    </div>
+                  )}
                   <p className="text-sm font-semibold mb-5" style={{ color: tier.color }}>
                     {tier.callsLabel}
                   </p>
@@ -598,12 +590,12 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
           open={modalTier !== null}
           onClose={() => setModalTier(null)}
           context="nova"
-          planName={`${modalTier.name} Plan · ${industry.name}`}
-          planAmount={modalTier.priceCents}
-          planPriceLabel={`$${modalTier.price}/mo`}
+          planName={`${modalTier.name} Plan · ${industry.name}${billing === 'annual' ? ' · Annual' : ''}`}
+          planAmount={billing === 'annual' ? modalTier.priceCentsAnnual : modalTier.priceCents}
+          planPriceLabel={billing === 'annual' ? `$${modalTier.priceAnnual.toLocaleString()}/yr` : `$${modalTier.price}/mo`}
           setupFeeCents={29700}
           setupFeeName="One-Time Setup Fee ($297)"
-          productName={`Never Miss a Call — ${modalTier.name} Plan · ${industry.name}`}
+          productName={`Never Miss a Call — ${modalTier.name} Plan · ${industry.name}${billing === 'annual' ? ' · Annual (saves $' + modalTier.annualSavings + ')' : ''}`}
           loading={loadingId === modalTier.id}
           onConfirm={(payload) => submitToStripe(payload, modalTier.id)}
         />

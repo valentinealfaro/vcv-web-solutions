@@ -104,88 +104,15 @@ const STACK = [
   },
 ];
 
-interface Tier {
-  id:        string;
-  name:      string;
-  tag:       string;        // popular badge text
-  positioning:string;       // "Best for ..." line
-  price:     number;
-  priceCents:number;
-  callsLabel:string;
-  features:  string[];
-  ctaLabel:  string;        // outcome-based CTA per tier
-  color:     string;
-  popular:   boolean;
-}
-
-const TIERS: Tier[] = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    tag: 'Gets foot in door',
-    positioning: 'Best for small businesses that need basic call coverage',
-    price: 147,
-    priceCents: 14700,
-    callsLabel: '50–100 calls / month',
-    features: [
-      'Never miss a call again',
-      'AI answers and captures lead details',
-      'Missed-call auto-text reply',
-      'Instant text + email alerts',
-      'Local number in your area code',
-      '24/7 coverage while you work',
-    ],
-    ctaLabel: 'Start Capturing Leads',
-    color: '#3b82f6',
-    popular: false,
-  },
-  {
-    id: 'growth',
-    name: 'Growth',
-    tag: 'MOST POPULAR',
-    positioning: 'Best for businesses that want booked appointments',
-    price: 297,
-    priceCents: 29700,
-    callsLabel: '200–300 calls / month',
-    features: [
-      'Everything in Starter',
-      'Books appointments automatically',
-      'Texts leads after the call',
-      'Live transfers hot leads when you\'re free',
-      'Custom call script for your business',
-      'Helps turn callers into scheduled jobs',
-    ],
-    ctaLabel: 'Activate Nova',
-    color: '#10b981',
-    popular: true,
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    tag: 'Serious businesses',
-    positioning: 'Best for serious businesses that want automation',
-    price: 497,
-    priceCents: 49700,
-    callsLabel: 'Up to 500 calls / mo',
-    features: [
-      'Everything in Growth',
-      'Built-in CRM to track every lead',
-      'Day 1 / Day 3 / Day 7 follow-up automation',
-      'Estimate follow-up reminders',
-      'Priority support',
-      'Custom integrations and automations',
-    ],
-    ctaLabel: 'Scale My Calls',
-    color: '#a855f7',
-    popular: false,
-  },
-];
+import { NOVA_TIERS as TIERS, type NovaTier as Tier } from '@/data/novaTiers';
+import { BillingToggle, type Billing } from '@/components/BillingToggle';
 
 export default function AIReceptionist() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [err, setErr]             = useState('');
   const [modalTier,    setModalTier]    = useState<Tier | null>(null);  // Nova tier modal
   const [bundleModalOpen, setBundleModalOpen] = useState(false);        // Mega bundle modal
+  const [billing, setBilling] = useState<Billing>('monthly');           // Monthly vs Annual toggle
 
   // Click "Buy Now" on a tier → open upsell modal first
   const handleBuy = (tier: Tier) => { setErr(''); setModalTier(tier); };
@@ -806,6 +733,9 @@ export default function AIReceptionist() {
           </motion.div>
 
 
+          {/* Monthly / Annual toggle */}
+          <BillingToggle value={billing} onChange={setBilling} className="mb-8" />
+
           {/* Three-tier pricing grid */}
           {err && <p className="text-red-400 text-sm text-center mb-4">{err}</p>}
 
@@ -836,7 +766,7 @@ export default function AIReceptionist() {
                       transition={{ duration:2, repeat:Infinity }}
                       className="text-white text-xs font-black px-4 py-1.5 rounded-full inline-flex items-center gap-1.5 whitespace-nowrap"
                       style={{ background:`linear-gradient(135deg,${tier.color},#06b6d4)` }}>
-                      <Zap className="w-3 h-3"/> {tier.tag}
+                      <Zap className="w-3 h-3"/> MOST POPULAR
                     </motion.div>
                   </div>
                 )}
@@ -856,14 +786,25 @@ export default function AIReceptionist() {
                     {tier.positioning}
                   </p>
 
-                  {/* Price */}
+                  {/* Price — flips with billing toggle */}
                   <div className="flex items-end gap-1 mb-1">
                     <span className="font-display text-6xl text-white"
                       style={{ textShadow:`0 0 25px ${tier.color}55` }}>
-                      ${tier.price}
+                      ${billing === 'annual' ? tier.priceAnnual.toLocaleString() : tier.price}
                     </span>
-                    <span className="text-gray-300 text-sm mb-2 ml-1">/mo</span>
+                    <span className="text-gray-300 text-sm mb-2 ml-1">
+                      {billing === 'annual' ? '/yr' : '/mo'}
+                    </span>
                   </div>
+
+                  {billing === 'annual' && (
+                    <div className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 mb-1.5"
+                      style={{ background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.35)' }}>
+                      <span className="text-green-400 text-xs font-bold">
+                        Save ${tier.annualSavings} · 2 months free
+                      </span>
+                    </div>
+                  )}
 
                   <p className="text-sm font-semibold mb-5" style={{ color: tier.color }}>
                     {tier.callsLabel}
@@ -1477,12 +1418,12 @@ export default function AIReceptionist() {
           open={modalTier !== null}
           onClose={() => setModalTier(null)}
           context="nova"
-          planName={`${modalTier.name} Plan`}
-          planAmount={modalTier.priceCents}
-          planPriceLabel={`$${modalTier.price}/mo`}
+          planName={`${modalTier.name} Plan${billing === 'annual' ? ' · Annual' : ''}`}
+          planAmount={billing === 'annual' ? modalTier.priceCentsAnnual : modalTier.priceCents}
+          planPriceLabel={billing === 'annual' ? `$${modalTier.priceAnnual.toLocaleString()}/yr` : `$${modalTier.price}/mo`}
           setupFeeCents={29700}
           setupFeeName="One-Time Setup Fee ($297)"
-          productName={`Never Miss a Call — ${modalTier.name} Plan`}
+          productName={`Never Miss a Call — ${modalTier.name} Plan${billing === 'annual' ? ' · Annual (saves $' + modalTier.annualSavings + ')' : ''}`}
           loading={loadingId === modalTier.id}
           onConfirm={(payload) => submitToStripe(payload, modalTier.id)}
         />

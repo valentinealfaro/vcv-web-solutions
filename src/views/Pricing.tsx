@@ -8,6 +8,8 @@ import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverla
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { DottedSurface } from '@/components/ui/dotted-surface';
 import { CheckoutUpsellModal, CheckoutPayload } from '@/components/CheckoutUpsellModal';
+import { NOVA_TIERS, type NovaTier } from '@/data/novaTiers';
+import { BillingToggle, type Billing } from '@/components/BillingToggle';
 
 const RISK_ITEMS = [
   { id:'ri-a', icon:'🎯', title:'See It Before You Commit',  body:'We build a custom design preview of your site. You approve it, then we launch it.',     color:'#3b82f6', bg:'rgba(59,130,246,0.09)'  },
@@ -149,34 +151,6 @@ const packages = [
     features:["Everything in Monthly","Advanced SEO optimization","Google Ads landing page ready","Blog & content system","Analytics dashboard","Priority 24hr support","Quarterly strategy calls","Google My Business setup","Setup fee waived ($497 value)"] },
 ];
 
-interface NovaTier {
-  id: string; name: string; tag: string;
-  price: number; priceCents: number;
-  callsLabel: string; features: string[];
-  color: string; popular: boolean;
-}
-
-const NOVA_TIERS: NovaTier[] = [
-  {
-    id: 'starter', name: 'Starter', tag: 'Gets foot in door',
-    price: 147, priceCents: 14700, callsLabel: '50–100 calls / month',
-    features: ['Basic answering + lead capture','Local number in your area code','Instant text + email alerts','Missed-call auto-text reply','24/7 coverage'],
-    color: '#3b82f6', popular: false,
-  },
-  {
-    id: 'growth', name: 'Growth', tag: 'MOST POPULAR',
-    price: 297, priceCents: 29700, callsLabel: '200–300 calls / month',
-    features: ['Everything in Starter','Books appointments automatically','Texts leads after the call',"Live transfers hot leads when you're free",'Custom call script for your business'],
-    color: '#10b981', popular: true,
-  },
-  {
-    id: 'pro', name: 'Pro', tag: 'Serious businesses',
-    price: 497, priceCents: 49700, callsLabel: 'Up to 500 calls / mo',
-    features: ['Everything in Growth','Built-in CRM to track every lead','Day 1 / Day 3 / Day 7 follow-up automation','Priority support','Custom integrations and automations'],
-    color: '#a855f7', popular: false,
-  },
-];
-
 export default function Pricing() {
   const [loadingIdx, setLoadingIdx] = useState<number|null>(null);
   const [riskOrder, setRiskOrder]   = useState([0,1,2,3]);
@@ -205,6 +179,7 @@ export default function Pricing() {
 
   const [modalIdx, setModalIdx] = useState<number | null>(null);
   const [novaModalTier, setNovaModalTier] = useState<NovaTier | null>(null);
+  const [novaBilling, setNovaBilling] = useState<Billing>('monthly');
   const [bundleModalOpen, setBundleModalOpen] = useState(false);
 
   const handleBuy = (_pkg: typeof packages[0], idx: number) => {
@@ -642,6 +617,9 @@ export default function Pricing() {
             </p>
           </motion.div>
 
+          {/* Monthly / Annual toggle */}
+          <BillingToggle value={novaBilling} onChange={setNovaBilling} className="mb-8"/>
+
           {/* 3 Nova tier cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {NOVA_TIERS.map((tier, i) => (
@@ -664,7 +642,7 @@ export default function Pricing() {
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                     <div className="text-white text-xs font-black px-4 py-1.5 rounded-full inline-flex items-center gap-1.5 whitespace-nowrap"
                       style={{ background:`linear-gradient(135deg,${tier.color},#06b6d4)`, boxShadow:`0 0 18px ${tier.color}99` }}>
-                      <Zap className="w-3 h-3"/> {tier.tag}
+                      <Zap className="w-3 h-3"/> MOST POPULAR
                     </div>
                   </div>
                 )}
@@ -672,16 +650,23 @@ export default function Pricing() {
                 <div className="rounded-[21px] p-7 h-full flex flex-col"
                   style={{ background:'rgba(5,12,22,0.97)', backdropFilter:'blur(24px)' }}>
 
-                  <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">{tier.name}</p>
-                  {!tier.popular && <p className="text-gray-500 text-xs mb-3">{tier.tag}</p>}
-                  {tier.popular && <div className="mb-3"/>}
+                  <p className="text-gray-300 text-xs font-bold uppercase tracking-widest mb-1">{tier.name}</p>
+                  <p className="text-gray-300 text-xs mb-3 min-h-[32px] leading-snug">{tier.positioning}</p>
 
                   <div className="flex items-end gap-1 mb-1">
                     <span className="font-display text-5xl text-white" style={{ textShadow:`0 0 25px ${tier.color}55` }}>
-                      ${tier.price}
+                      ${novaBilling === 'annual' ? tier.priceAnnual.toLocaleString() : tier.price}
                     </span>
-                    <span className="text-gray-500 text-sm mb-2 ml-1">/mo</span>
+                    <span className="text-gray-300 text-sm mb-2 ml-1">
+                      {novaBilling === 'annual' ? '/yr' : '/mo'}
+                    </span>
                   </div>
+                  {novaBilling === 'annual' && (
+                    <div className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 mb-1.5"
+                      style={{ background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.35)' }}>
+                      <span className="text-green-400 text-xs font-bold">Save ${tier.annualSavings} · 2 months free</span>
+                    </div>
+                  )}
                   <p className="text-blue-400 text-sm font-semibold mb-5">{tier.callsLabel}</p>
 
                   <ul className="space-y-2.5 mb-6 flex-1">
@@ -750,12 +735,12 @@ export default function Pricing() {
           open={novaModalTier !== null}
           onClose={() => setNovaModalTier(null)}
           context="nova"
-          planName={`${novaModalTier.name} Plan`}
-          planAmount={novaModalTier.priceCents}
-          planPriceLabel={`$${novaModalTier.price}/mo`}
+          planName={`${novaModalTier.name} Plan${novaBilling === 'annual' ? ' · Annual' : ''}`}
+          planAmount={novaBilling === 'annual' ? novaModalTier.priceCentsAnnual : novaModalTier.priceCents}
+          planPriceLabel={novaBilling === 'annual' ? `$${novaModalTier.priceAnnual.toLocaleString()}/yr` : `$${novaModalTier.price}/mo`}
           setupFeeCents={29700}
           setupFeeName="One-Time Setup Fee ($297)"
-          productName={`Never Miss a Call — ${novaModalTier.name} Plan`}
+          productName={`Never Miss a Call — ${novaModalTier.name} Plan${novaBilling === 'annual' ? ' · Annual (saves $' + novaModalTier.annualSavings + ')' : ''}`}
           loading={loadingIdx === 200 + NOVA_TIERS.findIndex(t => t.id === novaModalTier.id)}
           onConfirm={(payload) => submitToStripe(payload, 200 + NOVA_TIERS.findIndex(t => t.id === novaModalTier.id))}
         />
