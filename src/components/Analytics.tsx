@@ -11,7 +11,7 @@ import Script from 'next/script';
 ─────────────────────────────────────────────────────────────────── */
 const GA_ID       = process.env.NEXT_PUBLIC_GA_ID         || 'G-WBPG8KFMP6';
 const META_ID     = process.env.NEXT_PUBLIC_META_PIXEL_ID || '1669902044129893';
-const CLARITY_ID  = process.env.NEXT_PUBLIC_CLARITY_ID    || '';
+const CLARITY_ID  = process.env.NEXT_PUBLIC_CLARITY_ID    || 'wlu49ethr7';
 
 export const Analytics = () => (
   <>
