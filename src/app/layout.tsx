@@ -9,6 +9,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { MobileStickyBar } from '@/components/MobileStickyBar';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { ExitIntentPopup } from '@/components/ExitIntentPopup';
 
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 const OG_DESC  = 'High-converting websites built in 3-7 days for local service businesses. SEO-optimized, mobile-ready, and engineered to generate leads — not just look pretty.';
@@ -72,6 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <FloatingCTA />
           <MobileStickyBar />
           <ThemeSwitcher />
+          <ExitIntentPopup />
         </ThemeProvider>
       </body>
     </html>
