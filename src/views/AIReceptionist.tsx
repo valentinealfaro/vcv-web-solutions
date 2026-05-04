@@ -970,7 +970,7 @@ export default function AIReceptionist() {
               Call Nova. Hear it work. Then we&apos;ll have you live in 24-48 hours.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap mb-6">
               <motion.a href={`tel:${NOVA_NUMBER_RAW}`}
                 whileHover={{ scale:1.05 }} whileTap={{ scale:0.97 }}
                 animate={{
@@ -989,13 +989,8 @@ export default function AIReceptionist() {
                 className="px-10 py-5 rounded-full font-bold text-white text-lg inline-flex items-center justify-center gap-2">
                 <Phone className="w-6 h-6"/> Call Nova: {NOVA_NUMBER}
               </motion.a>
-              <a href={`tel:${VCV_NUMBER}`}
-                className="glass-card text-white px-10 py-5 rounded-full font-semibold text-base inline-flex items-center justify-center gap-2 hover:border-blue-500/40 transition-all">
-                <MessageSquare className="w-5 h-5 text-blue-400"/> Talk to Valentine
-              </a>
+              <FreeDemoButton size="md" label="Get a Free Website Preview" rounded="full" />
             </div>
-
-            <FreeDemoButton size="md" label="Or Get a Free Website Preview" rounded="full" />
 
             <p className="text-gray-600 text-sm mt-6">
               Setup in 24-48 hrs · Cancel anytime · No credit card to test the demo
