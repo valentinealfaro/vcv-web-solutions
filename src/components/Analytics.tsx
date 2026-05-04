@@ -1,15 +1,17 @@
 'use client';
 import Script from 'next/script';
 
-/* ─── Tracking IDs from environment ─────────────────────────────
-   Set these in Vercel → Project → Settings → Environment Variables:
-     NEXT_PUBLIC_GA_ID         = G-XXXXXXXXXX     (Google Analytics 4)
-     NEXT_PUBLIC_META_PIXEL_ID = 123456789012345  (Meta / Facebook Pixel)
-     NEXT_PUBLIC_CLARITY_ID    = abc123xyz        (Microsoft Clarity)
+/* ─── Tracking IDs ───────────────────────────────────────────────
+   Defaults are hardcoded here so the site tracks out of the box.
+   Override in Vercel → Project → Settings → Environment Variables
+   if you ever rotate or split traffic to a new property:
+     NEXT_PUBLIC_GA_ID         = G-XXXXXXXXXX
+     NEXT_PUBLIC_META_PIXEL_ID = 123456789012345
+     NEXT_PUBLIC_CLARITY_ID    = abc123xyz
 ─────────────────────────────────────────────────────────────────── */
-const GA_ID       = process.env.NEXT_PUBLIC_GA_ID || '';
+const GA_ID       = process.env.NEXT_PUBLIC_GA_ID         || 'G-WBPG8KFMP6';
 const META_ID     = process.env.NEXT_PUBLIC_META_PIXEL_ID || '';
-const CLARITY_ID  = process.env.NEXT_PUBLIC_CLARITY_ID || '';
+const CLARITY_ID  = process.env.NEXT_PUBLIC_CLARITY_ID    || '';
 
 export const Analytics = () => (
   <>
