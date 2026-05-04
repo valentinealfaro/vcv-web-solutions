@@ -1,10 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useRouter } from 'next/navigation';
 import {
   Search, Zap, CheckCircle2, AlertCircle, Globe, Phone, Mail,
   Star, TrendingUp, Send, Loader2, RefreshCw, Filter,
-  BarChart3, Target, Lock, Eye, EyeOff, ExternalLink, X,
+  BarChart3, Target, ExternalLink, X, LogOut,
 } from 'lucide-react';
 import { db } from '../../firebase';
 import { collection, addDoc, getDocs, query, where, serverTimestamp } from 'firebase/firestore';
@@ -17,8 +18,6 @@ interface Lead {
   ownerName: string; heat: 'hot' | 'warm' | 'review';
   siteReason: string;
 }
-
-const ADMIN_PASS = process.env.NEXT_PUBLIC_ADMIN_PASS || 'vcv2025';
 
 const HEAT_CONFIG = {
   hot:    { label:'🔴 Hot — No Website',        bg:'rgba(239,68,68,0.12)',   border:'rgba(239,68,68,0.4)',   text:'#ef4444' },
@@ -35,10 +34,7 @@ const NICHES = [
 ];
 
 export default function LeadFinder() {
-  const [authed,     setAuthed]     = useState(false);
-  const [passInput,  setPassInput]  = useState('');
-  const [showPass,   setShowPass]   = useState(false);
-  const [passErr,    setPassErr]    = useState(false);
+  const router = useRouter();
 
   const [niche,      setNiche]      = useState('Roofers');
   const [city,       setCity]       = useState('Lawton, OK');
@@ -54,7 +50,6 @@ export default function LeadFinder() {
 
   /* load already-sent IDs from Firebase */
   useEffect(() => {
-    if (!authed) return;
     (async () => {
       const snap = await getDocs(collection(db, 'sent_leads'));
       setSentIds(new Set(snap.docs.map(d => d.id)));
@@ -64,11 +59,12 @@ export default function LeadFinder() {
       const todaySnap = await getDocs(q);
       setStats(s => ({ ...s, total: snap.size, today: todaySnap.size }));
     })();
-  }, [authed]);
+  }, []);
 
-  const handleLogin = () => {
-    if (passInput === ADMIN_PASS) { setAuthed(true); setPassErr(false); }
-    else { setPassErr(true); }
+  const handleLogout = async () => {
+    try { await fetch('/api/admin-auth/logout', { method: 'POST' }); } catch {}
+    router.replace('/admin/login');
+    router.refresh();
   };
 
   const search = async () => {
@@ -135,38 +131,6 @@ export default function LeadFinder() {
 
   const visible = filterHeat === 'all' ? leads : leads.filter(l => l.heat === filterHeat);
 
-  /* ── Login screen ── */
-  if (!authed) return (
-    <div className="min-h-screen bg-[#030712] flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-grid opacity-20 pointer-events-none"/>
-      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}
-        className="w-full max-w-sm">
-        <div className="neon-card p-8 text-center">
-          <div className="w-14 h-14 btn-neon rounded-full flex items-center justify-center mx-auto mb-5">
-            <Lock className="w-6 h-6 text-white"/>
-          </div>
-          <h2 className="font-display text-3xl text-white mb-1">LEAD FINDER</h2>
-          <p className="text-gray-500 text-sm mb-6">Admin access required</p>
-          <div className="relative mb-3">
-            <input type={showPass ? 'text' : 'password'} value={passInput}
-              onChange={e => setPassInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              placeholder="Admin password"
-              className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 transition-all pr-10"/>
-            <button onClick={() => setShowPass(s=>!s)} className="absolute right-3 top-3.5 text-gray-500 hover:text-white">
-              {showPass ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
-            </button>
-          </div>
-          {passErr && <p className="text-red-400 text-xs mb-3">Incorrect password</p>}
-          <button onClick={handleLogin}
-            className="w-full btn-neon btn-glow text-white py-3 rounded-xl font-bold text-sm">
-            Enter
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-
   /* ── Main UI ── */
   return (
     <div className="min-h-screen bg-[#030712] pb-16">
@@ -203,15 +167,22 @@ export default function LeadFinder() {
               </div>
             </div>
 
-            {/* Revenue potential callout */}
-            <div className="glass-card px-6 py-4 text-right"
-              style={{ borderColor:'rgba(34,197,94,0.25)', background:'rgba(34,197,94,0.05)' }}>
-              <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Est. Revenue Potential</p>
-              <p className="font-display text-3xl text-green-400"
-                style={{ textShadow:'0 0 20px rgba(34,197,94,0.5)' }}>
-                ${(Math.floor(stats.total * 0.05) * 1497).toLocaleString()}
-              </p>
-              <p className="text-gray-600 text-xs mt-0.5">{Math.floor(stats.total*0.05)} est. closes × $1,497</p>
+            <div className="flex items-start gap-3">
+              {/* Revenue potential callout */}
+              <div className="glass-card px-6 py-4 text-right"
+                style={{ borderColor:'rgba(34,197,94,0.25)', background:'rgba(34,197,94,0.05)' }}>
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Est. Revenue Potential</p>
+                <p className="font-display text-3xl text-green-400"
+                  style={{ textShadow:'0 0 20px rgba(34,197,94,0.5)' }}>
+                  ${(Math.floor(stats.total * 0.05) * 1497).toLocaleString()}
+                </p>
+                <p className="text-gray-600 text-xs mt-0.5">{Math.floor(stats.total*0.05)} est. closes × $1,497</p>
+              </div>
+              <button onClick={handleLogout}
+                title="Sign out"
+                className="h-[88px] px-3 rounded-xl border border-white/10 bg-white/[0.03] text-gray-400 hover:text-white hover:border-white/20 transition-all flex items-center justify-center">
+                <LogOut className="w-4 h-4"/>
+              </button>
             </div>
           </div>
 

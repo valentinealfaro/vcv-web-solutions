@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { verifySessionToken, ADMIN_COOKIE_NAME } from '@/lib/adminAuth';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
+  // Defense in depth: middleware already gates this route, but verify the
+  // cookie here too in case middleware config drifts.
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  const token  = req.cookies.get(ADMIN_COOKIE_NAME)?.value;
+  if (!secret || !(await verifySessionToken(secret, token))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const { query, limit = 40 } = await req.json();
 
   const key = process.env.OUTSCRAPER_API_KEY;
