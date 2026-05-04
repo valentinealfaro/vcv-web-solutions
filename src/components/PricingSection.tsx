@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { CheckCircle2, ArrowRight, Zap, Loader2, Tag } from 'lucide-react';
 import { PricingBgCanvas } from '@/components/PageEffects';
 
+const SETUP_FEE_CENTS = 29700; // $297 — waived on annual
+
 const plans = [
   {
     name: 'Monthly',
@@ -12,6 +14,7 @@ const plans = [
     origPrice: 297,
     period: '/mo',
     amountCents: 14700,
+    setupFeeCents: SETUP_FEE_CENTS,        // monthly pays the setup fee
     setup: 'No long-term commitment',
     description: 'Get a professional lead-generating website with no annual contract.',
     features: [
@@ -32,6 +35,7 @@ const plans = [
     origPrice: 2970,
     period: '/yr',
     amountCents: 149700,
+    setupFeeCents: 0,                       // annual: setup fee waived
     setup: 'Best value — save $1,473',
     badge: 'Best Value — Save $1,473',
     description: 'The full lead machine. Everything you need to dominate your local market.',
@@ -64,6 +68,10 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
         body: JSON.stringify({
           productName: `VCV Web Solutions — ${plan.name} Plan`,
           amount: plan.amountCents,
+          ...(plan.setupFeeCents > 0 && {
+            setupFee: plan.setupFeeCents,
+            setupFeeName: 'One-Time Website Setup Fee ($297)',
+          }),
         }),
       });
       const data = await res.json();
@@ -131,10 +139,23 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
       </div>
 
       {/* Savings pill */}
-      <div className="inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/25 rounded-full px-3 py-1 mb-4">
+      <div className="inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/25 rounded-full px-3 py-1 mb-3">
         <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse inline-block" />
         <span className="text-green-400 text-xs font-bold">You save ${plan.origPrice - plan.price}{plan.period}</span>
       </div>
+
+      {/* Setup-fee note */}
+      {plan.setupFeeCents > 0 ? (
+        <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 mb-4 ml-2"
+          style={{ background:'rgba(255,193,7,0.10)', border:'1px solid rgba(255,193,7,0.35)' }}>
+          <span className="text-yellow-300 text-xs font-bold">+ $297 setup · auto-added at checkout</span>
+        </div>
+      ) : (
+        <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 mb-4 ml-2"
+          style={{ background:'rgba(34,197,94,0.10)', border:'1px solid rgba(34,197,94,0.35)' }}>
+          <span className="text-green-400 text-xs font-bold">✓ Setup fee waived</span>
+        </div>
+      )}
 
       <p className="text-gray-300 text-sm leading-relaxed mb-6">{plan.description}</p>
 

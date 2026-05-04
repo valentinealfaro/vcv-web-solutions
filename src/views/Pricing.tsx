@@ -142,9 +142,9 @@ const FAQItem = ({ question, answer, color, isOpen, onToggle }: {
 );
 
 const packages = [
-  { name:"Monthly", price:"$147", origPrice:"$297", period:"/mo", amountCents:14700, setup:"No long-term commitment", isPopular:false,
+  { name:"Monthly", price:"$147", origPrice:"$297", period:"/mo", amountCents:14700, setupFeeCents:29700, setup:"No long-term commitment", isPopular:false,
     features:["Custom website design","Mobile-responsive layout","Basic SEO setup","Contact & lead forms","Hosting & maintenance","Monthly updates","Email support"] },
-  { name:"Annual",  price:"$1,497", origPrice:"$2,970", period:"/yr", amountCents:149700, setup:"Best value — save $1,473", isPopular:true,
+  { name:"Annual",  price:"$1,497", origPrice:"$2,970", period:"/yr", amountCents:149700, setupFeeCents:0, setup:"Best value — save $1,473", isPopular:true,
     features:["Everything in Monthly","Advanced SEO optimization","Google Ads landing page ready","Blog & content system","Analytics dashboard","Priority 24hr support","Quarterly strategy calls","Google My Business setup","Setup fee waived ($297 value)"] },
 ];
 
@@ -179,7 +179,14 @@ export default function Pricing() {
     try {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productName: `VCV Web Solutions — ${pkg.name} Plan`, amount: pkg.amountCents }),
+        body: JSON.stringify({
+          productName: `VCV Web Solutions — ${pkg.name} Plan`,
+          amount: pkg.amountCents,
+          ...(pkg.setupFeeCents > 0 && {
+            setupFee: pkg.setupFeeCents,
+            setupFeeName: 'One-Time Website Setup Fee ($297)',
+          }),
+        }),
       });
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error(data.error || 'Failed');
@@ -291,12 +298,25 @@ export default function Pricing() {
             </div>
             <p className="text-blue-400 font-semibold text-sm mb-2">{pkg.setup}</p>
 
-            {/* Savings pill */}
-            <div className="inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/25 rounded-full px-3 py-1 mb-5 w-fit">
-              <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse inline-block" />
-              <span className="text-green-400 text-xs font-bold">
-                You save {pkg.isPopular ? '$1,473/yr' : '$150/mo'}
-              </span>
+            {/* Savings + setup-fee pills */}
+            <div className="flex flex-wrap gap-2 mb-5">
+              <div className="inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/25 rounded-full px-3 py-1">
+                <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse inline-block" />
+                <span className="text-green-400 text-xs font-bold">
+                  You save {pkg.isPopular ? '$1,473/yr' : '$150/mo'}
+                </span>
+              </div>
+              {pkg.setupFeeCents > 0 ? (
+                <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
+                  style={{ background:'rgba(255,193,7,0.10)', border:'1px solid rgba(255,193,7,0.35)' }}>
+                  <span className="text-yellow-300 text-xs font-bold">+ $297 setup · auto-added</span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
+                  style={{ background:'rgba(34,197,94,0.10)', border:'1px solid rgba(34,197,94,0.35)' }}>
+                  <span className="text-green-400 text-xs font-bold">✓ Setup fee waived</span>
+                </div>
+              )}
             </div>
 
             <p className="text-gray-400 text-sm leading-relaxed mb-6">{pkg.name === 'Monthly' ? 'Perfect for getting started with no long-term commitment.' : 'The complete package. Everything you need to dominate your market.'}</p>
