@@ -15,15 +15,15 @@ const NOVA_NUMBER      = '(580) 656-9429';
 const NOVA_NUMBER_RAW  = '+15806569429';
 const VCV_NUMBER       = '+15809191386';
 
-/* ─── Image placeholders — swap these later ─────────────────── */
+/* ─── Local image assets in /public/nova ─────────────────────── */
 const IMG = {
-  hero:        'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?auto=format&fit=crop&w=1200&q=70',
-  novaPortrait:'https://images.unsplash.com/photo-1535378917042-10a22c95931a?auto=format&fit=crop&w=600&q=70',
-  problem:     'https://images.unsplash.com/photo-1580974511812-23dbf83a39be?auto=format&fit=crop&w=1000&q=70',
-  solution:    'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1000&q=70',
-  contractor:  'https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=600&q=70',
-  dental:      'https://images.unsplash.com/photo-1606811971618-4486d14f3f99?auto=format&fit=crop&w=600&q=70',
-  restaurant:  'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=70',
+  hero:        '/nova/nova-hero.png',
+  novaPortrait:'/nova/nova-waiting.png',
+  problem:     '/nova/before-nova.png',
+  solution:    '/nova/after-nova.png',
+  contractor:  '/nova/construction-lead.png',
+  dental:      '/nova/dentist-lead.png',
+  restaurant:  '/nova/restaurant-lead.png',
 };
 
 const fade   = (d=0) => ({ initial:{opacity:0,y:30}, whileInView:{opacity:1,y:0}, transition:{delay:d,duration:0.6}, viewport:{once:true} });
@@ -441,6 +441,62 @@ export default function AIReceptionist() {
                   </div>
                 </motion.div>
               ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════ BEFORE vs AFTER NOVA ══════════ */}
+      <section className="py-20 bg-[#030712] relative overflow-hidden">
+        <SectionOrbs variant="mixed"/>
+        <GridOverlay gridOp={0.18} dotOp={0.08}/>
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div {...fade()} className="text-center mb-10">
+            <p className="neon-badge mb-4 mx-auto w-fit">The Difference</p>
+            <h2 className="font-display text-5xl md:text-6xl text-white mb-3 leading-none">
+              BEFORE vs <span className="gradient-text">AFTER NOVA</span>
+            </h2>
+            <p className="text-gray-400 text-base max-w-2xl mx-auto">
+              Same business. Same calls. Different outcome.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* BEFORE */}
+            <motion.div {...slideL()}
+              className="relative rounded-2xl overflow-hidden"
+              style={{ border:'2px solid rgba(239,68,68,0.35)', boxShadow:'0 20px 60px rgba(0,0,0,0.5)' }}>
+              <div className="absolute top-4 left-4 z-10 inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                style={{ background:'rgba(239,68,68,0.18)', border:'1px solid rgba(239,68,68,0.5)', backdropFilter:'blur(8px)' }}>
+                <PhoneOff className="w-4 h-4 text-red-400"/>
+                <span className="text-red-400 text-xs font-black uppercase tracking-wider">Before Nova</span>
+              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={IMG.problem} alt="Before Nova — missed calls and lost leads" loading="lazy"
+                className="w-full h-auto block"/>
+              <div className="p-5 bg-[#0a0f1e]">
+                <p className="text-white font-bold mb-1">Calls go to voicemail. Leads go to competitors.</p>
+                <p className="text-gray-400 text-sm">Phone rings, no answer, customer hangs up and dials the next contractor.</p>
+              </div>
+            </motion.div>
+
+            {/* AFTER */}
+            <motion.div {...slideR(0.1)}
+              className="relative rounded-2xl overflow-hidden"
+              style={{ border:'2px solid rgba(34,197,94,0.45)', boxShadow:'0 0 60px rgba(34,197,94,0.15), 0 20px 60px rgba(0,0,0,0.5)' }}>
+              <div className="absolute top-4 left-4 z-10 inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                style={{ background:'rgba(34,197,94,0.18)', border:'1px solid rgba(34,197,94,0.5)', backdropFilter:'blur(8px)' }}>
+                <Phone className="w-4 h-4 text-green-400"/>
+                <span className="text-green-400 text-xs font-black uppercase tracking-wider">After Nova</span>
+              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={IMG.solution} alt="After Nova — every call captured and converted" loading="lazy"
+                className="w-full h-auto block"/>
+              <div className="p-5 bg-[#0a0f1e]">
+                <p className="text-white font-bold mb-1">Every call answered. Every lead captured.</p>
+                <p className="text-gray-400 text-sm">Nova picks up on the first ring, qualifies the caller, and texts you the lead instantly.</p>
+              </div>
             </motion.div>
           </div>
         </div>
