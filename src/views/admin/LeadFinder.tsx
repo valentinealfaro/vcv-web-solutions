@@ -1,14 +1,15 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import {
   Search, Zap, CheckCircle2, AlertCircle, Globe, Phone, Mail,
   Star, TrendingUp, Send, Loader2, RefreshCw, Filter,
   BarChart3, Target, ExternalLink, X, LogOut,
+  Activity, MapPin, Briefcase, Clock, Flame, ArrowUp, ArrowDown,
 } from 'lucide-react';
 import { db } from '../../firebase';
-import { collection, addDoc, getDocs, query, where, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, serverTimestamp } from 'firebase/firestore';
 
 /* ── Types ── */
 interface Lead {
@@ -17,6 +18,18 @@ interface Lead {
   rating: number; reviews: number; category: string;
   ownerName: string; heat: 'hot' | 'warm' | 'review';
   siteReason: string;
+}
+
+interface SentLead {
+  id: string;          // Firestore doc id
+  leadId: string;      // Outscraper place_id (real dedup key)
+  name: string;
+  phone: string;
+  city: string;
+  heat: 'hot' | 'warm' | 'review';
+  category?: string;
+  niche?: string;
+  sentAt: any;         // Firestore Timestamp
 }
 
 const HEAT_CONFIG = {
@@ -47,17 +60,27 @@ export default function LeadFinder() {
   const [sentIds,    setSentIds]    = useState<Set<string>>(new Set());
   const [filterHeat, setFilterHeat] = useState<'all'|'hot'|'warm'|'review'>('all');
   const [stats,      setStats]      = useState({ total:0, today:0, hot:0 });
+  const [allSent,    setAllSent]    = useState<SentLead[]>([]);
 
-  /* load already-sent IDs from Firebase */
+  /* Load full sent_leads collection — drives both the dedup set and the analytics dashboard */
   useEffect(() => {
     (async () => {
-      const snap = await getDocs(collection(db, 'sent_leads'));
-      setSentIds(new Set(snap.docs.map(d => d.id)));
+      try {
+        const snap = await getDocs(collection(db, 'sent_leads'));
+        const docs: SentLead[] = snap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<SentLead, 'id'>) }));
+        setAllSent(docs);
+        // Dedup uses the Outscraper place_id stored as `leadId`, not the random Firestore doc id
+        setSentIds(new Set(docs.map(d => d.leadId).filter(Boolean)));
 
-      const today = new Date(); today.setHours(0,0,0,0);
-      const q = query(collection(db, 'sent_leads'), where('sentAt', '>=', today));
-      const todaySnap = await getDocs(q);
-      setStats(s => ({ ...s, total: snap.size, today: todaySnap.size }));
+        const today = new Date(); today.setHours(0,0,0,0);
+        const todayCount = docs.filter(d => {
+          const t = d.sentAt?.toDate?.();
+          return t && t >= today;
+        }).length;
+        setStats(s => ({ ...s, total: docs.length, today: todayCount }));
+      } catch {
+        /* Firestore rules may block reads — analytics will simply be empty */
+      }
     })();
   }, []);
 
@@ -65,6 +88,104 @@ export default function LeadFinder() {
     try { await fetch('/api/admin-auth/logout', { method: 'POST' }); } catch {}
     router.replace('/admin/login');
     router.refresh();
+  };
+
+  /* ── Analytics derived from all-time sent_leads ── */
+  const analytics = useMemo(() => {
+    const now = Date.now();
+    const dayMs = 86_400_000;
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    const tsOf = (l: SentLead) => l.sentAt?.toDate?.()?.getTime() ?? 0;
+
+    /* 7-day daily timeline (oldest → newest) */
+    const timeline: { label: string; count: number; date: Date }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const dayStart = new Date(today.getTime() - i * dayMs);
+      const dayEnd = dayStart.getTime() + dayMs;
+      const count = allSent.filter(l => {
+        const t = tsOf(l);
+        return t >= dayStart.getTime() && t < dayEnd;
+      }).length;
+      timeline.push({
+        label: dayStart.toLocaleDateString('en-US', { weekday: 'short' }),
+        count,
+        date: dayStart,
+      });
+    }
+    const peakDay = Math.max(1, ...timeline.map(t => t.count));
+
+    /* This week vs last week */
+    const last7Cutoff  = today.getTime() - 6 * dayMs;
+    const prev7Start   = today.getTime() - 13 * dayMs;
+    const prev7End     = today.getTime() - 6 * dayMs;
+    const thisWeek = allSent.filter(l => tsOf(l) >= last7Cutoff).length;
+    const prevWeek = allSent.filter(l => { const t = tsOf(l); return t >= prev7Start && t < prev7End; }).length;
+    const weekDelta = prevWeek === 0
+      ? (thisWeek > 0 ? null : 0)
+      : Math.round(((thisWeek - prevWeek) / prevWeek) * 100);
+
+    /* Heat distribution all-time */
+    const heatCounts = {
+      hot:    allSent.filter(l => l.heat === 'hot').length,
+      warm:   allSent.filter(l => l.heat === 'warm').length,
+      review: allSent.filter(l => l.heat === 'review').length,
+    };
+    const heatTotal = heatCounts.hot + heatCounts.warm + heatCounts.review || 1;
+
+    /* Top cities by volume */
+    const cityMap = new Map<string, number>();
+    allSent.forEach(l => {
+      if (!l.city) return;
+      cityMap.set(l.city, (cityMap.get(l.city) || 0) + 1);
+    });
+    const topCities = [...cityMap.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([city, count]) => ({ city, count }));
+    const peakCity = Math.max(1, ...topCities.map(c => c.count));
+
+    /* Top niches (preferring stored `niche`, falling back to Google Maps `category`) */
+    const nicheMap = new Map<string, number>();
+    allSent.forEach(l => {
+      const n = (l.niche || l.category || '').trim();
+      if (!n) return;
+      nicheMap.set(n, (nicheMap.get(n) || 0) + 1);
+    });
+    const topNiches = [...nicheMap.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([n, count]) => ({ niche: n, count }));
+    const peakNiche = Math.max(1, ...topNiches.map(n => n.count));
+
+    /* Recent activity (last 12 leads) */
+    const recent = [...allSent]
+      .sort((a, b) => tsOf(b) - tsOf(a))
+      .slice(0, 12);
+
+    /* Days since last push */
+    const lastPush = allSent.length ? Math.max(...allSent.map(tsOf)) : 0;
+    const daysSinceLast = lastPush ? Math.floor((now - lastPush) / dayMs) : null;
+
+    return {
+      timeline, peakDay,
+      thisWeek, prevWeek, weekDelta,
+      heatCounts, heatTotal,
+      topCities, peakCity,
+      topNiches, peakNiche,
+      recent, daysSinceLast,
+    };
+  }, [allSent]);
+
+  const fmtRelTime = (ts: number) => {
+    const diff = Date.now() - ts;
+    const m = Math.floor(diff / 60_000);
+    if (m < 1) return 'just now';
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    const d = Math.floor(h / 24);
+    return `${d}d ago`;
   };
 
   const search = async () => {
@@ -113,12 +234,31 @@ export default function LeadFinder() {
 
       /* Save sent IDs to Firebase — non-blocking, ignore permission errors */
       try {
-        await Promise.all(toSend.map(l =>
+        const refs = await Promise.all(toSend.map(l =>
           addDoc(collection(db, 'sent_leads'), {
-            leadId: l.id, name: l.name, phone: l.phone,
-            city: l.city, heat: l.heat, sentAt: serverTimestamp(),
+            leadId:   l.id,
+            name:     l.name,
+            phone:    l.phone,
+            city:     l.city,
+            heat:     l.heat,
+            category: l.category || '',
+            niche:    niche,
+            sentAt:   serverTimestamp(),
           })
         ));
+        // Optimistically update analytics state with the just-pushed leads
+        const newDocs: SentLead[] = toSend.map((l, i) => ({
+          id:       refs[i].id,
+          leadId:   l.id,
+          name:     l.name,
+          phone:    l.phone,
+          city:     l.city,
+          heat:     l.heat,
+          category: l.category || '',
+          niche:    niche,
+          sentAt:   { toDate: () => new Date() },
+        }));
+        setAllSent(prev => [...prev, ...newDocs]);
       } catch { /* Firebase rules may not allow — HL push already succeeded */ }
 
       setSentIds(prev => new Set([...prev, ...toSend.map(l => l.id)]));
@@ -216,6 +356,281 @@ export default function LeadFinder() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+
+        {/* ─── ANALYTICS DASHBOARD ─── */}
+        {allSent.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-1 h-5 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"/>
+              <p className="text-xs font-black uppercase tracking-widest text-zinc-400">Insights & Analytics</p>
+            </div>
+
+            {/* Pulse banner: this week vs last week + days since last push */}
+            <div className="neon-card p-5 mb-4 grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background:'rgba(59,130,246,0.15)', color:'#3b82f6' }}>
+                  <Activity className="w-5 h-5"/>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-[10px] uppercase tracking-widest font-bold">This Week</p>
+                  <p className="font-display text-3xl text-white leading-none mt-0.5">{analytics.thisWeek}</p>
+                  {analytics.weekDelta !== null && analytics.prevWeek > 0 && (
+                    <p className={`text-xs mt-1 flex items-center gap-1 ${analytics.weekDelta >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {analytics.weekDelta >= 0 ? <ArrowUp className="w-3 h-3"/> : <ArrowDown className="w-3 h-3"/>}
+                      {Math.abs(analytics.weekDelta)}% vs last week ({analytics.prevWeek})
+                    </p>
+                  )}
+                  {analytics.prevWeek === 0 && analytics.thisWeek > 0 && (
+                    <p className="text-xs mt-1 text-gray-500">First week of activity</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background:'rgba(168,85,247,0.15)', color:'#a855f7' }}>
+                  <Clock className="w-5 h-5"/>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Last Push</p>
+                  <p className="font-display text-3xl text-white leading-none mt-0.5">
+                    {analytics.daysSinceLast === null ? '—' :
+                     analytics.daysSinceLast === 0 ? 'Today' :
+                     analytics.daysSinceLast === 1 ? 'Yesterday' :
+                     `${analytics.daysSinceLast}d ago`}
+                  </p>
+                  <p className="text-xs mt-1 text-gray-500">
+                    {analytics.daysSinceLast === null ? 'No leads pushed yet' :
+                     analytics.daysSinceLast > 7 ? 'Inactive — time to scrape more' :
+                     analytics.daysSinceLast > 2 ? 'Pipeline cooling off' :
+                     'Active outreach'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background:'rgba(239,68,68,0.15)', color:'#ef4444' }}>
+                  <Flame className="w-5 h-5"/>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Hot %</p>
+                  <p className="font-display text-3xl text-white leading-none mt-0.5">
+                    {Math.round((analytics.heatCounts.hot / analytics.heatTotal) * 100)}%
+                  </p>
+                  <p className="text-xs mt-1 text-gray-500">
+                    {analytics.heatCounts.hot} of {analytics.heatTotal} have no website
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 7-day activity sparkline */}
+            <div className="neon-card p-5 mb-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-blue-400"/>
+                  <p className="text-white font-bold text-sm">Daily Push Activity</p>
+                  <span className="text-gray-600 text-xs">— last 7 days</span>
+                </div>
+                <p className="text-gray-500 text-xs">{analytics.timeline.reduce((s,d)=>s+d.count,0)} total</p>
+              </div>
+              <div className="flex items-end gap-2 h-32">
+                {analytics.timeline.map((d, i) => {
+                  const height = d.count === 0 ? 4 : Math.max(8, (d.count / analytics.peakDay) * 100);
+                  const isToday = i === analytics.timeline.length - 1;
+                  return (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1.5 group">
+                      <div className="w-full flex items-end justify-center" style={{ height: '100%' }}>
+                        <motion.div
+                          initial={{ height: 0 }}
+                          animate={{ height: `${height}%` }}
+                          transition={{ delay: i * 0.05, type: 'spring', stiffness: 80 }}
+                          className="w-full rounded-t-lg relative"
+                          style={{
+                            background: isToday
+                              ? 'linear-gradient(180deg,#3b82f6,#8b5cf6)'
+                              : d.count === 0
+                                ? 'rgba(255,255,255,0.04)'
+                                : 'linear-gradient(180deg,rgba(59,130,246,0.5),rgba(139,92,246,0.3))',
+                            boxShadow: isToday ? '0 0 16px rgba(59,130,246,0.4)' : 'none',
+                          }}
+                        >
+                          <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            {d.count}
+                          </span>
+                        </motion.div>
+                      </div>
+                      <p className={`text-[10px] font-bold ${isToday ? 'text-blue-400' : 'text-gray-600'}`}>
+                        {d.label}
+                      </p>
+                      <p className={`text-[9px] tabular-nums ${isToday ? 'text-white' : 'text-gray-700'}`}>
+                        {d.count}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Two-column row: Heat breakdown + Top cities */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              {/* Heat distribution */}
+              <div className="neon-card p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <Target className="w-4 h-4 text-red-400"/>
+                  <p className="text-white font-bold text-sm">Pipeline Heat — All Time</p>
+                </div>
+                {/* Stacked bar */}
+                <div className="flex h-3 rounded-full overflow-hidden mb-4 bg-white/[0.04]">
+                  <motion.div initial={{width:0}} animate={{width:`${(analytics.heatCounts.hot/analytics.heatTotal)*100}%`}}
+                    transition={{ duration: 0.6 }}
+                    style={{ background:'linear-gradient(90deg,#ef4444,#f97316)' }}/>
+                  <motion.div initial={{width:0}} animate={{width:`${(analytics.heatCounts.warm/analytics.heatTotal)*100}%`}}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    style={{ background:'linear-gradient(90deg,#eab308,#facc15)' }}/>
+                  <motion.div initial={{width:0}} animate={{width:`${(analytics.heatCounts.review/analytics.heatTotal)*100}%`}}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    style={{ background:'rgba(255,255,255,0.15)' }}/>
+                </div>
+                {/* Legend */}
+                <div className="space-y-2">
+                  {[
+                    { key:'hot' as const,    label:'No Website',    sub:'Easiest to close', color:'#ef4444' },
+                    { key:'warm' as const,   label:'Bad Website',   sub:'Cheap site builder', color:'#eab308' },
+                    { key:'review' as const, label:'Has Website',   sub:'Lower priority', color:'#9ca3af' },
+                  ].map(row => {
+                    const c = analytics.heatCounts[row.key];
+                    const pct = Math.round((c / analytics.heatTotal) * 100);
+                    return (
+                      <div key={row.key} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full" style={{ background: row.color }}/>
+                          <span className="text-white text-xs font-semibold">{row.label}</span>
+                          <span className="text-gray-600 text-[10px]">— {row.sub}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="font-display text-lg text-white tabular-nums">{c}</span>
+                          <span className="text-gray-500 text-xs ml-2 tabular-nums">{pct}%</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Top cities */}
+              <div className="neon-card p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <MapPin className="w-4 h-4 text-blue-400"/>
+                  <p className="text-white font-bold text-sm">Top Cities Targeted</p>
+                </div>
+                {analytics.topCities.length === 0 ? (
+                  <p className="text-gray-600 text-xs py-6 text-center">No data yet — push some leads to see top cities</p>
+                ) : (
+                  <div className="space-y-3">
+                    {analytics.topCities.map((c, i) => (
+                      <div key={c.city} className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-white text-xs font-semibold truncate">
+                            <span className="text-gray-600 text-[10px] mr-2">#{i+1}</span>
+                            {c.city}
+                          </span>
+                          <span className="font-display text-sm text-white tabular-nums">{c.count}</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(c.count / analytics.peakCity) * 100}%` }}
+                            transition={{ delay: i * 0.05 }}
+                            className="h-full rounded-full"
+                            style={{ background:'linear-gradient(90deg,#3b82f6,#8b5cf6)' }}/>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Two-column row: Top niches + Recent activity */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              {/* Top niches */}
+              <div className="neon-card p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <Briefcase className="w-4 h-4 text-purple-400"/>
+                  <p className="text-white font-bold text-sm">Top Niches Scraped</p>
+                </div>
+                {analytics.topNiches.length === 0 ? (
+                  <p className="text-gray-600 text-xs py-6 text-center">
+                    No niche data on existing leads. New pushes will populate this panel.
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {analytics.topNiches.map((n, i) => (
+                      <div key={n.niche} className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-white text-xs font-semibold truncate">
+                            <span className="text-gray-600 text-[10px] mr-2">#{i+1}</span>
+                            {n.niche}
+                          </span>
+                          <span className="font-display text-sm text-white tabular-nums">{n.count}</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(n.count / analytics.peakNiche) * 100}%` }}
+                            transition={{ delay: i * 0.05 }}
+                            className="h-full rounded-full"
+                            style={{ background:'linear-gradient(90deg,#a855f7,#ec4899)' }}/>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Recent activity feed */}
+              <div className="neon-card p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Send className="w-4 h-4 text-green-400"/>
+                    <p className="text-white font-bold text-sm">Recent Pushes</p>
+                  </div>
+                  <span className="text-gray-600 text-[10px]">last 12</span>
+                </div>
+                {analytics.recent.length === 0 ? (
+                  <p className="text-gray-600 text-xs py-6 text-center">No activity yet</p>
+                ) : (
+                  <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                    {analytics.recent.map((l, i) => {
+                      const t = l.sentAt?.toDate?.()?.getTime() ?? 0;
+                      const heatColor = l.heat === 'hot' ? '#ef4444' : l.heat === 'warm' ? '#eab308' : '#9ca3af';
+                      return (
+                        <motion.div key={l.id}
+                          initial={{ opacity:0, x:-8 }} animate={{ opacity:1, x:0 }}
+                          transition={{ delay: i * 0.02 }}
+                          className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white/[0.03] transition-colors">
+                          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: heatColor }}/>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-white text-xs font-semibold truncate">{l.name || 'Unknown'}</p>
+                            <p className="text-gray-600 text-[10px]">
+                              {l.city || '—'}{l.niche ? ` · ${l.niche}` : ''}
+                            </p>
+                          </div>
+                          <span className="text-gray-700 text-[10px] flex-shrink-0 tabular-nums">
+                            {t ? fmtRelTime(t) : '—'}
+                          </span>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Search form */}
         <div className="neon-card p-6 mb-6">
@@ -438,7 +853,8 @@ export default function LeadFinder() {
               <p><code className="text-blue-300">OUTSCRAPER_API_KEY</code> — from app.outscraper.com → Settings → API Key</p>
               <p><code className="text-blue-300">HIGHLEVEL_API_KEY</code> — from HighLevel → Settings → Integrations → API Keys</p>
               <p><code className="text-blue-300">HIGHLEVEL_LOCATION_ID</code> — same page, copy Location ID</p>
-              <p><code className="text-blue-300">NEXT_PUBLIC_ADMIN_PASS</code> — password to access this page (default: vcv2025)</p>
+              <p><code className="text-blue-300">ADMIN_PASSWORD</code> — server-only password gating this admin page</p>
+              <p><code className="text-blue-300">ADMIN_SESSION_SECRET</code> — 32+ random chars, signs the session cookie</p>
             </div>
           </div>
         </div>
