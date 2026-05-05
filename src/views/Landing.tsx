@@ -44,9 +44,17 @@ export default function Landing() {
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
+      // Save to Firestore so it shows in the admin dashboard
       await addDoc(collection(db, 'leads'), {
-        ...data, createdAt: serverTimestamp(), status: 'new',
+        ...data, createdAt: serverTimestamp(), status: 'new', source: 'Free Demo',
       });
+      // Fire-and-forget email notification — don't block the success state on email
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, source: 'Free Demo Request' }),
+      }).catch(err => console.error('[free-demo] email notify failed', err));
+
       setIsSuccess(true);
       reset();
     } catch (err) {

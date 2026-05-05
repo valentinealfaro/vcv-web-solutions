@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { db } from '../../firebase';
 import { collection, addDoc, getDocs, serverTimestamp } from 'firebase/firestore';
+import AdminTabs from '../../components/admin/AdminTabs';
 
 /* ── Types ── */
 interface Lead {
@@ -284,6 +285,8 @@ export default function LeadFinder() {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent"/>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+          <AdminTabs active="lead-finder"/>
+
           {/* Title row */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
             <div>

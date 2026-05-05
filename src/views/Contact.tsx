@@ -291,16 +291,16 @@ export default function Contact() {
     }
     setStatus('loading');
     try {
-      const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      // Save to Firestore so the lead shows up in /admin/leads
+      const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
+      const { db } = await import('../firebase');
+      await addDoc(collection(db, 'leads'), {
+        ...form, createdAt: serverTimestamp(), status: 'new', source: 'Contact',
+      });
+      // Email info@vcvservices.com via Resend
+      const res = await fetch('/api/send-email', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          service_id: 'service_ryxz9tk', template_id: 'template_m1kkbm5', user_id: 'QhgVuWgPA8Rj-BGpQ',
-          template_params: {
-            from_name: form.name, reply_to: form.email,
-            phone: form.phone || 'Not provided', business: form.business || 'Not provided',
-            message: form.message,
-          },
-        }),
+        body: JSON.stringify({ ...form, source: 'Contact Form' }),
       });
       if (!res.ok) throw new Error('Failed to send');
       setStatus('success'); setForm({ name: '', email: '', phone: '', business: '', message: '' });
