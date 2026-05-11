@@ -1,7 +1,7 @@
-/* polished v2 */
+/* polished v2 · why-bento v3 */
 'use client';
-import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
+import { motion, useScroll, useTransform, useMotionValue, useSpring, type MotionValue } from 'motion/react';
 import Link from 'next/link';
 import {
   Phone, Mail, MapPin, Clock, ChevronDown, Calendar, Check,
@@ -9,6 +9,30 @@ import {
   Smile, Heart, Users, CreditCard, Activity, Award, Stethoscope,
   Camera, Trophy,
 } from 'lucide-react';
+
+/* ─── 3D Tilt Card · cursor-tracked rotation ─── */
+function TiltCard({ children, className, style }: { children: ReactNode; className?: string; style?: React.CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const rx = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 });
+  const ry = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 });
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top) / r.height;
+    (ry as MotionValue<number>).set((px - 0.5) * 14);
+    (rx as MotionValue<number>).set((0.5 - py) * 14);
+  };
+  const onLeave = () => { (rx as MotionValue<number>).set(0); (ry as MotionValue<number>).set(0); };
+  return (
+    <motion.div
+      ref={ref} onMouseMove={onMove} onMouseLeave={onLeave}
+      className={className}
+      style={{ ...style, transformStyle: 'preserve-3d', rotateX: rx, rotateY: ry }}>
+      {children}
+    </motion.div>
+  );
+}
 
 const BIZ = {
   name:        'Cedar Creek Dental',
@@ -47,11 +71,28 @@ const SERVICES = [
   { icon: ShieldCheck, title: 'Sedation Dentistry',    desc: 'Nervous? We offer nitrous and oral sedation so the whole visit is relaxing.',       color: '#0ea5e9' },
 ];
 
+/* ─── Why-choose-us differentiators — BENTO with visuals ─── */
 const WHY = [
-  { icon: Heart,       title: 'Comfort First',         desc: 'Heated blankets, noise-canceling headphones, sedation options. Most patients say they actually look forward to visits.' },
-  { icon: Calendar,    title: 'On-Time Guarantee',     desc: 'Your appointment starts within 10 minutes of your scheduled time — or your next cleaning is free.' },
-  { icon: CreditCard,  title: 'Easy Insurance',        desc: 'We file every claim for you and explain your benefits before treatment. No bill surprises.' },
-  { icon: Award,       title: 'Trusted by Families',   desc: `${BIZ.patients} patients across ${BIZ.yearsServing} years — 4.9 stars on Google, generations seen by Dr. Halberg.` },
+  {
+    icon: Heart, title: 'Comfort First', stat: '★',
+    desc: 'Heated blankets, noise-canceling headphones, sedation options. Most patients say they actually look forward to visits.',
+    color: '#fb7185', colorDeep: '#be123c', span: 'lg:col-span-2', visual: 'stars',
+  },
+  {
+    icon: Calendar, title: 'On-Time Guarantee', stat: '< 10m',
+    desc: 'Your appointment starts within 10 minutes of your scheduled time — or your next cleaning is free.',
+    color: '#14b8a6', colorDeep: '#0f766e', span: 'lg:row-span-2', visual: 'clock',
+  },
+  {
+    icon: CreditCard, title: 'Easy Insurance', stat: '$0',
+    desc: 'We file every claim for you and explain your benefits before treatment. No bill surprises.',
+    color: '#d4a574', colorDeep: '#a16207', span: '', visual: 'price',
+  },
+  {
+    icon: Award, title: 'Trusted by Families', stat: `${BIZ.patients}`,
+    desc: `${BIZ.patients} patients across ${BIZ.yearsServing} years — 4.9 stars on Google, generations seen by Dr. Halberg.`,
+    color: '#7c3aed', colorDeep: '#5b21b6', span: '', visual: 'map',
+  },
 ];
 
 const METRICS = [
@@ -528,44 +569,183 @@ export default function DentistsTemplate() {
         </div>
       </section>
 
-      {/* WHY US */}
-      <section id="why" className="py-20 sm:py-24" style={{ background: BIZ.cream }}>
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
+      {/* ═══════ WHY CHOOSE US — BENTO with animated visuals ═══════ */}
+      <section id="why" className="py-20 sm:py-24 relative overflow-hidden"
+        style={{ background: `linear-gradient(135deg, #f0fdfa 0%, #fef3c7 30%, #fce7f3 60%, #f5f3ff 100%)` }}>
+        <motion.div
+          animate={{ x: ['0%','50%','0%'], y: ['0%','-30%','0%'] }}
+          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: `radial-gradient(circle, ${BIZ.mint}50, transparent 60%)`, filter: 'blur(80px)' }}/>
+        <motion.div
+          animate={{ x: ['0%','-40%','0%'], y: ['0%','30%','0%'] }}
+          transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -bottom-32 -left-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: `radial-gradient(circle, ${BIZ.gold}40, transparent 60%)`, filter: 'blur(80px)' }}/>
+        <motion.div
+          animate={{ x: ['-20%','20%','-20%'], y: ['10%','-10%','10%'] }}
+          transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-1/2 left-1/3 w-[400px] h-[400px] rounded-full pointer-events-none"
+          style={{ background: `radial-gradient(circle, ${BIZ.rose}40, transparent 60%)`, filter: 'blur(90px)' }}/>
+
+        <div className="max-w-7xl mx-auto px-4 relative">
+          <div className="text-center mb-14 max-w-2xl mx-auto">
             <p className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: BIZ.mintDeep }}>Why {BIZ.name}</p>
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-5 leading-[1.05]" style={{ color: BIZ.ink }}>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-5 leading-[1.05]" style={{ color: BIZ.ink, fontFamily: '"Playfair Display", serif' }}>
               Dentistry the Way It<br/>Should Have Always Been.
             </h2>
-            <p className="text-slate-600 text-lg leading-relaxed mb-6">
-              {BIZ.doctor} opened Cedar Creek Dental in {BIZ.established} on a simple idea: dentistry should feel like a calm visit to a friend, not a stressful trip to a sterile chain office. {BIZ.yearsServing} years later, that&apos;s still how every patient leaves.
-            </p>
-            <p className="text-slate-600 text-lg leading-relaxed mb-8">
-              We&apos;ve invested in modern technology (3D imaging, same-day crowns, intraoral cameras), comfort features (heated blankets, sedation, noise-canceling headphones), and most importantly — staff who actually listen. {BIZ.patients} patients later, we&apos;ve never had a single complaint we didn&apos;t resolve.
-            </p>
-            <a href="#book"
-              className="inline-flex items-center gap-2 text-white font-bold px-7 py-4 rounded-full hover:scale-105 transition-transform"
-              style={{ background: `linear-gradient(135deg, ${BIZ.mint}, ${BIZ.mintDeep})`, boxShadow: `0 8px 30px ${BIZ.mint}50` }}>
-              Book My First Visit <ArrowRight className="w-5 h-5"/>
-            </a>
+            <p className="text-slate-600 text-lg italic">{BIZ.doctor}. Modern tech, comforting visits, honest pricing — backed by {BIZ.patients} patients and {BIZ.yearsServing} years.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:auto-rows-[280px]" style={{ perspective: 1200 }}>
             {WHY.map((w, i) => {
               const Icon = w.icon;
               return (
                 <motion.div key={w.title}
-                  initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
-                  transition={{ delay: i*0.08 }}
-                  className="bg-white rounded-2xl p-6 shadow-sm">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
-                    style={{ background: `${BIZ.mint}15`, color: BIZ.mintDeep }}>
-                    <Icon className="w-6 h-6"/>
-                  </div>
-                  <h3 className="font-bold text-lg mb-2" style={{ color: BIZ.ink }}>{w.title}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{w.desc}</p>
+                  initial={{ opacity:0, y:40, scale:0.95 }} whileInView={{ opacity:1, y:0, scale:1 }} viewport={{ once:true }}
+                  transition={{ delay: i*0.1, type:'spring', stiffness:80 }}
+                  className={`relative ${w.span}`}>
+                  <TiltCard
+                    className="relative h-full rounded-3xl p-7 overflow-hidden cursor-pointer"
+                    style={{
+                      background: `linear-gradient(135deg, ${w.color}18 0%, ${w.color}08 40%, white 70%, ${w.color}22 100%)`,
+                      boxShadow: `0 16px 50px ${w.color}35, 0 4px 14px rgba(0,0,0,0.06), 0 0 0 1px ${w.color}40, inset 0 1px 0 rgba(255,255,255,0.6)`,
+                    }}>
+                    <div className="absolute top-0 left-0 right-0 h-1.5 rounded-t-3xl"
+                      style={{ background: `linear-gradient(90deg, ${w.color}, ${w.colorDeep}, ${w.color})` }}/>
+                    <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
+                      style={{ background: `linear-gradient(to top, ${w.color}30, transparent)` }}/>
+                    <motion.div
+                      animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.2, 1] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: i*0.5 }}
+                      className="absolute -top-20 -right-20 w-48 h-48 rounded-full pointer-events-none"
+                      style={{ background: `radial-gradient(circle, ${w.color}40, transparent 70%)`, filter: 'blur(40px)' }}/>
+                    <span className="absolute top-5 right-5 text-[80px] leading-none font-black opacity-[0.08] tracking-tighter pointer-events-none"
+                      style={{ color: w.color, fontFamily: '"Playfair Display", serif' }}>
+                      {String(i+1).padStart(2,'0')}
+                    </span>
+
+                    {w.visual === 'clock' && (
+                      <div className="absolute -bottom-6 -right-6 w-44 h-44 pointer-events-none">
+                        <div className="relative w-full h-full rounded-full border-[3px] flex items-center justify-center"
+                          style={{ borderColor: `${w.color}30`, background: `radial-gradient(circle, white, ${w.color}10)` }}>
+                          {[...Array(12)].map((_, t) => (
+                            <div key={t} className="absolute w-0.5 h-2 rounded-full"
+                              style={{ background: t % 3 === 0 ? w.color : `${w.color}50`, top: '8%', left: '50%', transformOrigin: '50% 540%', transform: `translateX(-50%) rotate(${t*30}deg)` }}/>
+                          ))}
+                          <motion.div animate={{ rotate: 360 }} transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                            className="absolute w-1 h-[40%] rounded-full origin-bottom top-[10%] left-1/2 -translate-x-1/2"
+                            style={{ background: w.color, boxShadow: `0 0 10px ${w.color}` }}/>
+                          <motion.div animate={{ rotate: 360 }} transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
+                            className="absolute w-1.5 h-[28%] rounded-full origin-bottom top-[22%] left-1/2 -translate-x-1/2"
+                            style={{ background: BIZ.ink }}/>
+                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white" style={{ background: w.color }}/>
+                        </div>
+                      </div>
+                    )}
+
+                    {w.visual === 'map' && (
+                      <div className="absolute -bottom-4 -right-4 w-52 h-52 pointer-events-none">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          {[0.4, 0.6, 0.85].map((s, ri) => (
+                            <motion.div key={ri}
+                              animate={{ scale: [s, s*1.15, s], opacity: [0.4, 0.1, 0.4] }}
+                              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: ri*0.5 }}
+                              className="absolute inset-0 rounded-full border-2"
+                              style={{ borderColor: `${w.color}40` }}/>
+                          ))}
+                          <div className="relative w-4 h-4 rounded-full" style={{ background: w.color, boxShadow: `0 0 16px ${w.color}` }}>
+                            <motion.div animate={{ scale:[1,2.2,1], opacity:[0.6,0,0.6] }} transition={{ duration:2, repeat:Infinity }}
+                              className="absolute inset-0 rounded-full" style={{ background: w.color }}/>
+                          </div>
+                        </div>
+                        {[
+                          { city:'Kids',   top:'15%', left:'15%' },
+                          { city:'Adults', top:'70%', left:'10%' },
+                          { city:'Teens',  top:'20%', left:'70%' },
+                          { city:'Seniors',top:'68%', left:'68%' },
+                        ].map((c, ci) => (
+                          <motion.span key={c.city}
+                            animate={{ y:[0,-4,0] }}
+                            transition={{ duration: 3+ci*0.3, repeat: Infinity, ease: 'easeInOut', delay: ci*0.5 }}
+                            className="absolute text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white shadow-md"
+                            style={{ top: c.top, left: c.left, color: w.color, border: `1px solid ${w.color}30` }}>
+                            <Smile className="w-2.5 h-2.5 inline mr-0.5"/>{c.city}
+                          </motion.span>
+                        ))}
+                      </div>
+                    )}
+
+                    {w.visual === 'stars' && (
+                      <div className="absolute bottom-5 right-5 flex gap-1 pointer-events-none">
+                        {[...Array(5)].map((_, si) => (
+                          <motion.div key={si}
+                            initial={{ scale: 0, rotate: -30 }}
+                            whileInView={{ scale: 1, rotate: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.4 + si*0.12, type: 'spring', stiffness: 200 }}>
+                            <Heart className="w-7 h-7 fill-current" style={{ color: w.color, filter: `drop-shadow(0 2px 6px ${w.color}66)` }}/>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+
+                    {w.visual === 'price' && (
+                      <div className="absolute bottom-5 right-5 pointer-events-none">
+                        <motion.div
+                          animate={{ rotate: [-5, 5, -5] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                          className="relative px-4 py-2 rounded-xl text-white font-black text-sm tracking-tight"
+                          style={{ background: `linear-gradient(135deg, ${w.color}, ${w.colorDeep})`, boxShadow: `0 8px 20px ${w.color}55` }}>
+                          In-Network
+                          <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-3 h-3 rotate-45" style={{ background: w.color }}/>
+                        </motion.div>
+                        <div className="flex gap-1 mt-2 justify-end">
+                          {['Filed','Verified','Paid'].map((l, li) => (
+                            <motion.span key={l}
+                              initial={{ opacity: 0, y: 10 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: 0.5 + li*0.15 }}
+                              className="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                              style={{ background: 'white', color: w.color, border: `1px solid ${w.color}30` }}>
+                              <Check className="w-2.5 h-2.5"/>{l}
+                            </motion.span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="relative" style={{ transform: 'translateZ(30px)' }}>
+                      <motion.div
+                        whileHover={{ rotate: [0, -8, 8, 0], scale: 1.1 }}
+                        transition={{ duration: 0.5 }}
+                        className="w-14 h-14 rounded-full flex items-center justify-center mb-4 text-white"
+                        style={{ background: `linear-gradient(135deg, ${w.color}, ${w.colorDeep})`, boxShadow: `0 8px 24px ${w.color}55` }}>
+                        <Icon className="w-7 h-7"/>
+                      </motion.div>
+                      <div className="flex items-baseline gap-3 mb-2">
+                        <h3 className="text-2xl font-black tracking-tight" style={{ color: BIZ.ink, fontFamily: '"Playfair Display", serif' }}>{w.title}</h3>
+                        <span className="text-xs font-black px-2 py-0.5 rounded-full"
+                          style={{ background: `${w.color}15`, color: w.color }}>{w.stat}</span>
+                      </div>
+                      <p className="text-slate-600 text-sm leading-relaxed max-w-[28ch]">{w.desc}</p>
+                    </div>
+                  </TiltCard>
                 </motion.div>
               );
             })}
+          </div>
+
+          <div className="mt-12 text-center">
+            <a href="#book"
+              className="inline-flex items-center gap-2 text-white font-bold px-8 py-4 rounded-full hover:scale-105 transition-transform text-lg"
+              style={{ background: `linear-gradient(135deg, ${BIZ.mint}, ${BIZ.mintDeep})`, boxShadow: `0 12px 30px ${BIZ.mint}55` }}>
+              Book My First Visit <ArrowRight className="w-5 h-5"/>
+            </a>
+            <p className="text-slate-500 text-sm mt-3">
+              {BIZ.patients} patients · {BIZ.reviewCount} reviews · {BIZ.rating}★ on Google
+            </p>
           </div>
         </div>
       </section>

@@ -1,7 +1,7 @@
-/* polished v2 */
+/* polished v2 · why-bento v3 */
 'use client';
-import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
+import { motion, useScroll, useTransform, useMotionValue, useSpring, type MotionValue } from 'motion/react';
 import Link from 'next/link';
 import {
   Phone, Mail, MapPin, Clock, Zap, ShieldCheck, ChevronDown, Calendar,
@@ -9,6 +9,30 @@ import {
   Lightbulb, Power, Cpu, Cable, Star, Home as HomeIcon, MessageCircle,
   FileText, Award, Camera, Trophy, Users,
 } from 'lucide-react';
+
+/* ─── 3D Tilt Card · cursor-tracked rotation ─── */
+function TiltCard({ children, className, style }: { children: ReactNode; className?: string; style?: React.CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const rx = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 });
+  const ry = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 });
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top) / r.height;
+    (ry as MotionValue<number>).set((px - 0.5) * 14);
+    (rx as MotionValue<number>).set((0.5 - py) * 14);
+  };
+  const onLeave = () => { (rx as MotionValue<number>).set(0); (ry as MotionValue<number>).set(0); };
+  return (
+    <motion.div
+      ref={ref} onMouseMove={onMove} onMouseLeave={onLeave}
+      className={className}
+      style={{ ...style, transformStyle: 'preserve-3d', rotateX: rx, rotateY: ry }}>
+      {children}
+    </motion.div>
+  );
+}
 
 const BIZ = {
   name:        'Volt Brothers Electric',
@@ -46,11 +70,28 @@ const SERVICES = [
   { icon: Cable,     title: 'Whole-Home Rewire',       desc: 'Knob-and-tube or aluminum wiring? Full rewire with zero-damage routing.',     color: '#7c3aed' },
 ];
 
+/* ─── Why-choose-us differentiators — BENTO with visuals ─── */
 const WHY = [
-  { icon: ShieldCheck, title: 'Code-Compliant, Every Time', desc: 'Every job permitted, inspected, and signed off. We don\'t cut corners on safety — period.' },
-  { icon: Clock,       title: 'Same-Day Service',           desc: 'Most repairs and installs done the day you call. Emergencies in under 90 min, 24/7.' },
-  { icon: FileText,    title: 'Upfront Flat-Rate Pricing',  desc: 'Diagnostic is free with any repair. Written quote before we touch a wire. No hourly meter.' },
-  { icon: BadgeCheck,  title: 'Lifetime Workmanship Warranty', desc: 'If wiring we installed ever fails, we come back free for as long as you own the home.' },
+  {
+    icon: ShieldCheck, title: 'Code-Compliant, Every Time', stat: 'NEC',
+    desc: 'Every job permitted, inspected, and signed off. We don\'t cut corners on safety — period.',
+    color: '#dc2626', colorDeep: '#991b1b', span: 'lg:col-span-2', visual: 'stars',
+  },
+  {
+    icon: Clock, title: 'Same-Day Service', stat: '< 90m',
+    desc: 'Most repairs and installs done the day you call. Emergencies in under 90 min, 24/7.',
+    color: '#fbbf24', colorDeep: '#b45309', span: 'lg:row-span-2', visual: 'clock',
+  },
+  {
+    icon: FileText, title: 'Upfront Flat-Rate Pricing', stat: '$0',
+    desc: 'Diagnostic is free with any repair. Written quote before we touch a wire. No hourly meter.',
+    color: '#06b6d4', colorDeep: '#0e7490', span: '', visual: 'price',
+  },
+  {
+    icon: BadgeCheck, title: 'Lifetime Workmanship Warranty', stat: '∞',
+    desc: 'If wiring we installed ever fails, we come back free for as long as you own the home.',
+    color: '#10b981', colorDeep: '#047857', span: '', visual: 'map',
+  },
 ];
 
 const METRICS = [
@@ -557,44 +598,186 @@ export default function ElectriciansTemplate() {
         </div>
       </section>
 
-      {/* WHY US */}
-      <section id="why" className="py-20 sm:py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
+      {/* ═══════ WHY CHOOSE US — BENTO with animated visuals ═══════ */}
+      <section id="why" className="py-20 sm:py-24 relative overflow-hidden"
+        style={{ background: `linear-gradient(135deg, #fef3c7 0%, #fee2e2 30%, #ecfeff 60%, #ecfdf5 100%)` }}>
+        {/* Drifting glow blobs */}
+        <motion.div
+          animate={{ x: ['0%','50%','0%'], y: ['0%','-30%','0%'] }}
+          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: `radial-gradient(circle, ${BIZ.primary}50, transparent 60%)`, filter: 'blur(80px)' }}/>
+        <motion.div
+          animate={{ x: ['0%','-40%','0%'], y: ['0%','30%','0%'] }}
+          transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -bottom-32 -left-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: `radial-gradient(circle, ${BIZ.alert}30, transparent 60%)`, filter: 'blur(80px)' }}/>
+        <motion.div
+          animate={{ x: ['-20%','20%','-20%'], y: ['10%','-10%','10%'] }}
+          transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-1/2 left-1/3 w-[400px] h-[400px] rounded-full pointer-events-none"
+          style={{ background: `radial-gradient(circle, #06b6d440, transparent 60%)`, filter: 'blur(90px)' }}/>
+
+        <div className="max-w-7xl mx-auto px-4 relative">
+          <div className="text-center mb-14 max-w-2xl mx-auto">
             <p className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: BIZ.deep }}>Why {BIZ.name}</p>
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-5 leading-[1.05]" style={{ color: BIZ.navy }}>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-5 leading-[1.05]" style={{ color: BIZ.navy, fontFamily: '"Playfair Display", serif' }}>
               {BIZ.yearsServing} Years of Wiring.<br/>Zero Code Violations.
             </h2>
-            <p className="text-slate-600 text-lg leading-relaxed mb-6">
-              We started Volt Brothers in {BIZ.established} after years watching homeowners get hurt by &ldquo;handyman&rdquo; electrical work that wasn&apos;t permitted, wasn&apos;t inspected, and wasn&apos;t safe. We do it the right way every time.
-            </p>
-            <p className="text-slate-600 text-lg leading-relaxed mb-8">
-              Every tech on our team is a W-2 employee — drug-tested, background-checked, and trained on the latest NEC code. Diagnostics are free with any repair. Flat-rate written quotes before we touch a wire. And every install we&apos;ve done is still working under our lifetime warranty.
-            </p>
-            <a href="#book"
-              className="inline-flex items-center gap-2 text-slate-900 font-bold px-7 py-4 rounded-xl hover:scale-105 transition-transform"
-              style={{ background: `linear-gradient(135deg, ${BIZ.primary}, ${BIZ.deep})`, boxShadow: `0 8px 30px ${BIZ.primary}50` }}>
-              Schedule a Free Estimate <ArrowRight className="w-5 h-5"/>
-            </a>
+            <p className="text-slate-600 text-lg">W-2 master electricians, paid hourly not by commission, permits pulled on every job, lifetime workmanship warranty.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:auto-rows-[280px]" style={{ perspective: 1200 }}>
             {WHY.map((w, i) => {
               const Icon = w.icon;
               return (
                 <motion.div key={w.title}
-                  initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
-                  transition={{ delay: i*0.08 }}
-                  className="bg-white rounded-2xl p-6 shadow-sm">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                    style={{ background: BIZ.navy, color: BIZ.primary }}>
-                    <Icon className="w-6 h-6"/>
-                  </div>
-                  <h3 className="font-bold text-lg mb-2" style={{ color: BIZ.navy }}>{w.title}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{w.desc}</p>
+                  initial={{ opacity:0, y:40, scale:0.95 }} whileInView={{ opacity:1, y:0, scale:1 }} viewport={{ once:true }}
+                  transition={{ delay: i*0.1, type:'spring', stiffness:80 }}
+                  className={`relative ${w.span}`}>
+                  <TiltCard
+                    className="relative h-full rounded-3xl p-7 overflow-hidden cursor-pointer"
+                    style={{
+                      background: `linear-gradient(135deg, ${w.color}18 0%, ${w.color}08 40%, white 70%, ${w.color}22 100%)`,
+                      boxShadow: `0 16px 50px ${w.color}35, 0 4px 14px rgba(0,0,0,0.06), 0 0 0 1px ${w.color}40, inset 0 1px 0 rgba(255,255,255,0.6)`,
+                    }}>
+                    <div className="absolute top-0 left-0 right-0 h-1.5 rounded-t-3xl"
+                      style={{ background: `linear-gradient(90deg, ${w.color}, ${w.colorDeep}, ${w.color})` }}/>
+                    <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
+                      style={{ background: `linear-gradient(to top, ${w.color}30, transparent)` }}/>
+                    <motion.div
+                      animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.2, 1] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: i*0.5 }}
+                      className="absolute -top-20 -right-20 w-48 h-48 rounded-full pointer-events-none"
+                      style={{ background: `radial-gradient(circle, ${w.color}40, transparent 70%)`, filter: 'blur(40px)' }}/>
+                    <span className="absolute top-5 right-5 text-[80px] leading-none font-black opacity-[0.08] tracking-tighter pointer-events-none"
+                      style={{ color: w.color, fontFamily: '"Playfair Display", serif' }}>
+                      {String(i+1).padStart(2,'0')}
+                    </span>
+
+                    {/* Per-card visual */}
+                    {w.visual === 'clock' && (
+                      <div className="absolute -bottom-6 -right-6 w-44 h-44 pointer-events-none">
+                        <div className="relative w-full h-full rounded-full border-[3px] flex items-center justify-center"
+                          style={{ borderColor: `${w.color}30`, background: `radial-gradient(circle, white, ${w.color}10)` }}>
+                          {[...Array(12)].map((_, t) => (
+                            <div key={t} className="absolute w-0.5 h-2 rounded-full"
+                              style={{ background: t % 3 === 0 ? w.color : `${w.color}50`, top: '8%', left: '50%', transformOrigin: '50% 540%', transform: `translateX(-50%) rotate(${t*30}deg)` }}/>
+                          ))}
+                          <motion.div animate={{ rotate: 360 }} transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                            className="absolute w-1 h-[40%] rounded-full origin-bottom top-[10%] left-1/2 -translate-x-1/2"
+                            style={{ background: w.color, boxShadow: `0 0 10px ${w.color}` }}/>
+                          <motion.div animate={{ rotate: 360 }} transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
+                            className="absolute w-1.5 h-[28%] rounded-full origin-bottom top-[22%] left-1/2 -translate-x-1/2"
+                            style={{ background: BIZ.navy }}/>
+                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white" style={{ background: w.color }}/>
+                        </div>
+                      </div>
+                    )}
+
+                    {w.visual === 'map' && (
+                      <div className="absolute -bottom-4 -right-4 w-52 h-52 pointer-events-none">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          {[0.4, 0.6, 0.85].map((s, ri) => (
+                            <motion.div key={ri}
+                              animate={{ scale: [s, s*1.15, s], opacity: [0.4, 0.1, 0.4] }}
+                              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: ri*0.5 }}
+                              className="absolute inset-0 rounded-full border-2"
+                              style={{ borderColor: `${w.color}40` }}/>
+                          ))}
+                          <div className="relative w-4 h-4 rounded-full" style={{ background: w.color, boxShadow: `0 0 16px ${w.color}` }}>
+                            <motion.div animate={{ scale:[1,2.2,1], opacity:[0.6,0,0.6] }} transition={{ duration:2, repeat:Infinity }}
+                              className="absolute inset-0 rounded-full" style={{ background: w.color }}/>
+                          </div>
+                        </div>
+                        {[
+                          { city:'5 Year', top:'15%', left:'15%' },
+                          { city:'10 Year',top:'70%', left:'10%' },
+                          { city:'Lifetime',top:'20%', left:'68%' },
+                          { city:'Always', top:'68%', left:'72%' },
+                        ].map((c, ci) => (
+                          <motion.span key={c.city}
+                            animate={{ y:[0,-4,0] }}
+                            transition={{ duration: 3+ci*0.3, repeat: Infinity, ease: 'easeInOut', delay: ci*0.5 }}
+                            className="absolute text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white shadow-md"
+                            style={{ top: c.top, left: c.left, color: w.color, border: `1px solid ${w.color}30` }}>
+                            <BadgeCheck className="w-2.5 h-2.5 inline mr-0.5"/>{c.city}
+                          </motion.span>
+                        ))}
+                      </div>
+                    )}
+
+                    {w.visual === 'stars' && (
+                      <div className="absolute bottom-5 right-5 flex gap-1 pointer-events-none">
+                        {[...Array(5)].map((_, si) => (
+                          <motion.div key={si}
+                            initial={{ scale: 0, rotate: -30 }}
+                            whileInView={{ scale: 1, rotate: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.4 + si*0.12, type: 'spring', stiffness: 200 }}>
+                            <ShieldCheck className="w-7 h-7" style={{ color: w.color, filter: `drop-shadow(0 2px 6px ${w.color}66)` }}/>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+
+                    {w.visual === 'price' && (
+                      <div className="absolute bottom-5 right-5 pointer-events-none">
+                        <motion.div
+                          animate={{ rotate: [-5, 5, -5] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                          className="relative px-4 py-2 rounded-xl text-white font-black text-sm tracking-tight"
+                          style={{ background: `linear-gradient(135deg, ${w.color}, ${w.colorDeep})`, boxShadow: `0 8px 20px ${w.color}55` }}>
+                          Free Diag
+                          <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-3 h-3 rotate-45" style={{ background: w.color }}/>
+                        </motion.div>
+                        <div className="flex gap-1 mt-2 justify-end">
+                          {['Quote','Permit','Done'].map((l, li) => (
+                            <motion.span key={l}
+                              initial={{ opacity: 0, y: 10 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: 0.5 + li*0.15 }}
+                              className="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                              style={{ background: 'white', color: w.color, border: `1px solid ${w.color}30` }}>
+                              <Check className="w-2.5 h-2.5"/>{l}
+                            </motion.span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className="relative" style={{ transform: 'translateZ(30px)' }}>
+                      <motion.div
+                        whileHover={{ rotate: [0, -8, 8, 0], scale: 1.1 }}
+                        transition={{ duration: 0.5 }}
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 text-white"
+                        style={{ background: `linear-gradient(135deg, ${w.color}, ${w.colorDeep})`, boxShadow: `0 8px 24px ${w.color}55` }}>
+                        <Icon className="w-7 h-7"/>
+                      </motion.div>
+                      <div className="flex items-baseline gap-3 mb-2">
+                        <h3 className="text-2xl font-black tracking-tight" style={{ color: BIZ.navy, fontFamily: '"Playfair Display", serif' }}>{w.title}</h3>
+                        <span className="text-xs font-black px-2 py-0.5 rounded-full"
+                          style={{ background: `${w.color}15`, color: w.color }}>{w.stat}</span>
+                      </div>
+                      <p className="text-slate-600 text-sm leading-relaxed max-w-[28ch]">{w.desc}</p>
+                    </div>
+                  </TiltCard>
                 </motion.div>
               );
             })}
+          </div>
+
+          <div className="mt-12 text-center">
+            <a href="#book"
+              className="inline-flex items-center gap-2 text-slate-900 font-bold px-8 py-4 rounded-xl hover:scale-105 transition-transform text-lg"
+              style={{ background: `linear-gradient(135deg, ${BIZ.primary}, ${BIZ.deep})`, boxShadow: `0 12px 30px ${BIZ.primary}55` }}>
+              Schedule a Free Estimate <ArrowRight className="w-5 h-5"/>
+            </a>
+            <p className="text-slate-500 text-sm mt-3">
+              {BIZ.jobs} jobs · {BIZ.reviewCount} reviews · {BIZ.rating}★ on Google
+            </p>
           </div>
         </div>
       </section>

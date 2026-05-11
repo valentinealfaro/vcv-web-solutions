@@ -1,7 +1,7 @@
-/* polished v2 */
+/* polished v2 · why-bento v3 */
 'use client';
-import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
+import { motion, useScroll, useTransform, useMotionValue, useSpring, type MotionValue } from 'motion/react';
 import Link from 'next/link';
 import {
   Phone, Mail, MapPin, Clock, ChevronDown, Calendar, Check,
@@ -9,6 +9,30 @@ import {
   Leaf, Trees, Sprout, Droplets, Sun, Snowflake, Award, Scissors,
   Camera, Trophy, Users,
 } from 'lucide-react';
+
+/* ─── 3D Tilt Card · cursor-tracked rotation ─── */
+function TiltCard({ children, className, style }: { children: ReactNode; className?: string; style?: React.CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const rx = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 });
+  const ry = useSpring(useMotionValue(0), { stiffness: 220, damping: 18 });
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top) / r.height;
+    (ry as MotionValue<number>).set((px - 0.5) * 14);
+    (rx as MotionValue<number>).set((0.5 - py) * 14);
+  };
+  const onLeave = () => { (rx as MotionValue<number>).set(0); (ry as MotionValue<number>).set(0); };
+  return (
+    <motion.div
+      ref={ref} onMouseMove={onMove} onMouseLeave={onLeave}
+      className={className}
+      style={{ ...style, transformStyle: 'preserve-3d', rotateX: rx, rotateY: ry }}>
+      {children}
+    </motion.div>
+  );
+}
 
 const BIZ = {
   name:        'Greenline Lawn & Landscape',
@@ -44,11 +68,28 @@ const SERVICES = [
   { icon: Sun,      title: 'Hardscape & Patios',     desc: 'Paver patios, retaining walls, fire pits, and walkways. Built to last decades.',  color: '#a16207' },
 ];
 
+/* ─── Why-choose-us differentiators — BENTO with visuals ─── */
 const WHY = [
-  { icon: ShieldCheck, title: 'Same Crew Every Visit',     desc: 'You see the same faces every week. They learn your yard, your dog, and your preferences.' },
-  { icon: BadgeCheck,  title: 'Damage-Free Guarantee',     desc: 'If we damage anything — sprinkler head, fence, plant — we replace it free. Period.' },
-  { icon: Calendar,    title: 'Show Up When We Say',       desc: 'Text alerts when crew is 30 min out. If we miss a visit, the next one is on us.' },
-  { icon: Award,       title: 'Owner-Trained Foremen',     desc: 'Every foreman has 5+ years with us. No revolving-door subcontractors. Ever.' },
+  {
+    icon: ShieldCheck, title: 'Same Crew Every Visit', stat: '★',
+    desc: 'You see the same faces every week. They learn your yard, your dog, and your preferences.',
+    color: '#166534', colorDeep: '#14532d', span: 'lg:col-span-2', visual: 'stars',
+  },
+  {
+    icon: BadgeCheck, title: 'Damage-Free Guarantee', stat: '$0',
+    desc: 'If we damage anything — sprinkler head, fence, plant — we replace it free. Period.',
+    color: '#84cc16', colorDeep: '#4d7c0f', span: 'lg:row-span-2', visual: 'price',
+  },
+  {
+    icon: Calendar, title: 'Show Up When We Say', stat: '30m',
+    desc: 'Text alerts when crew is 30 min out. If we miss a visit, the next one is on us.',
+    color: '#0ea5e9', colorDeep: '#0369a1', span: '', visual: 'clock',
+  },
+  {
+    icon: Award, title: 'Owner-Trained Foremen', stat: '5+',
+    desc: 'Every foreman has 5+ years with us. No revolving-door subcontractors. Ever.',
+    color: '#92400e', colorDeep: '#78350f', span: '', visual: 'map',
+  },
 ];
 
 const METRICS = [
@@ -568,44 +609,183 @@ export default function LandscapersTemplate() {
         </div>
       </section>
 
-      {/* WHY US */}
-      <section id="why" className="py-20 sm:py-24" style={{ background: BIZ.cream }}>
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
+      {/* ═══════ WHY CHOOSE US — BENTO with animated visuals ═══════ */}
+      <section id="why" className="py-20 sm:py-24 relative overflow-hidden"
+        style={{ background: `linear-gradient(135deg, #f0fdf4 0%, #fef9c3 30%, #ffedd5 60%, #ecfdf5 100%)` }}>
+        <motion.div
+          animate={{ x: ['0%','50%','0%'], y: ['0%','-30%','0%'] }}
+          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: `radial-gradient(circle, ${BIZ.lime}50, transparent 60%)`, filter: 'blur(80px)' }}/>
+        <motion.div
+          animate={{ x: ['0%','-40%','0%'], y: ['0%','30%','0%'] }}
+          transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -bottom-32 -left-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: `radial-gradient(circle, ${BIZ.forest}30, transparent 60%)`, filter: 'blur(80px)' }}/>
+        <motion.div
+          animate={{ x: ['-20%','20%','-20%'], y: ['10%','-10%','10%'] }}
+          transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-1/2 left-1/3 w-[400px] h-[400px] rounded-full pointer-events-none"
+          style={{ background: `radial-gradient(circle, ${BIZ.earth}40, transparent 60%)`, filter: 'blur(90px)' }}/>
+
+        <div className="max-w-7xl mx-auto px-4 relative">
+          <div className="text-center mb-14 max-w-2xl mx-auto">
             <p className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: BIZ.forest }}>Why {BIZ.name}</p>
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-5 leading-[1.05]" style={{ color: BIZ.charcoal }}>
-              {BIZ.yearsServing} Years.<br/>Same Crews. Same Standards.
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-5 leading-[1.05]" style={{ color: BIZ.charcoal, fontFamily: '"Playfair Display", serif' }}>
+              {BIZ.yearsServing} Years. Same Crews.<br/>Same Standards.
             </h2>
-            <p className="text-slate-600 text-lg leading-relaxed mb-6">
-              We started Greenline in {BIZ.established} because we were tired of watching homeowners cycle through three different lawn companies in a year — each one a new crew, a new schedule, a new excuse. That doesn&apos;t happen here.
-            </p>
-            <p className="text-slate-600 text-lg leading-relaxed mb-8">
-              Our foremen average 5+ years on staff. Crews are W-2 employees, drug-tested, and uniformed. You&apos;ll see the same faces every visit — they&apos;ll learn your yard, your gates, your dog. And if anything ever goes wrong, our owners answer their personal phones.
-            </p>
-            <a href="#book"
-              className="inline-flex items-center gap-2 text-white font-bold px-7 py-4 rounded-xl hover:scale-105 transition-transform"
-              style={{ background: `linear-gradient(135deg, ${BIZ.forest}, ${BIZ.lime})`, boxShadow: `0 8px 30px ${BIZ.forest}50` }}>
-              Get a Free Quote <ArrowRight className="w-5 h-5"/>
-            </a>
+            <p className="text-slate-600 text-lg">W-2 crews, uniformed, drug-tested, foremen with 5+ years on staff. Show up when we say, leave it cleaner than we found it.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:auto-rows-[280px]" style={{ perspective: 1200 }}>
             {WHY.map((w, i) => {
               const Icon = w.icon;
               return (
                 <motion.div key={w.title}
-                  initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
-                  transition={{ delay: i*0.08 }}
-                  className="bg-white rounded-2xl p-6 shadow-sm">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                    style={{ background: BIZ.forest, color: 'white' }}>
-                    <Icon className="w-6 h-6"/>
-                  </div>
-                  <h3 className="font-bold text-lg mb-2" style={{ color: BIZ.charcoal }}>{w.title}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{w.desc}</p>
+                  initial={{ opacity:0, y:40, scale:0.95 }} whileInView={{ opacity:1, y:0, scale:1 }} viewport={{ once:true }}
+                  transition={{ delay: i*0.1, type:'spring', stiffness:80 }}
+                  className={`relative ${w.span}`}>
+                  <TiltCard
+                    className="relative h-full rounded-3xl p-7 overflow-hidden cursor-pointer"
+                    style={{
+                      background: `linear-gradient(135deg, ${w.color}18 0%, ${w.color}08 40%, white 70%, ${w.color}22 100%)`,
+                      boxShadow: `0 16px 50px ${w.color}35, 0 4px 14px rgba(0,0,0,0.06), 0 0 0 1px ${w.color}40, inset 0 1px 0 rgba(255,255,255,0.6)`,
+                    }}>
+                    <div className="absolute top-0 left-0 right-0 h-1.5 rounded-t-3xl"
+                      style={{ background: `linear-gradient(90deg, ${w.color}, ${w.colorDeep}, ${w.color})` }}/>
+                    <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
+                      style={{ background: `linear-gradient(to top, ${w.color}30, transparent)` }}/>
+                    <motion.div
+                      animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.2, 1] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: i*0.5 }}
+                      className="absolute -top-20 -right-20 w-48 h-48 rounded-full pointer-events-none"
+                      style={{ background: `radial-gradient(circle, ${w.color}40, transparent 70%)`, filter: 'blur(40px)' }}/>
+                    <span className="absolute top-5 right-5 text-[80px] leading-none font-black opacity-[0.08] tracking-tighter pointer-events-none"
+                      style={{ color: w.color, fontFamily: '"Playfair Display", serif' }}>
+                      {String(i+1).padStart(2,'0')}
+                    </span>
+
+                    {w.visual === 'clock' && (
+                      <div className="absolute -bottom-6 -right-6 w-44 h-44 pointer-events-none">
+                        <div className="relative w-full h-full rounded-full border-[3px] flex items-center justify-center"
+                          style={{ borderColor: `${w.color}30`, background: `radial-gradient(circle, white, ${w.color}10)` }}>
+                          {[...Array(12)].map((_, t) => (
+                            <div key={t} className="absolute w-0.5 h-2 rounded-full"
+                              style={{ background: t % 3 === 0 ? w.color : `${w.color}50`, top: '8%', left: '50%', transformOrigin: '50% 540%', transform: `translateX(-50%) rotate(${t*30}deg)` }}/>
+                          ))}
+                          <motion.div animate={{ rotate: 360 }} transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                            className="absolute w-1 h-[40%] rounded-full origin-bottom top-[10%] left-1/2 -translate-x-1/2"
+                            style={{ background: w.color, boxShadow: `0 0 10px ${w.color}` }}/>
+                          <motion.div animate={{ rotate: 360 }} transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
+                            className="absolute w-1.5 h-[28%] rounded-full origin-bottom top-[22%] left-1/2 -translate-x-1/2"
+                            style={{ background: BIZ.charcoal }}/>
+                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white" style={{ background: w.color }}/>
+                        </div>
+                      </div>
+                    )}
+
+                    {w.visual === 'map' && (
+                      <div className="absolute -bottom-4 -right-4 w-52 h-52 pointer-events-none">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          {[0.4, 0.6, 0.85].map((s, ri) => (
+                            <motion.div key={ri}
+                              animate={{ scale: [s, s*1.15, s], opacity: [0.4, 0.1, 0.4] }}
+                              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: ri*0.5 }}
+                              className="absolute inset-0 rounded-full border-2"
+                              style={{ borderColor: `${w.color}40` }}/>
+                          ))}
+                          <div className="relative w-4 h-4 rounded-full" style={{ background: w.color, boxShadow: `0 0 16px ${w.color}` }}>
+                            <motion.div animate={{ scale:[1,2.2,1], opacity:[0.6,0,0.6] }} transition={{ duration:2, repeat:Infinity }}
+                              className="absolute inset-0 rounded-full" style={{ background: w.color }}/>
+                          </div>
+                        </div>
+                        {[
+                          { city:'5 yr', top:'15%', left:'15%' },
+                          { city:'8 yr', top:'70%', left:'10%' },
+                          { city:'10 yr',top:'20%', left:'70%' },
+                          { city:'12 yr',top:'68%', left:'72%' },
+                        ].map((c, ci) => (
+                          <motion.span key={c.city}
+                            animate={{ y:[0,-4,0] }}
+                            transition={{ duration: 3+ci*0.3, repeat: Infinity, ease: 'easeInOut', delay: ci*0.5 }}
+                            className="absolute text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white shadow-md"
+                            style={{ top: c.top, left: c.left, color: w.color, border: `1px solid ${w.color}30` }}>
+                            <Award className="w-2.5 h-2.5 inline mr-0.5"/>{c.city}
+                          </motion.span>
+                        ))}
+                      </div>
+                    )}
+
+                    {w.visual === 'stars' && (
+                      <div className="absolute bottom-5 right-5 flex gap-1 pointer-events-none">
+                        {[...Array(5)].map((_, si) => (
+                          <motion.div key={si}
+                            initial={{ scale: 0, rotate: -30 }}
+                            whileInView={{ scale: 1, rotate: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.4 + si*0.12, type: 'spring', stiffness: 200 }}>
+                            <Leaf className="w-7 h-7 fill-current" style={{ color: w.color, filter: `drop-shadow(0 2px 6px ${w.color}66)` }}/>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+
+                    {w.visual === 'price' && (
+                      <div className="absolute bottom-5 right-5 pointer-events-none">
+                        <motion.div
+                          animate={{ rotate: [-5, 5, -5] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                          className="relative px-4 py-2 rounded-xl text-white font-black text-sm tracking-tight"
+                          style={{ background: `linear-gradient(135deg, ${w.color}, ${w.colorDeep})`, boxShadow: `0 8px 20px ${w.color}55` }}>
+                          We Replace It
+                          <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-3 h-3 rotate-45" style={{ background: w.color }}/>
+                        </motion.div>
+                        <div className="flex gap-1 mt-2 justify-end">
+                          {['Spotted','Fixed','Free'].map((l, li) => (
+                            <motion.span key={l}
+                              initial={{ opacity: 0, y: 10 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: 0.5 + li*0.15 }}
+                              className="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                              style={{ background: 'white', color: w.color, border: `1px solid ${w.color}30` }}>
+                              <Check className="w-2.5 h-2.5"/>{l}
+                            </motion.span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="relative" style={{ transform: 'translateZ(30px)' }}>
+                      <motion.div
+                        whileHover={{ rotate: [0, -8, 8, 0], scale: 1.1 }}
+                        transition={{ duration: 0.5 }}
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 text-white"
+                        style={{ background: `linear-gradient(135deg, ${w.color}, ${w.colorDeep})`, boxShadow: `0 8px 24px ${w.color}55` }}>
+                        <Icon className="w-7 h-7"/>
+                      </motion.div>
+                      <div className="flex items-baseline gap-3 mb-2">
+                        <h3 className="text-2xl font-black tracking-tight" style={{ color: BIZ.charcoal, fontFamily: '"Playfair Display", serif' }}>{w.title}</h3>
+                        <span className="text-xs font-black px-2 py-0.5 rounded-full"
+                          style={{ background: `${w.color}15`, color: w.color }}>{w.stat}</span>
+                      </div>
+                      <p className="text-slate-600 text-sm leading-relaxed max-w-[28ch]">{w.desc}</p>
+                    </div>
+                  </TiltCard>
                 </motion.div>
               );
             })}
+          </div>
+
+          <div className="mt-12 text-center">
+            <a href="#book"
+              className="inline-flex items-center gap-2 text-white font-bold px-8 py-4 rounded-xl hover:scale-105 transition-transform text-lg"
+              style={{ background: `linear-gradient(135deg, ${BIZ.forest}, ${BIZ.lime})`, boxShadow: `0 12px 30px ${BIZ.forest}55` }}>
+              Get a Free Quote <ArrowRight className="w-5 h-5"/>
+            </a>
+            <p className="text-slate-500 text-sm mt-3">
+              {BIZ.jobs} yards · {BIZ.reviewCount} reviews · {BIZ.rating}★ on Google
+            </p>
           </div>
         </div>
       </section>
