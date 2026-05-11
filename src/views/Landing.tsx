@@ -33,7 +33,7 @@ const STEPS = [
   { n: '01', label: 'Fill out the form below',       sub: 'Takes under 2 minutes'         },
   { n: '02', label: 'We build your custom preview',  sub: 'Ready within 48 hours'         },
   { n: '03', label: 'You review and approve it',     sub: 'Request unlimited changes'     },
-  { n: '04', label: 'Choose your plan and go live',  sub: 'From $197/mo — cancel anytime' },
+  { n: '04', label: 'Choose your plan and go live',  sub: 'From $97/mo — cancel anytime' },
 ];
 
 export default function Landing() {
@@ -105,7 +105,7 @@ export default function Landing() {
             <div className="flex flex-wrap justify-center gap-3 mb-10">
               {[
                 { icon:<Clock className="w-4 h-4"/>, text:'Preview ready in 48 hrs', color:'#3b82f6' },
-                { icon:<TrendingUp className="w-4 h-4"/>, text:'From $197/mo after approval', color:'#8b5cf6' },
+                { icon:<TrendingUp className="w-4 h-4"/>, text:'From $97/mo after approval', color:'#8b5cf6' },
                 { icon:<Award className="w-4 h-4"/>, text:'30-day results guarantee', color:'#22c55e' },
               ].map((p,i) => (
                 <motion.div key={i}
@@ -349,7 +349,7 @@ export default function Landing() {
                         {/* Pricing reminder */}
                         <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500 pt-1">
                           <CheckCircle2 className="w-3.5 h-3.5 text-green-500 flex-shrink-0"/>
-                          Preview is complimentary — plans start at $197/mo after you approve the design
+                          Preview is complimentary — plans start at $97/mo after you approve the design
                         </div>
                       </form>
                     </motion.div>

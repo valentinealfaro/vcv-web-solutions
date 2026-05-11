@@ -5,8 +5,8 @@ import { X, Phone, Loader2, Clock, Gift, ArrowRight, CheckCircle2 } from 'lucide
 
 const STORAGE_KEY = 'vcv-exit-popup-shown-v1';
 const TRIAL_DAYS  = 14;
-const SETUP_FEE   = 297;
-const SETUP_CENTS = 29700;
+const SETUP_FEE   = 147;
+const SETUP_CENTS = 14700;
 
 export const ExitIntentPopup = () => {
   const [open,    setOpen]    = useState(false);
@@ -77,7 +77,7 @@ export const ExitIntentPopup = () => {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          productName: `Nova Growth Plan — ${TRIAL_DAYS}-Day FREE Trial · Exclusive Exit Offer (first ${TRIAL_DAYS} days free, $297/mo after)`,
+          productName: `Nova Growth Plan — ${TRIAL_DAYS}-Day FREE Trial · Exclusive Exit Offer (first ${TRIAL_DAYS} days free, $147/mo after)`,
           amount:       SETUP_CENTS,
         }),
       });
@@ -182,12 +182,12 @@ export const ExitIntentPopup = () => {
                 <div className="flex items-baseline justify-center gap-2 mb-1">
                   <span className="font-display text-5xl md:text-6xl text-white"
                     style={{ textShadow: '0 0 24px rgba(34,197,94,0.55)' }}>
-                    $297
+                    $147
                   </span>
                   <span className="text-gray-400 text-sm">one-time setup</span>
                 </div>
                 <p className="text-green-400 text-sm font-bold">
-                  Then $0 for {TRIAL_DAYS} days · $297/mo after if you stay
+                  Then $0 for {TRIAL_DAYS} days · $147/mo after if you stay
                 </p>
               </div>
 

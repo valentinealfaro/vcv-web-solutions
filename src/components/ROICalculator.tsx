@@ -38,7 +38,7 @@ export const ROICalculator = () => {
     const recoveredCalls = Math.round(missedCalls * 0.85); // Nova captures ~85% of missed
     const newJobs        = Math.round(recoveredCalls * (closeRate / 100));
     const newRevenue     = newJobs * jobValue;
-    const novaCost       = 297;            // Growth tier
+    const novaCost       = 147;            // Growth tier
     const netProfit      = newRevenue - novaCost;
     const roi            = newRevenue > 0 ? Math.round((netProfit / novaCost) * 100) : 0;
     return { missedCalls, recoveredCalls, newJobs, newRevenue, netProfit, roi };
@@ -123,7 +123,7 @@ export const ROICalculator = () => {
                   {fmt(math.newRevenue)}
                 </p>
                 <p className="text-green-400 text-sm font-bold mt-1">
-                  {math.roi}× ROI on Nova Growth ($297/mo)
+                  {math.roi}× ROI on Nova Growth ($147/mo)
                 </p>
               </motion.div>
 

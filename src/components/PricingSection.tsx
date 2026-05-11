@@ -6,15 +6,15 @@ import { CheckCircle2, ArrowRight, Zap, Loader2, Tag } from 'lucide-react';
 import { PricingBgCanvas } from '@/components/PageEffects';
 import { CheckoutUpsellModal, CheckoutPayload } from '@/components/CheckoutUpsellModal';
 
-const SETUP_FEE_CENTS = 49700; // $497 — waived on annual
+const SETUP_FEE_CENTS = 24700; // $247 — waived on annual
 
 const plans = [
   {
     name: 'Monthly',
-    price: 197,
-    origPrice: 397,
+    price: 97,
+    origPrice: 197,
     period: '/mo',
-    amountCents: 19700,
+    amountCents: 9700,
     setupFeeCents: SETUP_FEE_CENTS,        // monthly pays the setup fee
     setup: 'No long-term commitment',
     description: 'Get a professional lead-generating website with no annual contract.',
@@ -32,13 +32,12 @@ const plans = [
   },
   {
     name: 'Annual',
-    price: 1997,
-    origPrice: 3970,
+    price: 997,
+    origPrice: 1970,
     period: '/yr',
-    amountCents: 199700,
+    amountCents: 99700,
     setupFeeCents: 0,                       // annual: setup fee waived
-    setup: 'Best value — save $1,973',
-    badge: 'Best Value — Save $1,973',
+    setup: 'Save $973 vs monthly',
     description: 'The full lead machine. Everything you need to dominate your local market.',
     features: [
       'Everything in Monthly',
@@ -49,9 +48,32 @@ const plans = [
       'Priority 24hr support',
       'Quarterly strategy calls',
       'Google My Business setup',
-      'Setup fee waived ($497 value)',
+      'Setup fee waived ($247 value)',
     ],
     cta: 'Buy Now',
+    popular: false,
+  },
+  {
+    name: 'Lifetime',
+    price: 1497,
+    origPrice: 2997,
+    period: ' once',
+    amountCents: 149700,
+    setupFeeCents: 0,                       // lifetime: setup fee waived
+    setup: 'Pay once. Own it forever.',
+    badge: 'Lifetime Deal — Pay Once',
+    description: 'One price. Forever. No monthly fees, no contracts. Pays for itself in 12 months — saves $9K+ vs paying monthly for 10 years.',
+    features: [
+      'Everything in Annual',
+      'No recurring fees — ever',
+      'Hosting & SSL forever',
+      '4 free content updates / year',
+      'You own the domain & code',
+      '30-day money-back guarantee',
+      'Lifetime security patches',
+      'Setup fee waived ($247 value)',
+    ],
+    cta: 'Claim Lifetime Deal',
     popular: true,
   },
 ];
@@ -82,7 +104,7 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
     }
   };
 
-  // 30-day FREE trial — Monthly only — customer pays only the $297 setup fee
+  // 30-day FREE trial — Monthly only — customer pays only the $247 setup fee
   const handleTrial = async () => {
     setLoading('trial'); setError('');
     try {
@@ -91,7 +113,7 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           productName: `${plan.name} Plan — 30 Day FREE Trial (first month free, $${plan.price}/mo after)`,
-          amount:       SETUP_FEE_CENTS,    // $297 setup only — no monthly charge today
+          amount:       SETUP_FEE_CENTS,    // $247 setup only — no monthly charge today
         }),
       });
       const data = await res.json();
@@ -168,7 +190,7 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
       {plan.setupFeeCents > 0 ? (
         <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 mb-4 ml-2"
           style={{ background:'rgba(255,193,7,0.10)', border:'1px solid rgba(255,193,7,0.35)' }}>
-          <span className="text-yellow-300 text-xs font-bold">+ $497 setup · auto-added at checkout</span>
+          <span className="text-yellow-300 text-xs font-bold">+ $247 setup · auto-added at checkout</span>
         </div>
       ) : (
         <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 mb-4 ml-2"
@@ -248,7 +270,7 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
             }}>
             {loading === 'trial'
               ? <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting...</>
-              : <>🎁 Try Free 30 Days — Only $497 Setup</>}
+              : <>🎁 Try Free 30 Days — Only $247 Setup</>}
           </motion.button>
           <p className="text-center text-gray-500 text-[11px] mt-2 leading-relaxed">
             First month FREE · No charge for 30 days · Cancel before day 30 = pay nothing further
@@ -267,7 +289,7 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
         planAmount={plan.amountCents}
         planPriceLabel={`$${plan.price.toLocaleString()}${plan.period}`}
         setupFeeCents={plan.setupFeeCents}
-        setupFeeName="One-Time Website Setup Fee ($497)"
+        setupFeeName="One-Time Website Setup Fee ($247)"
         productName={`VCV Web Solutions — ${plan.name} Plan`}
         loading={loading === 'buy'}
         onConfirm={submitToStripe}
@@ -294,7 +316,7 @@ export const PricingSection = () => (
     <div className="absolute inset-0 bg-[#030712]/40 pointer-events-none" />
     <div className="absolute inset-0 bg-grid opacity-18 pointer-events-none" />
 
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <motion.div className="text-center mb-4"
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
         <p className="neon-badge mb-4 mx-auto w-fit">Simple Pricing</p>
@@ -312,7 +334,7 @@ export const PricingSection = () => (
         <p className="text-gray-400 text-lg max-w-lg mx-auto">No hidden fees. No long-term contracts. Cancel anytime.</p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto mt-8">
         {plans.map((plan, i) => <PlanCard key={i} plan={plan} index={i} />)}
       </div>
 

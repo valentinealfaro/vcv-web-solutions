@@ -90,7 +90,7 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
               className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5"
               style={{ background:'rgba(255,193,7,0.12)', border:'1px solid rgba(255,193,7,0.5)' }}>
               <span className="text-yellow-300 font-bold text-xs tracking-wide">
-                🎁 14-Day Free Trial · $297 Setup
+                🎁 14-Day Free Trial · $147 Setup
               </span>
             </motion.span>
           </motion.div>
@@ -486,7 +486,7 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
           <motion.div {...fade(0.2)} className="max-w-3xl mx-auto rounded-2xl p-5 text-center"
             style={{ background:'rgba(255,193,7,0.10)', border:'1.5px solid rgba(255,193,7,0.4)' }}>
             <p className="text-yellow-300 font-bold text-base mb-1">
-              👉 One-Time Setup Fee: <span className="text-white text-xl">$297</span>
+              👉 One-Time Setup Fee: <span className="text-white text-xl">$147</span>
               <span className="text-green-400 font-bold text-xs ml-2">· Auto-added at checkout</span>
             </p>
             <p className="text-gray-200 text-sm">
@@ -593,8 +593,8 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
           planName={`${modalTier.name} Plan · ${industry.name}${billing === 'annual' ? ' · Annual' : ''}`}
           planAmount={billing === 'annual' ? modalTier.priceCentsAnnual : modalTier.priceCents}
           planPriceLabel={billing === 'annual' ? `$${modalTier.priceAnnual.toLocaleString()}/yr` : `$${modalTier.price}/mo`}
-          setupFeeCents={29700}
-          setupFeeName="One-Time Setup Fee ($297)"
+          setupFeeCents={14700}
+          setupFeeName="One-Time Setup Fee ($147)"
           productName={`Never Miss a Call — ${modalTier.name} Plan · ${industry.name}${billing === 'annual' ? ' · Annual (saves $' + modalTier.annualSavings + ')' : ''}`}
           loading={loadingId === modalTier.id}
           onConfirm={(payload) => submitToStripe(payload, modalTier.id)}

@@ -1,15 +1,10 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import './globals.css';
-import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
-import { FloatingCTA } from '@/components/FloatingCTA';
 import { CustomCursor } from '@/components/CustomCursor';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { MobileStickyBar } from '@/components/MobileStickyBar';
 import { ThemeProvider } from '@/contexts/ThemeContext';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { ExitIntentPopup } from '@/components/ExitIntentPopup';
+import { SiteChrome } from '@/components/SiteChrome';
 import { Analytics } from '@/components/Analytics';
 import Script from 'next/script';
 
@@ -61,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter+Tight:wght@500;600;700;800;900&display=swap"
         />
       </head>
       <body>
@@ -94,7 +89,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             name: 'VCV Web Solutions',
             url: SITE_URL,
             telephone: '+1-580-919-1386',
-            priceRange: '$97-$1497',
+            priceRange: '$47-$1497',
             description: OG_DESC,
             address: { '@type': 'PostalAddress', addressCountry: 'US' },
             openingHours: 'Mo-Sa 09:00-18:00',
@@ -117,15 +112,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <ThemeProvider>
           <CustomCursor />
-          <Navbar />
           <ErrorBoundary>
-            <main className="pb-20 md:pb-0">{children}</main>
+            <SiteChrome>{children}</SiteChrome>
           </ErrorBoundary>
-          <Footer />
-          <FloatingCTA />
-          <MobileStickyBar />
-          <ThemeSwitcher />
-          <ExitIntentPopup />
         </ThemeProvider>
       </body>
     </html>

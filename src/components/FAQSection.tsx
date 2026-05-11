@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     q: 'Do you offer monthly plans?',
-    a: 'Yes — $197/month + a one-time $497 setup fee, no long-term commitment. Or save big with our annual plan at $1,997/year (saves you $1,973 off the regular $3,970 rate, and the $497 setup fee is waived).',
+    a: 'Yes — $97/month + a one-time $247 setup fee, no long-term commitment. Or save big with our annual plan at $997/year (saves you $973 off the regular $1,970 rate, and the $247 setup fee is waived). Or go lifetime for $1,497 once — no recurring fees ever.',
   },
   {
     q: 'What industries do you work with?',

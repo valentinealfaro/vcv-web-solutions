@@ -66,7 +66,7 @@ const COMPANY = [
 const STATS = [
   { val:'50+',    label:'Businesses Launched' },
   { val:'3-7',    label:'Days to Launch' },
-  { val:'$197',   label:'Starting Per Month' },
+  { val:'$97',    label:'Starting Per Month' },
   { val:'30-Day', label:'Results Guarantee' },
 ];
 

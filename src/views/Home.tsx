@@ -668,7 +668,7 @@ const Hero = () => (
           </div>
 
           <div className="flex flex-wrap gap-6 text-sm text-gray-400">
-            {['From $197/mo', '3-7 day launch', '30-day results guarantee'].map((t, i) => (
+            {['From $97/mo', '3-7 day launch', '30-day results guarantee'].map((t, i) => (
               <span key={i} className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" /> {t}
               </span>

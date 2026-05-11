@@ -240,8 +240,8 @@ export const StaticElectricity = () => {
 export const MarqueeBand = () => (
   <div className="marquee-band">
     <div className="marquee-inner">
-      {['From $197/mo','Built in 3-7 Days','SEO Optimized','Mobile Friendly','Lead Generation Focused','30-Day Results Guarantee','Google Ads Ready','You Own Your Site',
-        'From $197/mo','Built in 3-7 Days','SEO Optimized','Mobile Friendly','Lead Generation Focused','30-Day Results Guarantee','Google Ads Ready','You Own Your Site']
+      {['From $97/mo','Built in 3-7 Days','SEO Optimized','Mobile Friendly','Lead Generation Focused','30-Day Results Guarantee','Google Ads Ready','You Own Your Site',
+        'From $97/mo','Built in 3-7 Days','SEO Optimized','Mobile Friendly','Lead Generation Focused','30-Day Results Guarantee','Google Ads Ready','You Own Your Site']
         .map((t,i)=><span key={i} className="marquee-item">{t}</span>)}
     </div>
   </div>
