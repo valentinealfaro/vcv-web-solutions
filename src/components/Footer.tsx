@@ -1,9 +1,9 @@
 'use client';
 import Link from 'next/link';
-import { motion, useMotionValue, useSpring } from 'motion/react';
+import { motion } from 'motion/react';
 import { Mail, Phone, MapPin, Star, Zap, CheckCircle2 } from 'lucide-react';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 /* ─── HLS video background ─────────────────────────────────── */
 const HLS_SRC = 'https://stream.mux.com/Kec29dVyJgiPdtWaQtPuEiiGHkJIYQAVUJcNiIHUYeo.m3u8';
@@ -73,94 +73,26 @@ const STATS = [
   { val:'30-Day', label:'Results Guarantee' },
 ];
 
-/* ─── Stat card with traveling dot + mouse-tilt ─────────────── */
-const StatTiltCard = ({ s, i }: { s: typeof STATS[0]; i: number }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [dims,   setDims]   = useState({ w: 200, h: 80 });
-
-  const rotX = useMotionValue(0);
-  const rotY = useMotionValue(0);
-  const sRotX = useSpring(rotX, { stiffness: 200, damping: 22 });
-  const sRotY = useSpring(rotY, { stiffness: 200, damping: 22 });
-
-  useEffect(() => {
-    const el = cardRef.current; if (!el) return;
-    const measure = () => setDims({ w: el.offsetWidth, h: el.offsetHeight });
-    measure();
-    const obs = new ResizeObserver(measure);
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = cardRef.current; if (!el) return;
-    const r = el.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width  - 0.5;
-    const y = (e.clientY - r.top)  / r.height - 0.5;
-    rotY.set(x * 16);
-    rotX.set(-y * 16);
-  };
-  const onLeave = () => { rotX.set(0); rotY.set(0); };
-
-  const { w, h } = dims;
-  const r = 12;
-  const path = `M ${r} 0 L ${w-r} 0 Q ${w} 0 ${w} ${r} L ${w} ${h-r} Q ${w} ${h} ${w-r} ${h} L ${r} ${h} Q 0 ${h} 0 ${h-r} L 0 ${r} Q 0 0 ${r} 0 Z`;
-  const dur = `${2.6 + i * 0.5}s`;
-  const uid = `fdot-${i}`;
-
-  return (
-    <motion.div
-      initial={{ opacity:0, y:10 }} whileInView={{ opacity:1, y:0 }}
-      viewport={{ once:true }} transition={{ delay: i * 0.08 }}
-      style={{ perspective: '600px' }}>
-      <motion.div
-        ref={cardRef}
-        className="text-center px-4 py-4 rounded-xl relative cursor-default select-none"
-        style={{
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          rotateX: sRotX, rotateY: sRotY,
-          transformStyle: 'preserve-3d',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
-        }}
-        onMouseMove={onMove}
-        onMouseLeave={onLeave}
-        whileHover={{ scale: 1.04 }}>
-
-        {/* Traveling dot around the border */}
-        <svg className="absolute inset-0 pointer-events-none" width="100%" height="100%"
-          viewBox={`0 0 ${w} ${h}`} style={{ overflow:'visible', zIndex:5 }}>
-          <defs>
-            <filter id={uid} x="-60%" y="-60%" width="220%" height="220%">
-              <feGaussianBlur stdDeviation="4" result="b"/>
-              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          {/* Glow halo */}
-          <circle r="12" fill="rgba(37,99,235,0.14)" filter={`url(#${uid})`}>
-            <animateMotion dur={dur} repeatCount="indefinite" path={path}/>
-          </circle>
-          {/* Coloured dot */}
-          <circle r="4.5" fill="rgba(139,92,246,0.95)" filter={`url(#${uid})`}>
-            <animateMotion dur={dur} repeatCount="indefinite" path={path}/>
-          </circle>
-          {/* Bright core */}
-          <circle r="2" fill="white">
-            <animateMotion dur={dur} repeatCount="indefinite" path={path}/>
-          </circle>
-        </svg>
-
-        <div className="relative z-10 font-display text-2xl text-white mb-0.5"
-          style={{ textShadow:'0 0 20px rgba(59,130,246,0.5)' }}>
-          {s.val}
-        </div>
-        <div className="relative z-10 text-gray-500 text-xs uppercase tracking-wider font-semibold">
-          {s.label}
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
+/* Quiet stat card — no traveling dot, no tilt, no glow. Stat reads at a
+   glance instead of competing with neighbour cards for attention. */
+const StatTiltCard = ({ s, i }: { s: typeof STATS[0]; i: number }) => (
+  <motion.div
+    initial={{ opacity:0, y:10 }} whileInView={{ opacity:1, y:0 }}
+    viewport={{ once:true }} transition={{ delay: i * 0.06 }}
+    whileHover={{ y: -2 }}
+    className="text-center px-4 py-5 rounded-xl"
+    style={{
+      background: 'rgba(255,255,255,0.025)',
+      border: '1px solid rgba(255,255,255,0.08)',
+    }}>
+    <div className="font-display text-2xl md:text-3xl text-white mb-0.5 tracking-tight">
+      {s.val}
+    </div>
+    <div className="text-gray-500 text-[10px] uppercase tracking-[0.15em] font-semibold">
+      {s.label}
+    </div>
+  </motion.div>
+);
 
 export const Footer = () => (
   <footer className="relative bg-[#030712] overflow-hidden">
@@ -178,11 +110,10 @@ export const Footer = () => (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
           <div className="text-center lg:text-left">
-            <p className="text-gray-400 text-sm font-semibold uppercase tracking-widest mb-2">Ready to get more leads?</p>
-            <h3 className="font-display text-4xl md:text-5xl text-white leading-none"
-              style={{ textShadow:'0 0 40px rgba(37,99,235,0.4)' }}>
-              GET YOUR DESIGN
-              <span className="gradient-text"> PREVIEW</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-3">Ready to get more leads?</p>
+            <h3 className="font-display text-white tracking-tight leading-[1.02]"
+              style={{ fontSize: 'clamp(2rem, 4.5vw, 3.25rem)' }}>
+              See your site <span className="gradient-text">before you pay.</span>
             </h3>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
@@ -212,19 +143,17 @@ export const Footer = () => (
         {/* Brand — 2 cols */}
         <div className="lg:col-span-2">
           <Link href="/" className="flex items-center gap-3 mb-5 group">
-            <motion.div
-              className="relative rounded-xl p-1.5 flex-shrink-0"
-              style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)' }}
-              animate={{
-                borderColor:['rgba(59,130,246,0.4)','rgba(139,92,246,0.4)','rgba(6,182,212,0.4)','rgba(59,130,246,0.4)'],
-                boxShadow:['0 0 12px rgba(59,130,246,0.3)','0 0 12px rgba(139,92,246,0.3)','0 0 12px rgba(6,182,212,0.3)','0 0 12px rgba(59,130,246,0.3)'],
-              }}
-              transition={{ duration:4, repeat:Infinity, ease:'linear' }}>
+            <div className="relative rounded-xl p-1.5 flex-shrink-0 transition-all group-hover:scale-105"
+              style={{
+                background:'rgba(255,255,255,0.05)',
+                border:'1px solid rgba(59,130,246,0.40)',
+                boxShadow:'0 0 14px rgba(59,130,246,0.20)',
+              }}>
               <img
                 src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FVCV%20Websolutions%20Logo.png?alt=media&token=aed21397-69ca-4846-a45d-267482b81acf"
                 alt="VCV Web Solutions" className="w-9 h-9 object-contain" referrerPolicy="no-referrer"
               />
-            </motion.div>
+            </div>
             <div>
               <p className="font-bold text-white text-base leading-none">VCV Web Solutions</p>
               <p className="text-gray-500 text-xs mt-0.5">Local Business Growth Experts</p>
@@ -249,14 +178,11 @@ export const Footer = () => (
             ))}
           </div>
 
-          {/* Available badge */}
-          <motion.div
-            animate={{ boxShadow:['0 0 8px rgba(74,222,128,0.3)','0 0 18px rgba(74,222,128,0.6)','0 0 8px rgba(74,222,128,0.3)'] }}
-            transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-            className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-2">
+          {/* Available badge — quiet pulse on the dot, no glowing shadow loop */}
+          <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-2">
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse inline-block"/>
             <span className="text-green-300 text-xs font-bold tracking-wide">ACCEPTING NEW CLIENTS NOW</span>
-          </motion.div>
+          </div>
 
           {/* Social proof stars */}
           <div className="flex items-center gap-2 mt-5">

@@ -2171,15 +2171,14 @@ const SampleWebsites = () => (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <motion.div
         initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
-        className="text-center mb-12">
-        <p className="neon-badge mx-auto w-fit mb-4">Live Sample Sites</p>
-        <h2 className="font-display text-white mb-3"
-          style={{ fontSize:'clamp(2.8rem,8vw,7rem)', lineHeight:1,
-            textShadow:'0 0 50px rgba(37,99,235,0.6), 0 0 100px rgba(124,58,237,0.3)' }}>
-          PERFECT FOR
+        className="text-center mb-12 md:mb-16">
+        <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Live sample sites</p>
+        <h2 className="font-display text-white tracking-tight leading-[1.02] mb-5"
+          style={{ fontSize:'clamp(2.5rem, 7vw, 5.5rem)' }}>
+          Built for <span className="gradient-text">your industry.</span>
         </h2>
-        <p className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto">
-          {INDUSTRIES.length} fully-built industry websites — click any to see it live.
+        <p className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+          {INDUSTRIES.length} fully-built industry templates — click any to see it live and request it customized for your business.
         </p>
       </motion.div>
 
