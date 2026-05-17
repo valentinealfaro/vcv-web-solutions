@@ -77,23 +77,16 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{ opacity:0, y:30 }} animate={{ opacity:1, y:0 }} transition={{ duration:.7 }}>
 
-            {/* Badge */}
-            <motion.div
-              animate={{ scale:[1,1.04,1] }}
-              transition={{ duration:2.2, repeat:Infinity, ease:'easeInOut' }}
-              className="inline-flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/35 rounded-full px-5 py-2 mb-6">
-              <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse inline-block" />
-              <span className="text-yellow-300 font-bold text-sm tracking-wide">NOW TAKING NEW CLIENTS — LIMITED SPOTS THIS MONTH</span>
-              <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse inline-block" />
-            </motion.div>
+            {/* Availability badge — static, quiet, single-color */}
+            <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/35 rounded-full px-5 py-2 mb-7">
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse inline-block" />
+              <span className="text-green-300 font-bold text-xs tracking-[0.18em] uppercase">Now taking new clients · Limited spots this month</span>
+            </div>
 
-            <h1 className="font-display leading-none text-white mb-2"
-              style={{ fontSize:'clamp(3.5rem,9vw,7rem)', textShadow:'0 0 60px rgba(37,99,235,0.5), 0 0 120px rgba(124,58,237,0.25)' }}>
-              GET YOUR CUSTOM
-            </h1>
-            <h1 className="font-display leading-none gradient-text mb-6"
-              style={{ fontSize:'clamp(3.5rem,9vw,7rem)' }}>
-              DESIGN PREVIEW
+            <h1 className="font-display text-white leading-[1.02] tracking-tight mb-3"
+              style={{ fontSize:'clamp(3rem, 8vw, 6.5rem)' }}>
+              Get your custom<br/>
+              <span className="gradient-text">design preview.</span>
             </h1>
 
             <p className="text-gray-300 text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
