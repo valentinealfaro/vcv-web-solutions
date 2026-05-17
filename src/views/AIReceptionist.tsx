@@ -169,37 +169,27 @@ export default function AIReceptionist() {
 
             {/* Left copy */}
             <motion.div {...slideL()}>
-              {/* Both pills — left-aligned, wrap on small screens */}
-              <div className="flex flex-wrap items-center gap-2 mb-5">
-                <motion.div
-                  animate={{ scale: [1, 1.04, 1] }}
-                  transition={{ duration: 2.2, repeat: Infinity }}
-                  className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/40 rounded-full px-4 py-1.5">
+              {/* Trust pills — static, no competing scale/glow loops */}
+              <div className="flex flex-wrap items-center gap-2 mb-6">
+                <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/40 rounded-full px-4 py-1.5">
                   <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse"/>
                   <span className="text-red-400 font-bold text-xs tracking-wide">ONLY 10 SPOTS THIS MONTH</span>
-                </motion.div>
+                </div>
 
-                <motion.div
-                  animate={{ boxShadow:[
-                    '0 0 14px rgba(255,193,7,0.3)',
-                    '0 0 24px rgba(255,193,7,0.55)',
-                    '0 0 14px rgba(255,193,7,0.3)',
-                  ]}}
-                  transition={{ duration: 2.4, repeat: Infinity }}
-                  className="inline-flex items-center gap-2 rounded-full px-4 py-1.5"
+                <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5"
                   style={{ background:'rgba(255,193,7,0.12)', border:'1px solid rgba(255,193,7,0.5)' }}>
                   <span className="text-yellow-300 font-bold text-xs tracking-wide">
-                    🎁 Try Nova FREE for 30 Days · Just $147 Setup
+                    Try Nova FREE for 30 Days · Just $147 setup
                   </span>
-                </motion.div>
+                </div>
 
                 <CountdownTimer message="Free trial offer ends today" variant="banner"/>
               </div>
 
-              <h1 className="font-display leading-none text-white mb-6"
-                style={{ fontSize:'clamp(3rem, 8vw, 6.5rem)', textShadow:'0 0 60px rgba(37,99,235,0.5), 0 0 120px rgba(124,58,237,0.25)' }}>
-                NEVER MISS<br/>
-                <span className="gradient-text">ANOTHER CALL</span>
+              <h1 className="font-display text-white tracking-tight leading-[1.02] mb-6"
+                style={{ fontSize:'clamp(3rem, 8vw, 6.5rem)' }}>
+                Never miss<br/>
+                <span className="gradient-text">another call.</span>
               </h1>
 
               <p className="text-gray-300 text-xl leading-relaxed mb-8 max-w-xl">
