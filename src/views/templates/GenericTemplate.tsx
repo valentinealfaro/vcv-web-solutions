@@ -411,6 +411,8 @@ function ContactForm({ accent, industrySlug }: { accent: string; industrySlug: s
         body: JSON.stringify({ ...form, ...attribution, source: `Template · ${industrySlug}` }),
       });
       if (!res.ok) throw new Error('failed');
+      const { trackLead } = await import('@/components/Analytics');
+      trackLead(`Template · ${industrySlug}`);
       setStatus('success'); setForm({ name:'', email:'', phone:'', message:'' });
     } catch { setErr('Something went wrong. Please try again.'); setStatus('error'); }
   };

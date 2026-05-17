@@ -303,6 +303,8 @@ export default function Contact() {
         body: JSON.stringify({ ...form, source: 'Contact Form' }),
       });
       if (!res.ok) throw new Error('Failed to send');
+      const { trackLead } = await import('@/components/Analytics');
+      trackLead('Contact Form');
       setStatus('success'); setForm({ name: '', email: '', phone: '', business: '', message: '' });
     } catch { setErrMsg('Something went wrong. Please try again.'); setStatus('error'); }
   };

@@ -585,6 +585,10 @@ const HeroContactForm = () => {
         body: JSON.stringify({ ...form, ...attribution, source: 'Home Hero Form' }),
       });
       if (!res.ok) throw new Error('Failed to send');
+      // Fire GA4 generate_lead + Meta Pixel Lead so this conversion shows up
+      // in attribution reports and ad-platform Conversions APIs.
+      const { trackLead } = await import('@/components/Analytics');
+      trackLead('Home Hero Form');
       setStatus('success'); setForm({ name: '', email: '', phone: '', business: '', message: '' });
     } catch { setErrMsg('Something went wrong. Please try again.'); setStatus('error'); }
   };

@@ -109,6 +109,22 @@ export const trackLead = (source: string) => {
   window.fbq?.('track', 'Lead', { source });
 };
 
+/** Phone-call click tracking. Local-service buyers prefer to call;
+   we need to count those as conversions, not just form submits. */
+export const trackPhoneClick = (location: string) => {
+  if (typeof window === 'undefined') return;
+  window.gtag?.('event', 'phone_click',  { event_category: 'engagement', event_label: location });
+  window.fbq?.('track', 'Contact',       { source: location, method: 'phone' });
+};
+
+/** A demo / preview was requested via a CTA button — distinct from
+   landing on the page. Useful for measuring CTA click-through rates. */
+export const trackDemoRequest = (location: string) => {
+  if (typeof window === 'undefined') return;
+  window.gtag?.('event', 'demo_request', { event_category: 'engagement', event_label: location });
+  window.fbq?.('track', 'Schedule',      { source: location });
+};
+
 export const trackInitiateCheckout = (value: number, productName: string) => {
   if (typeof window === 'undefined') return;
   window.gtag?.('event', 'begin_checkout', {

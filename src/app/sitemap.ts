@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { INDUSTRIES } from '@/data/industries';
+import { STATES } from '@/data/states';
 
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 
@@ -18,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/templates`,             lastModified: now, changeFrequency: 'weekly',  priority: 0.9 },
     { url: `${SITE_URL}/how-it-works`,          lastModified: now, changeFrequency: 'monthly', priority: 0.75 },
     { url: `${SITE_URL}/about`,                 lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${SITE_URL}/serving`,               lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${SITE_URL}/terms`,                 lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
   ];
 
@@ -37,5 +39,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  return [...staticPages, ...industryPages, ...templatePages];
+  /* US state-level local-SEO landing pages */
+  const statePages: MetadataRoute.Sitemap = STATES.map(s => ({
+    url: `${SITE_URL}/serving/${s.slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.6,
+  }));
+
+  return [...staticPages, ...industryPages, ...templatePages, ...statePages];
 }
