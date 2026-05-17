@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { INDUSTRIES } from '@/data/industries';
 import { STATES } from '@/data/states';
+import { GUIDES } from '@/data/guides';
 
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 
@@ -20,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/how-it-works`,          lastModified: now, changeFrequency: 'monthly', priority: 0.75 },
     { url: `${SITE_URL}/about`,                 lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${SITE_URL}/serving`,               lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${SITE_URL}/guides`,                lastModified: now, changeFrequency: 'weekly',  priority: 0.7 },
     { url: `${SITE_URL}/terms`,                 lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
   ];
 
@@ -47,5 +49,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...industryPages, ...templatePages, ...statePages];
+  /* Evergreen guides — Article schema, individually indexable */
+  const guidePages: MetadataRoute.Sitemap = GUIDES.map(g => ({
+    url: `${SITE_URL}/guides/${g.slug}`,
+    lastModified: new Date(g.updatedAt),
+    changeFrequency: 'monthly',
+    priority: 0.65,
+  }));
+
+  return [...staticPages, ...industryPages, ...templatePages, ...statePages, ...guidePages];
 }
