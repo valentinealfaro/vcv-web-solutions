@@ -47,19 +47,22 @@ const FooterVideo = () => {
 };
 
 const SERVICES = [
-  { label:'Website Design',       path:'/services' },
-  { label:'SEO Optimization',     path:'/services' },
-  { label:'Google Ads Ready',     path:'/services' },
-  { label:'Lead Generation',      path:'/services' },
-  { label:'Hosting & Maintenance',path:'/services' },
+  { label:'Website Templates',     path:'/templates' },
+  { label:'AI Receptionist',       path:'/ai-receptionist' },
+  { label:'SEO Optimization',      path:'/services' },
+  { label:'Google Ads Ready',      path:'/services' },
+  { label:'Lead Generation',       path:'/services' },
+  { label:'Hosting & Maintenance', path:'/services' },
 ];
 
 const COMPANY = [
-  { label:'Home',          path:'/' },
-  { label:'Services',      path:'/services' },
-  { label:'Pricing',       path:'/pricing' },
-  { label:'Contact',       path:'/contact' },
-  { label:'Design Preview',path:'/free-demo' },
+  { label:'About',          path:'/about' },
+  { label:'How It Works',   path:'/how-it-works' },
+  { label:'Client Reviews', path:'/reviews' },
+  { label:'Our Work',       path:'/our-work' },
+  { label:'Pricing',        path:'/pricing' },
+  { label:'Contact',        path:'/contact' },
+  { label:'Design Preview', path:'/free-demo' },
   { label:'Terms & Privacy',path:'/terms' },
 ];
 
