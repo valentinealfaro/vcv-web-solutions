@@ -103,11 +103,11 @@ export default function Portfolio() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
-            <p className="neon-badge mb-5 mx-auto w-fit">Our Work</p>
-            <h1 className="font-display text-5xl md:text-7xl text-white leading-[1.05] mb-5"
-              style={{ textShadow:'0 0 60px rgba(37,99,235,0.5), 0 0 120px rgba(124,58,237,0.25)' }}>
-              REAL SITES.<br/>
-              <span className="gradient-text">REAL CONVERSIONS.</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Our work</p>
+            <h1 className="font-display text-white tracking-tight leading-[1.02] mb-5"
+              style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)' }}>
+              Real sites.<br/>
+              <span className="gradient-text">Real conversions.</span>
             </h1>
             <p className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-3">
               Every site below is a <strong className="text-white">live, working website</strong> we designed and built.
@@ -188,9 +188,10 @@ export default function Portfolio() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-10">
-            <p className="neon-badge mb-4 mx-auto w-fit">9 Featured · 34 Total</p>
-            <h2 className="font-display text-3xl md:text-5xl text-white mb-3 leading-tight">
-              Live <span className="gradient-text">industry sites</span> we built
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">9 featured · 34 total</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-3"
+              style={{ fontSize: 'clamp(1.85rem, 5vw, 3.5rem)' }}>
+              Live <span className="gradient-text">industry sites</span> we built.
             </h2>
             <p className="text-gray-300 text-base max-w-2xl mx-auto">
               Each one is a fully working site with custom copy, conversion design, and Nova integrated.
@@ -265,9 +266,10 @@ export default function Portfolio() {
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-10">
-            <p className="neon-badge mb-3 mx-auto w-fit">The Stack</p>
-            <h2 className="font-display text-3xl md:text-5xl text-white leading-tight">
-              How we build sites that <span className="gradient-text">actually convert</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">The stack</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(1.85rem, 5vw, 3.5rem)' }}>
+              How we build sites that <span className="gradient-text">actually convert.</span>
             </h2>
           </motion.div>
 
@@ -299,12 +301,13 @@ export default function Portfolio() {
 
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div {...fade()}>
-            <p className="neon-badge mb-4 mx-auto w-fit">Your Turn</p>
-            <h2 className="font-display text-4xl md:text-7xl text-white mb-5 leading-tight"
-              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4)' }}>
-              Want one like<br/><span className="gradient-text">these for your biz?</span>
+            <p className="text-green-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Your turn</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-5"
+              style={{ fontSize: 'clamp(2.25rem, 7vw, 5.5rem)' }}>
+              Want one like<br/>
+              <span className="gradient-text">these for your biz?</span>
             </h2>
-            <p className="text-gray-200 text-lg mb-8 max-w-2xl mx-auto">
+            <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto leading-relaxed">
               We&apos;ll build a custom design preview for your business <strong className="text-white">free</strong> — see it before you commit to anything.
               Approved? Live in 24-48 hrs.
             </p>
