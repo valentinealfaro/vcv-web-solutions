@@ -575,12 +575,14 @@ const HeroContactForm = () => {
     try {
       const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
       const { db } = await import('../firebase');
+      const { getAttribution } = await import('@/lib/attribution');
+      const attribution = getAttribution();
       await addDoc(collection(db, 'leads'), {
-        ...form, createdAt: serverTimestamp(), status: 'new', source: 'Home Hero Form',
+        ...form, ...attribution, createdAt: serverTimestamp(), status: 'new', source: 'Home Hero Form',
       });
       const res = await fetch('/api/send-email', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, source: 'Home Hero Form' }),
+        body: JSON.stringify({ ...form, ...attribution, source: 'Home Hero Form' }),
       });
       if (!res.ok) throw new Error('Failed to send');
       setStatus('success'); setForm({ name: '', email: '', phone: '', business: '', message: '' });

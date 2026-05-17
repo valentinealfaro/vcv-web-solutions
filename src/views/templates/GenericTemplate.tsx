@@ -337,12 +337,14 @@ function ContactForm({ accent, industrySlug }: { accent: string; industrySlug: s
     try {
       const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
       const { db } = await import('@/firebase');
+      const { getAttribution } = await import('@/lib/attribution');
+      const attribution = getAttribution();
       await addDoc(collection(db, 'leads'), {
-        ...form, createdAt: serverTimestamp(), status:'new', source: `Template · ${industrySlug}`,
+        ...form, ...attribution, createdAt: serverTimestamp(), status:'new', source: `Template · ${industrySlug}`,
       });
       const res = await fetch('/api/send-email', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ ...form, source: `Template · ${industrySlug}` }),
+        body: JSON.stringify({ ...form, ...attribution, source: `Template · ${industrySlug}` }),
       });
       if (!res.ok) throw new Error('failed');
       setStatus('success'); setForm({ name:'', email:'', phone:'', message:'' });
