@@ -4,6 +4,7 @@ import Link from 'next/link';
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 const TITLE       = 'Client Reviews — 4.9 / 5 from 50+ Local Businesses · VCV Web Solutions';
 const DESCRIPTION = 'Real reviews from real businesses we have launched. Roofers, dentists, HVAC, plumbers — see what they say about our 3–7 day launches and lead-generating sites.';
+const OG_IMAGE    = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('★★★★★ · 4.9 / 5')}&title=${encodeURIComponent('Trusted by 50+ local businesses')}&subtitle=${encodeURIComponent('Roofers · Dentists · HVAC · Plumbers · Real reviews from real owners')}&accent=%23eab308`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -15,9 +16,9 @@ export const metadata: Metadata = {
     siteName: 'VCV Web Solutions',
     title: TITLE,
     description: DESCRIPTION,
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'VCV Web Solutions Reviews' }],
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'VCV Web Solutions Reviews' }],
   },
-  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: ['/og-image.png'] },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: [OG_IMAGE] },
 };
 
 const REVIEWS = [

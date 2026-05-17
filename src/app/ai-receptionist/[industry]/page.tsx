@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!data) return { title: 'Page Not Found' };
 
   const url = `${SITE_URL}/ai-receptionist/${data.slug}`;
+  const ogImage = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent(`NOVA · ${data.heroEyebrow}`)}&title=${encodeURIComponent('Never miss a call again')}&subtitle=${encodeURIComponent(`24/7 AI receptionist for ${data.pluralLabel}`)}&accent=${encodeURIComponent(data.color)}&emoji=${encodeURIComponent(data.emoji)}`;
   return {
     title: data.metaTitle,
     description: data.metaDescription,
@@ -33,13 +34,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: 'VCV Web Solutions',
       title: data.metaTitle,
       description: data.metaDescription,
-      images: [{ url: '/og-image.png', width: 1200, height: 630, alt: data.name }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: data.name }],
     },
     twitter: {
       card: 'summary_large_image',
       title: data.metaTitle,
       description: data.metaDescription,
-      images: ['/og-image.png'],
+      images: [ogImage],
     },
   };
 }

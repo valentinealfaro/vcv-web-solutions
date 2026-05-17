@@ -5,6 +5,7 @@ import { STATES } from '@/data/states';
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 const TITLE       = 'Service Areas — Website Design Across All 50 US States · VCV Web Solutions';
 const DESCRIPTION = 'We build conversion-focused websites for small businesses in every US state. Pick yours to see industry templates and local-SEO setup tailored to your market.';
+const OG_IMAGE    = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('SERVICE AREAS')}&title=${encodeURIComponent('All 50 US states')}&subtitle=${encodeURIComponent('Local SEO and conversion-focused sites · Built in 3–7 days')}&accent=%233b82f6`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -13,9 +14,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website', url: `${SITE_URL}/serving`, siteName: 'VCV Web Solutions',
     title: TITLE, description: DESCRIPTION,
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'VCV Web Solutions service areas' }],
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'VCV Web Solutions service areas' }],
   },
-  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: ['/og-image.png'] },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: [OG_IMAGE] },
 };
 
 const REGIONS = ['Northeast', 'South', 'Midwest', 'West'] as const;

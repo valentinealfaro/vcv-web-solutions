@@ -5,6 +5,7 @@ import { GUIDES } from '@/data/guides';
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 const TITLE       = 'Guides — Practical Web & Local-SEO Advice for Small Businesses · VCV';
 const DESCRIPTION = 'Plain-language guides for service-business owners on local SEO, website ROI, and what actually moves the needle. No fluff, no upsells.';
+const OG_IMAGE    = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('GUIDES')}&title=${encodeURIComponent('Plain advice for small business owners')}&subtitle=${encodeURIComponent('Local SEO · Website ROI · What actually moves the needle')}&accent=%233b82f6`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -13,9 +14,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website', url: `${SITE_URL}/guides`, siteName: 'VCV Web Solutions',
     title: TITLE, description: DESCRIPTION,
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'VCV Web Solutions Guides' }],
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'VCV Web Solutions Guides' }],
   },
-  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: ['/og-image.png'] },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: [OG_IMAGE] },
 };
 
 export default function Page() {

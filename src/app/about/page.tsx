@@ -4,6 +4,7 @@ import Link from 'next/link';
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 const TITLE       = 'About VCV Web Solutions — Lead-Generating Websites for Local Businesses';
 const DESCRIPTION = 'We build conversion-focused websites in 3–7 days for local service businesses. No bloated CMS, no upfront cost, no platform lock-in. Designed by people who actually run small businesses.';
+const OG_IMAGE    = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('ABOUT VCV')}&title=${encodeURIComponent('Websites that earn their keep')}&subtitle=${encodeURIComponent('Speed beats perfection · You own everything · See it before you pay')}&accent=%233b82f6`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -15,9 +16,9 @@ export const metadata: Metadata = {
     siteName: 'VCV Web Solutions',
     title: TITLE,
     description: DESCRIPTION,
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'About VCV Web Solutions' }],
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'About VCV Web Solutions' }],
   },
-  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: ['/og-image.png'] },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: [OG_IMAGE] },
 };
 
 const BELIEFS = [

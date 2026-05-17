@@ -3,6 +3,7 @@ import { INDUSTRIES } from '@/data/industries';
 import TemplatesGallery from '@/views/TemplatesGallery';
 
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const OG_IMAGE = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('TEMPLATE GALLERY')}&title=${encodeURIComponent('34 live website templates')}&subtitle=${encodeURIComponent('Filter by industry · Live demos · From $97/mo')}&accent=%238b5cf6`;
 
 export const metadata: Metadata = {
   title:       '34 Live Website Templates · Filter by Industry · VCV Web Solutions',
@@ -14,13 +15,13 @@ export const metadata: Metadata = {
     siteName: 'VCV Web Solutions',
     title: '34 Live Website Templates · Filter by Industry',
     description: 'Production-ready website templates for 34 industries. Live demos, full SEO, mobile-perfect, from $97/mo.',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'VCV Web Solutions Template Gallery' }],
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'VCV Web Solutions Template Gallery' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: '34 Live Website Templates · Filter by Industry',
     description: 'Live demos for 34 industries. Pick yours, customize, launch in 3–7 days.',
-    images: ['/og-image.png'],
+    images: [OG_IMAGE],
   },
 };
 

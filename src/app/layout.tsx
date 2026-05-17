@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     description: OG_DESC,
     images: [
       {
-        url:    '/og-image.png',
+        url:    `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('VCV WEB SOLUTIONS')}&title=${encodeURIComponent('Websites that generate leads')}&subtitle=${encodeURIComponent('Built in 3–7 days for local businesses · From $97/mo')}&accent=%233b82f6`,
         width:  1200,
         height: 630,
         alt:    'VCV Web Solutions — We build websites that generate leads',
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     site:        '@vcvwebsolutions',
     title:       'VCV Web Solutions — Websites That Generate Leads',
     description: OG_DESC,
-    images:      ['/og-image.png'],
+    images:      [`${SITE_URL}/api/og?eyebrow=${encodeURIComponent('VCV WEB SOLUTIONS')}&title=${encodeURIComponent('Websites that generate leads')}&subtitle=${encodeURIComponent('Built in 3–7 days for local businesses · From $97/mo')}&accent=%233b82f6`],
   },
   alternates: {
     canonical: SITE_URL,

@@ -47,17 +47,18 @@ export default async function Page({ params }: PageProps) {
   if (!g) notFound();
   const url = `${SITE_URL}/guides/${g.slug}`;
 
+  const articleImage = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent(`GUIDE · ${g.category.toUpperCase()}`)}&title=${encodeURIComponent(g.title)}&subtitle=${encodeURIComponent(g.readingTime + ' · Practical advice for small business owners')}&accent=%233b82f6`;
   const article = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline:     g.title,
     description:  g.description,
-    image:        `${SITE_URL}/og-image.png`,
+    image:        articleImage,
     datePublished: g.publishedAt,
     dateModified:  g.updatedAt,
     author:    { '@type': 'Organization', name: 'VCV Web Solutions', url: SITE_URL },
     publisher: { '@type': 'Organization', name: 'VCV Web Solutions', url: SITE_URL,
-                 logo: { '@type': 'ImageObject', url: `${SITE_URL}/og-image.png` } },
+                 logo: { '@type': 'ImageObject', url: 'https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FVCV%20Websolutions%20Logo.png?alt=media&token=aed21397-69ca-4846-a45d-267482b81acf' } },
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     articleSection: g.category,
     wordCount: g.sections.reduce((s, sec) => s + sec.paragraphs.join(' ').split(/\s+/).length, 0),
