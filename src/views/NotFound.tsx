@@ -89,6 +89,28 @@ export default function NotFound() {
           <FreeDemoButton size="md" label="Get Free Demo" />
         </div>
 
+        {/* Popular destinations — get lost visitors back into the funnel */}
+        <div className="mt-12">
+          <p className="text-gray-500 text-xs uppercase tracking-widest mb-4">Popular destinations</p>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {[
+              { href: '/templates',                label: 'Browse all templates' },
+              { href: '/templates/roofers',        label: 'Roofing template' },
+              { href: '/templates/hvac',           label: 'HVAC template' },
+              { href: '/templates/plumbers',       label: 'Plumbing template' },
+              { href: '/templates/dentists',       label: 'Dental template' },
+              { href: '/templates/restaurants',    label: 'Restaurant template' },
+              { href: '/pricing',                  label: 'See pricing' },
+              { href: '/contact',                  label: 'Contact us' },
+            ].map(({ href, label }) => (
+              <Link key={href} href={href}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-gray-300 bg-white/[0.04] border border-white/10 hover:border-blue-500/40 hover:text-white hover:bg-white/[0.08] transition-colors">
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
         {/* Retro terminal-style box */}
         <motion.div
           initial={{ opacity: 0 }}

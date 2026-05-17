@@ -17,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/terms`,                 lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
   ];
 
-  /* Industry-specific landing pages — each gets its own sitemap entry for SEO */
+  /* Industry-specific AI receptionist landing pages */
   const industryPages: MetadataRoute.Sitemap = INDUSTRIES.map(i => ({
     url: `${SITE_URL}/ai-receptionist/${i.slug}`,
     lastModified: now,
@@ -25,5 +25,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  return [...staticPages, ...industryPages];
+  /* Industry template demo pages — every slug has a live template at /templates/{slug} */
+  const templatePages: MetadataRoute.Sitemap = INDUSTRIES.map(i => ({
+    url: `${SITE_URL}/templates/${i.slug}`,
+    lastModified: now,
+    changeFrequency: 'weekly',
+    priority: 0.9,
+  }));
+
+  return [...staticPages, ...industryPages, ...templatePages];
 }

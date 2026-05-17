@@ -54,9 +54,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://firebasestorage.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        {/* Preload the primary font stylesheet so it doesn't render-block above the fold */}
+        <link
+          rel="preload"
+          as="style"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Inter+Tight:wght@500;600;700;800;900&family=Bebas+Neue&display=swap"
+        />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter+Tight:wght@500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Inter+Tight:wght@500;600;700;800;900&family=Bebas+Neue&display=swap"
         />
       </head>
       <body>
@@ -79,6 +85,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               contactType: 'sales',
               areaServed: 'US',
               availableLanguage: ['English'],
+            },
+          })}
+        </Script>
+        <Script id="ld-website" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'VCV Web Solutions',
+            url: SITE_URL,
+            description: OG_DESC,
+            publisher: { '@type': 'Organization', name: 'VCV Web Solutions' },
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/templates?q={search_term_string}` },
+              'query-input': 'required name=search_term_string',
             },
           })}
         </Script>

@@ -4,9 +4,10 @@ import { motion, useInView, AnimatePresence, LayoutGroup } from 'motion/react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
-import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award, Hammer, Wrench, Thermometer, Leaf, Sparkles, UtensilsCrossed, Store, Paintbrush, Car, Building2, Scissors, Dumbbell, GraduationCap, Truck, Bug, Sun, Stethoscope, Scale, PawPrint, HardHat, TreePine, Phone } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Globe, Rocket, BarChart3, Users, Layout, ShieldCheck, Search, Zap, TrendingUp, MousePointer, Clock, Award, Hammer, Wrench, Thermometer, Leaf, Sparkles, UtensilsCrossed, Store, Paintbrush, Car, Building2, Scissors, Dumbbell, GraduationCap, Truck, Bug, Sun, Stethoscope, Scale, PawPrint, HardHat, TreePine, Phone, ExternalLink, MessageCircle } from 'lucide-react';
 import { Boxes } from '@/components/ui/background-boxes';
 import { MarkerHighlight } from '@/components/ui/marker-highlight';
+import { INDUSTRIES } from '@/data/industries';
 
 // Below-fold sections loaded lazily — each becomes its own JS chunk
 const WhatHappensNextSection = dynamic(() => import('../components/WhatHappensNextSection').then(m => ({ default: m.WhatHappensNextSection })), { ssr: false });
@@ -556,32 +557,133 @@ const RobotMockup = () => {
   );
 };
 
+/* ─── Hero Contact Form (replaces the old animated demo mockup) ── */
+const HeroContactForm = () => {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', business: '', message: '' });
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errMsg, setErrMsg] = useState('');
+
+  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm(p => ({ ...p, [k]: e.target.value }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.message) {
+      setErrMsg('Please fill in Name, Email, and Message.'); setStatus('error'); return;
+    }
+    setStatus('loading'); setErrMsg('');
+    try {
+      const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
+      const { db } = await import('../firebase');
+      await addDoc(collection(db, 'leads'), {
+        ...form, createdAt: serverTimestamp(), status: 'new', source: 'Home Hero Form',
+      });
+      const res = await fetch('/api/send-email', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, source: 'Home Hero Form' }),
+      });
+      if (!res.ok) throw new Error('Failed to send');
+      setStatus('success'); setForm({ name: '', email: '', phone: '', business: '', message: '' });
+    } catch { setErrMsg('Something went wrong. Please try again.'); setStatus('error'); }
+  };
+
+  const baseInput = 'w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-blue-500/60 focus:bg-white/10 transition-colors';
+
+  return (
+    <div className="relative">
+      {/* Soft glow behind card */}
+      <div className="absolute -inset-3 rounded-3xl pointer-events-none"
+        style={{ background:'radial-gradient(ellipse at center, rgba(59,130,246,0.25), rgba(124,58,237,0.15), transparent 70%)', filter:'blur(28px)' }}/>
+
+      <div className="relative rounded-3xl p-7 md:p-8"
+        style={{ background:'rgba(6,10,22,0.96)', border:'1px solid rgba(255,255,255,0.10)',
+                 boxShadow:'0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(59,130,246,0.18)' }}>
+
+        {status === 'success' ? (
+          <div className="text-center py-6">
+            <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center"
+              style={{ background:'rgba(34,197,94,0.15)', border:'1px solid rgba(34,197,94,0.45)' }}>
+              <CheckCircle2 className="w-7 h-7 text-green-400"/>
+            </div>
+            <h3 className="text-white font-bold text-2xl mb-2">Thanks!</h3>
+            <p className="text-gray-400 text-sm leading-relaxed mb-5">
+              We&apos;ll get back to you within 24 hours with your free design preview.
+            </p>
+            <button onClick={() => setStatus('idle')}
+              className="text-blue-400 hover:text-blue-300 text-xs font-semibold uppercase tracking-wider">
+              Send another →
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="mb-5">
+              <p className="text-blue-400 text-[10px] font-bold uppercase tracking-[0.22em] mb-2">Free Design Preview</p>
+              <h3 className="font-display text-white text-2xl md:text-3xl leading-tight">
+                Get your custom demo<br/>built for free.
+              </h3>
+              <p className="text-gray-400 text-xs mt-2">No credit card · We reply within 24 hrs</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <input
+                type="text" required value={form.name} onChange={set('name')}
+                placeholder="Your name"
+                className={baseInput}
+              />
+              <input
+                type="email" required value={form.email} onChange={set('email')}
+                placeholder="you@example.com"
+                className={baseInput}
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="tel" value={form.phone} onChange={set('phone')}
+                  placeholder="Phone (optional)"
+                  className={baseInput}
+                />
+                <input
+                  type="text" value={form.business} onChange={set('business')}
+                  placeholder="Business name"
+                  className={baseInput}
+                />
+              </div>
+              <textarea
+                required value={form.message} onChange={set('message')}
+                placeholder="Tell us about your business and what you need"
+                rows={3}
+                className={baseInput + ' resize-none'}
+              />
+
+              {errMsg && (
+                <p className="text-red-400 text-xs font-semibold">{errMsg}</p>
+              )}
+
+              <button type="submit" disabled={status === 'loading'}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white px-6 py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 flex items-center justify-center gap-2">
+                {status === 'loading' ? 'Sending…' : <>Get My Free Demo <ArrowRight className="w-4 h-4"/></>}
+              </button>
+
+              <p className="text-center text-gray-600 text-[10px] tracking-wide">
+                Or call <a href="tel:+15809191386" className="text-blue-400 font-semibold hover:underline">(580) 919-1386</a>
+              </p>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 /* ─── Hero ────────────────────────────────────────────────── */
 const Hero = () => (
   <section className="relative flex items-center pt-28 pb-6" style={{ overflowX: 'hidden', overflowY: 'hidden', minHeight: 'calc(100vh - 80px)', background:'#030712' }}>
 
-    {/* ── Background video ── */}
-    <video
-      autoPlay loop muted playsInline
-      className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-      style={{ zIndex:0, opacity:0.45 }}>
-      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260206_044704_dd33cb15-c23f-4cfc-aa09-a0465d4dcb54.mp4" type="video/mp4" />
-    </video>
-
-    {/* Dark gradient overlay — site color */}
+    {/* Background video, ParticleCanvas, and animated orbs removed for performance. */}
+    {/* Quiet static gradient backdrop */}
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex:1,
-      background:'linear-gradient(135deg,rgba(3,7,18,0.82) 0%,rgba(17,24,39,0.65) 50%,rgba(3,7,18,0.80) 100%)' }} />
-
-    {/* Bottom fade to match next section */}
+      background:'radial-gradient(ellipse at 20% 30%, rgba(37,99,235,0.10) 0%, transparent 55%), radial-gradient(ellipse at 80% 70%, rgba(124,58,237,0.08) 0%, transparent 55%), #030712' }} />
     <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none" style={{ zIndex:1,
       background:'linear-gradient(to bottom,transparent,#030712)' }} />
-
-    <ParticleCanvas />
-
-    {/* Glowing orbs */}
-    <div className="absolute top-[-5%] left-[-5%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none animate-orb" style={{ zIndex:2 }} />
-    <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-purple-600/8 rounded-full blur-[140px] pointer-events-none animate-orb-delay" style={{ zIndex:2 }} />
-    <div className="absolute top-[40%] left-[50%] w-[300px] h-[300px] bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none animate-orb-slow" style={{ zIndex:2 }} />
 
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
       <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -676,12 +778,12 @@ const Hero = () => (
           </div>
         </motion.div>
 
-        {/* ── Robot overlaid on site mockup ── */}
+        {/* ── Contact form (replaces the demo robot mockup) ── */}
         <motion.div
           initial={{ opacity:0, x:40 }} animate={{ opacity:1, x:0 }}
           transition={{ duration:0.9, delay:0.2 }}
           className="hidden lg:block">
-          <RobotMockup />
+          <HeroContactForm />
         </motion.div>
       </div>
     </div>
@@ -969,8 +1071,7 @@ const StatsSection = () => {
 
   return (
     <section className="py-20 relative overflow-hidden bg-[#030712]">
-      {/* Static electricity fills the entire section behind cards */}
-      <StaticElectricity hitRectsRef={hitRectsRef} onHit={handleHit} />
+      {/* StaticElectricity canvas removed for performance */}
       <div className="absolute inset-0 bg-dot opacity-25 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -1269,17 +1370,9 @@ const PerfectFor = () => {
   return (
     <section style={{ borderTop: '1px solid rgba(37,99,235,0.15)', borderBottom: '1px solid rgba(37,99,235,0.15)', background: '#030712', position:'relative', overflow:'hidden' }}>
 
-      {/* ── Orbis space video background ── */}
-      <video autoPlay loop muted playsInline
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-        style={{ zIndex:0, opacity:0.85 }}>
-        <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_045634_e1c98c76-1265-4f5c-882a-4276f2080894.mp4" type="video/mp4"/>
-      </video>
-      {/* Light VCV tint — just enough to blend edges, let the video breathe */}
+      {/* Astronaut background video + Aurora canvas removed for performance */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex:1,
-        background:'linear-gradient(160deg,rgba(3,7,18,0.35) 0%,rgba(10,15,40,0.18) 50%,rgba(3,7,18,0.38) 100%)' }}/>
-
-      <AuroraCanvas />
+        background:'linear-gradient(160deg,rgba(10,15,40,0.6) 0%,rgba(3,7,18,0.85) 50%,rgba(10,15,40,0.6) 100%)' }}/>
 
       {/* ── Shared heading ── */}
       <div className="text-center pt-8 pb-4 px-4 relative z-10">
@@ -1559,23 +1652,31 @@ const PerfectFor = () => {
         )}
       </AnimatePresence>
 
-      {/* Popup */}
+      {/* Popup — viewport-fixed modal so it's always center-screen */}
       <AnimatePresence>
         {popup && (
-          <motion.div
-            key={`${popup.biz.id}-${Math.round(popup.cx)}`}
-            initial={{ opacity:0, scale:0.82, y:8 }}
-            animate={{ opacity:1, scale:1, y:0 }}
-            exit={{ opacity:0, scale:0.82, y:8 }}
-            transition={{ duration:0.22, ease:[0.16,1,0.3,1] }}
-            onClick={closePopup}
-            style={{ position:'absolute', zIndex:200, cursor:'pointer', width:320,
-              left: Math.max(12, (W - 320) / 2),
-              top: 12 }}>
-            <div style={{ background:'rgba(6,10,22,0.97)', border:`1.5px solid ${popup.biz.color}60`,
-              borderRadius:18, padding:20,
-              boxShadow:`0 0 0 1px ${popup.biz.color}20, 0 0 70px ${popup.biz.color}30, 0 24px 64px rgba(0,0,0,0.9)`,
-              backdropFilter:'blur(28px)' }}>
+          <>
+            {/* Dim backdrop */}
+            <motion.div
+              key="popup-backdrop"
+              initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
+              transition={{ duration:0.2 }}
+              onClick={closePopup}
+              style={{ position:'fixed', inset:0, zIndex:9998,
+                background:'rgba(0,0,0,0.55)', backdropFilter:'blur(4px)' }} />
+            <motion.div
+              key={`${popup.biz.id}-${Math.round(popup.cx)}`}
+              initial={{ opacity:0, scale:0.82, y:8 }}
+              animate={{ opacity:1, scale:1, y:0 }}
+              exit={{ opacity:0, scale:0.82, y:8 }}
+              transition={{ duration:0.22, ease:[0.16,1,0.3,1] }}
+              onClick={closePopup}
+              style={{ position:'fixed', zIndex:9999, cursor:'pointer', width:'min(420px, calc(100vw - 32px))',
+                left:'50%', top:'50%', transform:'translate(-50%, -50%)' }}>
+              <div style={{ background:'rgba(6,10,22,0.98)', border:`2px solid ${popup.biz.color}`,
+                borderRadius:18, padding:24,
+                boxShadow:`0 0 0 1px ${popup.biz.color}40, 0 0 80px ${popup.biz.color}55, 0 24px 64px rgba(0,0,0,0.95)`,
+                backdropFilter:'blur(28px)' }}>
               <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:12 }}>
                 <div style={{ width:44,height:44,borderRadius:12,background:`${popup.biz.color}20`,
                   border:`1px solid ${popup.biz.color}50`, display:'flex',alignItems:'center',
@@ -1593,9 +1694,10 @@ const PerfectFor = () => {
                 <span style={{ color:'#e2e8f0',fontWeight:700,fontSize:12 }}>{popup.biz.stat}</span>
               </div>
               <p style={{ color:'#94a3b8',fontSize:12,lineHeight:1.65,margin:'0 0 10px' }}>{popup.biz.detail}</p>
-              <p style={{ color:`${popup.biz.color}70`,fontSize:10,textAlign:'center',margin:0 }}>Click to close &amp; respawn</p>
-            </div>
-          </motion.div>
+              <p style={{ color:`${popup.biz.color}70`,fontSize:10,textAlign:'center',margin:0 }}>Click anywhere to close &amp; respawn</p>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
       </div>{/* end desktop physics div */}
@@ -2234,6 +2336,468 @@ const SEOContent = () => (
   </section>
 );
 
+/* ─── Sample Websites — replaces the old bubble physics section ── */
+const SampleWebsiteCard = ({ ind, i }: { ind: typeof INDUSTRIES[number]; i: number }) => {
+  const tagline =
+    ind.name.includes('Roofers')    ? 'Storm Calls' :
+    ind.name.includes('Plumbers')   ? '3am Calls' :
+    ind.name.includes('Dentists')   ? 'New Patients' :
+    ind.name.includes('Lawyers')    ? 'Consults' :
+    ind.name.includes('Real')       ? 'Showings' :
+    ind.name.includes('Restaurant') ? 'Reservations' :
+    ind.name.includes('Med')        ? 'Bookings' :
+    ind.name.includes('Salon')      ? 'Appointments' :
+    ind.name.includes('Wedding')    ? 'Tour Requests' :
+    'Jobs';
+
+  return (
+    <motion.div
+      initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+      transition={{ delay: (i % 8) * 0.04 }}>
+      <Link href={`/templates/${ind.slug}`}
+        className="group block rounded-2xl overflow-hidden p-3 transition-transform hover:-translate-y-1"
+        style={{
+          background: 'rgba(5,12,22,0.97)',
+          border: `1px solid ${ind.color}30`,
+          boxShadow: `0 8px 32px rgba(0,0,0,0.5), 0 0 24px ${ind.color}15`,
+        }}>
+        {/* Browser-frame mockup */}
+        <div className="relative aspect-[4/3] rounded-xl overflow-hidden"
+          style={{ background: `linear-gradient(135deg, ${ind.color}28, ${ind.color}08)`,
+                   border: `1px solid ${ind.color}50` }}>
+          <div className="absolute top-0 left-0 right-0 h-7 flex items-center gap-1.5 px-3"
+            style={{ background: 'rgba(0,0,0,0.55)', borderBottom: `1px solid ${ind.color}30` }}>
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
+            <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
+            <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
+            <span className="ml-2 text-[9px] text-gray-400 font-mono truncate">{ind.slug}-template.vcv.com</span>
+          </div>
+          <div className="absolute inset-x-0 top-7 bottom-0 flex flex-col items-center justify-center text-center px-4">
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full mb-2 text-[9px] font-bold tracking-widest"
+              style={{ background:`${ind.color}22`, border:`1px solid ${ind.color}55`, color: ind.color }}>
+              {ind.emoji} {ind.name.toUpperCase()}
+            </span>
+            <div className="font-display text-white text-base md:text-lg leading-tight mb-2"
+              style={{ textShadow: `0 0 18px ${ind.color}80` }}>
+              Stop Losing<br/>
+              <span style={{ color: ind.color }}>{tagline}</span>
+            </div>
+            <div className="flex gap-1.5 mt-1">
+              <span className="text-[8px] font-bold px-2 py-1 rounded text-white" style={{ background: ind.color }}>Try Free</span>
+              <span className="text-[8px] font-bold px-2 py-1 rounded text-gray-300"
+                style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)' }}>Call Demo</span>
+            </div>
+            <div className="absolute bottom-3 left-3 right-3 flex gap-1.5">
+              {[0,1,2].map(k => (
+                <div key={k} className="flex-1 rounded h-2"
+                  style={{ background: `${ind.color}${k===1?'40':'20'}` }} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-xl">{ind.emoji}</span>
+            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: ind.color }}>
+              {ind.name}
+            </p>
+          </div>
+          <h3 className="text-white font-bold text-base leading-snug mb-2 line-clamp-2">
+            {ind.heroHeadline.replace(/\n/g, ' ')}
+          </h3>
+          <span className="inline-flex items-center gap-1.5 text-sm font-bold group-hover:gap-2 transition-all"
+            style={{ color: ind.color }}>
+            View live site <ExternalLink className="w-3.5 h-3.5"/>
+          </span>
+        </div>
+      </Link>
+    </motion.div>
+  );
+};
+
+const SampleWebsites = () => (
+  <section className="relative py-20 bg-[#030712] overflow-hidden"
+    style={{ borderTop: '1px solid rgba(37,99,235,0.15)', borderBottom: '1px solid rgba(37,99,235,0.15)' }}>
+    <div className="absolute inset-0 pointer-events-none" style={{ zIndex:0,
+      background:'linear-gradient(160deg,rgba(10,15,40,0.45) 0%,rgba(3,7,18,0.85) 50%,rgba(10,15,40,0.45) 100%)' }}/>
+
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <motion.div
+        initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+        className="text-center mb-12">
+        <p className="neon-badge mx-auto w-fit mb-4">Live Sample Sites</p>
+        <h2 className="font-display text-white mb-3"
+          style={{ fontSize:'clamp(2.8rem,8vw,7rem)', lineHeight:1,
+            textShadow:'0 0 50px rgba(37,99,235,0.6), 0 0 100px rgba(124,58,237,0.3)' }}>
+          PERFECT FOR
+        </h2>
+        <p className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto">
+          {INDUSTRIES.length} fully-built industry websites — click any to see it live.
+        </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {INDUSTRIES.map((ind, i) => (
+          <SampleWebsiteCard key={ind.slug} ind={ind} i={i} />
+        ))}
+      </div>
+
+      <motion.div
+        initial={{ opacity:0 }} whileInView={{ opacity:1 }} viewport={{ once:true }}
+        className="text-center mt-12">
+        <Link href="/our-work"
+          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
+          See all our work <ArrowRight className="w-4 h-4"/>
+        </Link>
+      </motion.div>
+    </div>
+  </section>
+);
+
+/* ─── Trust band — testimonials + counters + 5-star review row ──── */
+const TESTIMONIALS = [
+  { quote: 'Booked 3 jobs in the first week. The phone literally has not stopped.',           name: 'Mike R.',     role: 'Owner, Tulsa Roofing Co.',  initial: 'M', accent: '#ef4444' },
+  { quote: 'Looks like a $20k website. Cost me a fraction of that. Best money I have spent.', name: 'Sarah H.',    role: 'Owner, Sparkle Cleaning',   initial: 'S', accent: '#22c55e' },
+  { quote: 'Our old site got 2 leads a month. New site got 18 in the first 30 days.',          name: 'David L.',    role: 'GM, Cool Air HVAC',          initial: 'D', accent: '#06b6d4' },
+  { quote: 'Launched in 5 days. We are #1 on Google for "plumber {city}" within a month.',     name: 'James T.',    role: 'Anchor Plumbing',           initial: 'J', accent: '#3b82f6' },
+];
+
+const CounterStat = ({ value, suffix='', label }: { value: number; suffix?: string; label: string }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let fired = false;
+    const run = () => {
+      if (fired) return; fired = true;
+      const dur = 1500, t0 = performance.now();
+      const tick = (now: number) => {
+        const t = Math.min((now - t0) / dur, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        setN(Math.floor(ease * value));
+        if (t < 1) requestAnimationFrame(tick); else setN(value);
+      };
+      requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { run(); io.disconnect(); } }, { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [value]);
+  return (
+    <div ref={ref} className="text-center">
+      <div className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-2">
+        {n.toLocaleString()}{suffix}
+      </div>
+      <p className="text-gray-400 text-xs md:text-sm uppercase tracking-wider font-semibold">{label}</p>
+    </div>
+  );
+};
+
+const TrustBand = () => (
+  <section className="relative py-20 md:py-24 bg-[#030712]"
+    style={{ borderTop:'1px solid rgba(255,255,255,0.06)', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+    <div className="absolute inset-0 pointer-events-none"
+      style={{ background:'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.07) 0%, transparent 60%)' }}/>
+
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+        className="text-center mb-12">
+        <div className="inline-flex items-center gap-1.5 mb-4">
+          {[...Array(5)].map((_,i)=> (
+            <svg key={i} className="w-5 h-5 fill-current text-yellow-400" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M10 1l2.6 5.9 6.4.6-4.8 4.4 1.4 6.3L10 15l-5.6 3.2L5.8 11.9 1 7.5l6.4-.6L10 1z"/>
+            </svg>
+          ))}
+          <span className="ml-2 text-white font-bold text-sm">4.9 · 50+ reviews</span>
+        </div>
+        <h2 className="font-display text-4xl md:text-6xl text-white tracking-tight mb-3">
+          Trusted by local <span className="gradient-text">business owners</span>
+        </h2>
+        <p className="text-gray-400 max-w-2xl mx-auto">
+          Real results from real businesses we&apos;ve launched.
+        </p>
+      </motion.div>
+
+      {/* Counter row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-14 max-w-4xl mx-auto">
+        <CounterStat value={50}   suffix="+"        label="Websites Launched" />
+        <CounterStat value={5}    suffix=" days"    label="Avg Launch Time" />
+        <CounterStat value={98}   suffix="%"        label="Client Satisfaction" />
+        <CounterStat value={30}   suffix="-Day"     label="Results Guarantee" />
+      </div>
+
+      {/* Testimonials grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-5xl mx-auto">
+        {TESTIMONIALS.map((t, i) => (
+          <motion.div key={i}
+            initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+            transition={{ delay: i * 0.06 }}
+            className="p-6 md:p-7 rounded-2xl"
+            style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.08)' }}>
+            <div className="flex items-center gap-1 mb-3">
+              {[...Array(5)].map((_,k)=> (
+                <svg key={k} className="w-3.5 h-3.5 fill-current" style={{ color: t.accent }} viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M10 1l2.6 5.9 6.4.6-4.8 4.4 1.4 6.3L10 15l-5.6 3.2L5.8 11.9 1 7.5l6.4-.6L10 1z"/>
+                </svg>
+              ))}
+            </div>
+            <p className="text-gray-100 text-base md:text-lg leading-relaxed mb-5">
+              &ldquo;{t.quote}&rdquo;
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm"
+                style={{ background: t.accent }}>
+                {t.initial}
+              </div>
+              <div>
+                <p className="text-white font-bold text-sm leading-tight">{t.name}</p>
+                <p className="text-gray-400 text-xs">{t.role}</p>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* CTA */}
+      <div className="text-center mt-12">
+        <Link href="/free-demo"
+          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-7 py-3.5 rounded-full font-bold text-sm transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
+          Join them — get your free demo <ArrowRight className="w-4 h-4"/>
+        </Link>
+      </div>
+    </div>
+  </section>
+);
+
+/* ─── ROI / Value Stack — "what you'd pay elsewhere" ───────── */
+const VALUE_ROWS = [
+  { label: 'Custom website design',          ours: 'Included', theirs: '$3,500',  badge: '✓' },
+  { label: 'Mobile-optimized + responsive',  ours: 'Included', theirs: '$800',    badge: '✓' },
+  { label: 'SEO setup + Google Business',    ours: 'Included', theirs: '$1,200',  badge: '✓' },
+  { label: 'Lead-capture forms + analytics', ours: 'Included', theirs: '$600',    badge: '✓' },
+  { label: 'Hosting + SSL + maintenance',    ours: 'Included', theirs: '$1,200/yr', badge: '✓' },
+  { label: '30-day results guarantee',       ours: 'Included', theirs: '—',       badge: '✓' },
+  { label: 'You own the domain + code',      ours: 'Yes',      theirs: '✗',       badge: '✓' },
+];
+
+const ValueStackBand = () => (
+  <section className="relative py-20 md:py-28 bg-[#040a16]"
+    style={{ borderTop:'1px solid rgba(255,255,255,0.06)', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+    <div className="absolute inset-0 pointer-events-none"
+      style={{ background:'radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.06) 0%, transparent 60%)' }}/>
+
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <motion.div
+        initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+        className="text-center mb-12">
+        <span className="inline-block text-green-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">What it costs elsewhere</span>
+        <h2 className="font-display text-4xl md:text-6xl text-white tracking-tight leading-tight mb-3">
+          A <span className="gradient-text">$7,300+ build</span><br/>for $97/month.
+        </h2>
+        <p className="text-gray-400 max-w-2xl mx-auto">
+          Most agencies price each piece separately. We bundle the entire stack into one monthly fee and ship it in a week.
+        </p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+        className="relative rounded-3xl overflow-hidden"
+        style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.10)',
+                 boxShadow:'0 30px 80px rgba(0,0,0,0.5)' }}>
+        {/* Header row */}
+        <div className="hidden md:grid grid-cols-12 px-6 py-4 text-xs font-bold uppercase tracking-widest"
+          style={{ background:'rgba(255,255,255,0.03)', borderBottom:'1px solid rgba(255,255,255,0.08)', color:'#94a3b8' }}>
+          <div className="col-span-6">What you get</div>
+          <div className="col-span-3 text-center text-blue-400">VCV — from $97/mo</div>
+          <div className="col-span-3 text-center text-gray-500">Typical agency</div>
+        </div>
+
+        {VALUE_ROWS.map((row, i) => (
+          <motion.div key={i}
+            initial={{ opacity:0, x:-10 }} whileInView={{ opacity:1, x:0 }} viewport={{ once:true }}
+            transition={{ delay: i * 0.04 }}
+            className="grid grid-cols-1 md:grid-cols-12 px-6 py-5 items-center gap-3 md:gap-0"
+            style={{ borderBottom: i < VALUE_ROWS.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
+            <div className="md:col-span-6 flex items-center gap-3">
+              <span className="w-6 h-6 rounded-full flex items-center justify-center bg-green-500/15 border border-green-500/35 flex-shrink-0">
+                <CheckCircle2 className="w-3.5 h-3.5 text-green-400"/>
+              </span>
+              <span className="text-white text-sm md:text-base font-medium">{row.label}</span>
+            </div>
+            <div className="md:col-span-3 md:text-center">
+              <span className="md:hidden text-gray-500 text-xs uppercase tracking-wider mr-2">VCV:</span>
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-bold"
+                style={{ background:'rgba(34,197,94,0.12)', color:'#4ade80', border:'1px solid rgba(34,197,94,0.35)' }}>
+                {row.ours}
+              </span>
+            </div>
+            <div className="md:col-span-3 md:text-center">
+              <span className="md:hidden text-gray-500 text-xs uppercase tracking-wider mr-2">Typical:</span>
+              <span className={`text-sm font-bold ${row.theirs === '—' || row.theirs === '✗' ? 'text-gray-600' : 'text-red-400 line-through decoration-red-400/40'}`}>
+                {row.theirs}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+
+        {/* Total row */}
+        <div className="grid grid-cols-1 md:grid-cols-12 px-6 py-6 items-center"
+          style={{ background:'linear-gradient(90deg, rgba(34,197,94,0.06), rgba(59,130,246,0.06))', borderTop:'1px solid rgba(255,255,255,0.10)' }}>
+          <div className="md:col-span-6 mb-3 md:mb-0">
+            <p className="text-white font-extrabold text-lg">Total value</p>
+          </div>
+          <div className="md:col-span-3 text-center">
+            <p className="text-2xl font-extrabold text-green-400">$97/mo</p>
+          </div>
+          <div className="md:col-span-3 text-center">
+            <p className="text-2xl font-extrabold text-gray-500 line-through decoration-red-400/40">$7,300+</p>
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="text-center mt-10">
+        <Link href="/free-demo"
+          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-base transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
+          Lock in $97/month while it lasts <ArrowRight className="w-5 h-5"/>
+        </Link>
+        <p className="text-gray-500 text-xs mt-3">No setup fee on annual · Cancel anytime · You own everything</p>
+      </div>
+    </div>
+  </section>
+);
+
+/* ─── Process timeline — "How it works" ────────────────────── */
+const PROCESS_STEPS = [
+  { n: '01', t: 'Tell us about your business', d: 'Fill out a 60-second form or call (580) 919-1386. We learn your niche, services, and goals.', icon: MessageCircle as any },
+  { n: '02', t: 'We build a free design preview', d: 'Within 48 hours you get a custom website mockup designed specifically for you — no payment required.',  icon: Sparkles as any },
+  { n: '03', t: 'You approve, we launch',         d: 'Tweak anything, then we ship the live site in 3–7 days. SEO, hosting, domain — all handled.',          icon: Rocket as any },
+  { n: '04', t: 'Phone starts ringing',           d: '30-day results guarantee. If it isn\'t generating leads in a month, we optimize at no extra charge.',   icon: TrendingUp as any },
+];
+
+const ProcessBand = () => (
+  <section className="relative py-20 md:py-28 bg-[#030712]"
+    style={{ borderTop:'1px solid rgba(255,255,255,0.06)', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+        className="text-center mb-14">
+        <span className="inline-block text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">How it works</span>
+        <h2 className="font-display text-4xl md:text-6xl text-white tracking-tight leading-tight mb-3">
+          Live in under a week.
+        </h2>
+        <p className="text-gray-400 max-w-2xl mx-auto">
+          Four steps. No upfront cost. No long-term contracts. You only pay if you love what you see.
+        </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {PROCESS_STEPS.map((s, i) => {
+          const Icon = s.icon;
+          return (
+            <motion.div key={s.n}
+              initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+              transition={{ delay: i * 0.06 }}
+              className="relative p-7 rounded-2xl group hover:border-blue-500/40 transition-colors"
+              style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.08)' }}>
+              <div className="flex items-center gap-3 mb-5">
+                <span className="text-4xl font-black text-blue-500/30 group-hover:text-blue-500/60 transition-colors">{s.n}</span>
+                <div className="w-10 h-10 rounded-xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-center">
+                  <Icon className="w-4 h-4 text-blue-400" />
+                </div>
+              </div>
+              <h3 className="text-white font-bold text-lg mb-2 leading-tight">{s.t}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">{s.d}</p>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+);
+
+/* ─── FAQ — conversion-objection answers ──────────────────── */
+const FAQ_ITEMS = [
+  { q: 'How much does a website cost?',
+    a: 'Monthly plans start at $97/mo. Annual is $997/yr (save $173). Lifetime is $1,497 one-time, no recurring fees. Setup is $247, waived on annual and lifetime plans.' },
+  { q: 'How long does it take to build my site?',
+    a: 'Most sites launch in 3–7 days from approval. We build a free design preview within 48 hours of your request — you only commit if you like what you see.' },
+  { q: 'Do I really get a free demo before paying?',
+    a: 'Yes. We build a custom mockup of your site first. No credit card needed. No commitment. You see exactly what you\'re getting before any money changes hands.' },
+  { q: 'What if I don\'t get any leads?',
+    a: 'Every site comes with a 30-day results guarantee. If it isn\'t generating leads after 30 days, we optimize it at no extra cost until it does.' },
+  { q: 'Do I own the website?',
+    a: '100%. Your domain, your code, your content. No platform lock-in. You can leave any time and take everything with you.' },
+  { q: 'Can you handle SEO and ads?',
+    a: 'Yes — every site is SEO-optimized from launch, including Google Business Profile setup. We also manage Google Ads + Meta Ads on Annual and Lifetime plans.' },
+];
+
+const FAQAccordion = () => {
+  const [open, setOpen] = useState<number | null>(0);
+  return (
+    <section className="relative py-20 md:py-28 bg-[#040a16]">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+          className="text-center mb-12">
+          <span className="inline-block text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Frequently asked</span>
+          <h2 className="font-display text-4xl md:text-6xl text-white tracking-tight leading-tight">
+            Got questions?
+          </h2>
+        </motion.div>
+
+        <div className="space-y-3">
+          {FAQ_ITEMS.map((item, i) => {
+            const isOpen = open === i;
+            return (
+              <motion.div key={i}
+                initial={{ opacity:0, y:10 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+                transition={{ delay: i * 0.04 }}
+                className="rounded-2xl overflow-hidden"
+                style={{
+                  background:'rgba(255,255,255,0.025)',
+                  border: isOpen ? '1px solid rgba(59,130,246,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                  transition: 'border-color 0.25s',
+                }}>
+                <button onClick={() => setOpen(isOpen ? null : i)}
+                  className="w-full px-6 py-5 flex items-center justify-between text-left gap-4">
+                  <span className="text-white font-bold text-base md:text-lg pr-4">{item.q}</span>
+                  <span className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${isOpen ? 'rotate-45 bg-blue-500/25' : 'bg-white/[0.06]'}`}>
+                    <span className="text-white text-xl leading-none -mt-px">+</span>
+                  </span>
+                </button>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden">
+                      <p className="px-6 pb-6 text-gray-300 leading-relaxed">{item.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div className="text-center mt-10">
+          <p className="text-gray-400 mb-4 text-sm">Still have questions?</p>
+          <Link href="/contact"
+            className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-bold text-sm transition-colors">
+            Talk to us → <ArrowRight className="w-4 h-4"/>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 /* ─── Page ────────────────────────────────────────────────── */
 export default function Home() {
   return (
@@ -2241,11 +2805,15 @@ export default function Home() {
       <Hero />
       <MarqueeBand />
       <StatsSection />
-      <PerfectFor />
+      <SampleWebsites />
+      <TrustBand />
+      <ValueStackBand />
+      <ProcessBand />
       <WhatHappensNextSection />
       <LeadMagnetSection />
       <WhyChooseUs />
       <PricingSection />
+      <FAQAccordion />
     </div>
   );
 }

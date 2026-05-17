@@ -71,6 +71,7 @@ export const Navbar = () => {
               transition={{ duration: LOGO_DUR, repeat: Infinity, ease: 'linear' }}
               whileHover={{ scale: 1.06 }}>
               <img src={LOGO_SRC} alt="VCV Web Solutions"
+                width={36} height={36} fetchPriority="high" decoding="async"
                 className="w-7 h-7 md:w-9 md:h-9 object-contain mb-0.5" referrerPolicy="no-referrer" />
               <motion.span
                 className="text-xs md:text-sm font-black leading-none tracking-widest"
