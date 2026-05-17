@@ -548,12 +548,13 @@ export default function WebsiteOnboarding() {
 
         {/* Header */}
         <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} className="text-center mb-10">
-          <p className="neon-badge mb-4 mx-auto w-fit">Welcome, New Client</p>
-          <h1 className="font-display text-5xl md:text-6xl text-white mb-3 leading-none"
-            style={{ textShadow:'0 0 40px rgba(37,99,235,0.5)' }}>
-            LET&apos;S BUILD<br/><span className="gradient-text">YOUR SITE</span>
+          <p className="text-green-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Welcome, new client</p>
+          <h1 className="font-display text-white tracking-tight leading-[1.02] mb-3"
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
+            Let&apos;s build<br/>
+            <span className="gradient-text">your site.</span>
           </h1>
-          <p className="text-gray-400 text-base max-w-xl mx-auto">
+          <p className="text-gray-300 text-base max-w-xl mx-auto leading-relaxed">
             Complete all steps below so we can start building immediately. The more detail you provide, the faster and better we build.
           </p>
         </motion.div>

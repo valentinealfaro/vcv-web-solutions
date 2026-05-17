@@ -68,12 +68,12 @@ export default function Terms() {
         <GridOverlay gridOp={0.3} dotOp={0.12} />
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{ opacity:0, y:30 }} animate={{ opacity:1, y:0 }} transition={{ duration:.7 }}>
-            <p className="neon-badge mb-5 mx-auto w-fit">Legal</p>
-            <h1 className="font-display leading-none text-white mb-4"
-              style={{ fontSize:'clamp(3rem,8vw,6rem)', textShadow:'0 0 60px rgba(37,99,235,0.5)' }}>
-              TERMS &amp; PRIVACY
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Legal</p>
+            <h1 className="font-display text-white tracking-tight leading-[1.02] mb-4"
+              style={{ fontSize: 'clamp(2.75rem, 7.5vw, 5.5rem)' }}>
+              Terms &amp; <span className="gradient-text">privacy.</span>
             </h1>
-            <p className="text-gray-400 text-lg max-w-xl mx-auto">
+            <p className="text-gray-400 text-lg max-w-xl mx-auto leading-relaxed">
               Effective {EFFECTIVE_DATE} &nbsp;·&nbsp; {COMPANY}
             </p>
           </motion.div>
