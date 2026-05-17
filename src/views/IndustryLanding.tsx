@@ -10,7 +10,15 @@ import { TryNovaButton } from '@/components/TryNovaButton';
 /* EqualizerCanvas import removed — was a third rAF canvas per page on
    34 industry routes. Static CSS orbs alone provide the same depth. */
 import { ROICalculator } from '@/components/ROICalculator';
-import { CheckoutUpsellModal } from '@/components/CheckoutUpsellModal';
+import dynamic from 'next/dynamic';
+
+/* Lazy-load the 350-LOC upsell modal — only mounts when a user actually
+   clicks Buy Now, so it stays out of the critical render path for the
+   ~99% of visitors who never reach checkout. */
+const CheckoutUpsellModal = dynamic(
+  () => import('@/components/CheckoutUpsellModal').then(m => m.CheckoutUpsellModal),
+  { ssr: false },
+);
 import { MarqueeBand, SectionOrbs, GridOverlay } from '@/components/PageEffects';
 import type { IndustryData } from '@/data/industries';
 import { NOVA_TIERS as TIERS, type NovaTier as Tier } from '@/data/novaTiers';
