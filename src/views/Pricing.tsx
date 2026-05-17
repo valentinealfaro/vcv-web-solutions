@@ -227,13 +227,13 @@ export default function Pricing() {
 
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{ opacity:0,y:30 }} animate={{ opacity:1,y:0 }} transition={{ duration:.7 }}>
-            <p className="neon-badge mb-5 mx-auto w-fit">Simple Pricing</p>
-            <h1 className="font-display leading-none text-white mb-5"
-              style={{ fontSize:'clamp(3.5rem,9vw,7rem)',
-                textShadow:'0 0 60px rgba(37,99,235,0.5), 0 0 120px rgba(124,58,237,0.25)' }}>
-              PRICING THAT<br /><span className="gradient-text">PAYS FOR ITSELF</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Simple pricing</p>
+            <h1 className="font-display text-white tracking-tight leading-[1.02] mb-5"
+              style={{ fontSize:'clamp(3rem, 8vw, 6.5rem)' }}>
+              Pricing that<br/>
+              <span className="gradient-text">pays for itself.</span>
             </h1>
-            <p className="text-gray-400 text-xl mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-300 text-xl mb-6 max-w-2xl mx-auto leading-relaxed">
               Professional lead-generating websites starting at $97/mo — backed by our 30-day results guarantee.
             </p>
 
@@ -291,11 +291,11 @@ export default function Pricing() {
               style={{ background:'rgba(255,193,7,0.12)', border:'1px solid rgba(255,193,7,0.5)' }}>
               <span className="text-yellow-300 font-bold text-xs tracking-widest">🎁 BEST VALUE BUNDLE</span>
             </motion.div>
-            <h2 className="font-display text-5xl md:text-7xl text-white mb-4 leading-none"
-              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4), 0 0 80px rgba(6,182,212,0.25)' }}>
-              NOVA + <span className="gradient-text">LEAD WEBSITE</span>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-4"
+              style={{ fontSize: 'clamp(2.5rem, 7vw, 5.5rem)' }}>
+              Nova + <span className="gradient-text">lead website.</span>
             </h2>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
               Pair Nova with a high-converting website that captures leads even when she&apos;s not on a call.
               <span className="block mt-2 text-gray-400 text-base">Two products, one bundled price, one setup fee.</span>
             </p>
@@ -607,9 +607,10 @@ export default function Pricing() {
               <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"/>
               <span className="text-green-400 font-bold text-xs tracking-widest">AI RECEPTIONIST · NOVA</span>
             </div>
-            <h2 className="font-display text-5xl md:text-7xl text-white mb-4 leading-none"
-              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4), 0 0 80px rgba(6,182,212,0.25)' }}>
-              NEVER MISS<br/><span className="gradient-text">ANOTHER CALL</span>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-4"
+              style={{ fontSize: 'clamp(2.5rem, 7vw, 5.5rem)' }}>
+              Never miss<br/>
+              <span className="gradient-text">another call.</span>
             </h2>
             <p className="text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
               Add Nova — our AI receptionist that answers every call 24/7, books jobs, and texts you the lead instantly.
@@ -787,8 +788,11 @@ export default function Pricing() {
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
             <TrendingUp className="w-12 h-12 text-blue-500 mx-auto mb-6" />
-            <h2 className="font-display text-5xl text-white mb-4">NOT A COST - AN INVESTMENT</h2>
-            <p className="text-gray-400 text-lg">
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-4"
+              style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
+              Not a cost — <span className="gradient-text">an investment.</span>
+            </h2>
+            <p className="text-gray-300 text-lg leading-relaxed">
               If your website brings even 2 to 3 extra jobs per month, it pays for itself.
             </p>
           </motion.div>
@@ -872,7 +876,13 @@ export default function Pricing() {
       <section className="py-20 bg-[#040a16] relative overflow-hidden">
         <DottedSurface colorful className="opacity-45" />
         <div className="max-w-3xl mx-auto px-4 relative z-10">
-          <h2 className="font-display text-5xl text-white mb-10 text-center">FAQ</h2>
+          <div className="text-center mb-10">
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-3">Frequently asked</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
+              Common <span className="gradient-text">questions.</span>
+            </h2>
+          </div>
           <div className="space-y-3">
           {FAQ_DATA.map((item, i) => (
             <FAQItem
@@ -895,9 +905,11 @@ export default function Pricing() {
         <div className="absolute inset-0 bg-[#030712]/55 pointer-events-none" />
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{ opacity:0,y:30 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }}>
-            <p className="neon-badge mb-5 mx-auto w-fit">Ready to Start?</p>
-            <h2 className="font-display text-6xl md:text-8xl text-white mb-6 leading-none">
-              GET YOUR<br /><span className="gradient-text">FREE DEMO</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Ready to start?</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.02] mb-6"
+              style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)' }}>
+              Get your<br/>
+              <span className="gradient-text">free demo.</span>
             </h2>
             <p className="text-gray-400 text-xl mb-10">See your custom design first. If you love it, we launch it — fast.</p>
             <FreeDemoButton size="xl" label="Build My Free Demo" />
