@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import React from 'react';
+import { Inter, Inter_Tight, Bebas_Neue } from 'next/font/google';
 import './globals.css';
 import { CustomCursor } from '@/components/CustomCursor';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -7,6 +8,33 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { SiteChrome } from '@/components/SiteChrome';
 import { Analytics } from '@/components/Analytics';
 import Script from 'next/script';
+
+/* ─── Self-hosted fonts via next/font/google ───────────────────────────
+   Replaces the external <link rel="stylesheet"> that was render-blocking on
+   first paint. Now fonts are bundled, served from our own domain with
+   immutable caching, and use display: 'swap' to never block text from
+   rendering. Real LCP / CLS improvement on every page load. */
+const inter = Inter({
+  subsets: ['latin'],
+  weight:  ['400', '500', '600', '700', '800', '900'],
+  variable: '--font-inter',
+  display:  'swap',
+  preload:  true,
+});
+const interTight = Inter_Tight({
+  subsets: ['latin'],
+  weight:  ['500', '600', '700', '800', '900'],
+  variable: '--font-inter-tight',
+  display:  'swap',
+  preload:  true,
+});
+const bebas = Bebas_Neue({
+  subsets: ['latin'],
+  weight:  ['400'],
+  variable: '--font-bebas',
+  display:  'swap',
+  preload:  false, // display font — fine to load after the LCP
+});
 
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 const OG_DESC  = 'High-converting websites built in 3-7 days for local service businesses. SEO-optimized, mobile-ready, and engineered to generate leads — not just look pretty.';
@@ -68,25 +96,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${interTight.variable} ${bebas.variable}`}>
       <head>
         <meta name="theme-color" content="#030712" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://firebasestorage.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        {/* Preload the primary font stylesheet so it doesn't render-block above the fold */}
-        <link
-          rel="preload"
-          as="style"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Inter+Tight:wght@500;600;700;800;900&family=Bebas+Neue&display=swap"
-        />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Inter+Tight:wght@500;600;700;800;900&family=Bebas+Neue&display=swap"
-        />
       </head>
-      <body>
+      <body className={inter.className}>
         {/* Analytics: GA4 + Meta Pixel + Microsoft Clarity */}
         <Analytics />
 
