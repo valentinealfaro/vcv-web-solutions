@@ -46,7 +46,8 @@ export default function Success() {
           </motion.div>
 
           <p className="text-green-400 text-xs font-bold uppercase tracking-[0.22em] mb-3">Order confirmed</p>
-          <h1 className="font-display text-5xl md:text-6xl text-white tracking-tight leading-[1.05] mb-5">
+          <h1 className="font-display text-white tracking-tight leading-[1.02] mb-5"
+            style={{ fontSize: 'clamp(2.75rem, 7vw, 5rem)' }}>
             Welcome aboard.
           </h1>
           <p className="text-gray-300 text-lg md:text-xl max-w-xl mx-auto mb-3">
