@@ -6,11 +6,26 @@ import {
   Phone, Mail, MapPin, Clock, CheckCircle2, Star, ShieldCheck, Calendar,
   ArrowRight, MessageCircle, Sparkles, Award,
 } from 'lucide-react';
-import type { IndustryData } from '@/data/industries';
+import { INDUSTRIES, type IndustryData } from '@/data/industries';
+
+/* Pick 3 other industries to surface as "Related templates". Stable per slug:
+   uses a deterministic offset from the current industry's position in the
+   INDUSTRIES array so it doesn't shuffle on rerender. */
+function relatedIndustries(currentSlug: string): IndustryData[] {
+  const idx = INDUSTRIES.findIndex(i => i.slug === currentSlug);
+  if (idx < 0) return INDUSTRIES.slice(0, 3);
+  const out: IndustryData[] = [];
+  for (let n = 1; out.length < 3 && n < INDUSTRIES.length; n++) {
+    const cand = INDUSTRIES[(idx + n) % INDUSTRIES.length];
+    if (cand.slug !== currentSlug) out.push(cand);
+  }
+  return out;
+}
 
 export default function GenericTemplate({ industry }: { industry: IndustryData }) {
   const c = industry.color;
   const bizName = `${industry.name.replace(/s$/, '')} Pros`;
+  const related = relatedIndustries(industry.slug);
 
   return (
     <div className="min-h-screen" style={{ background: '#0a0a0a', color: '#fff' }}>
@@ -289,6 +304,55 @@ export default function GenericTemplate({ industry }: { industry: IndustryData }
           </div>
 
           <ContactForm accent={c} industrySlug={industry.slug}/>
+        </div>
+      </section>
+
+      {/* ── Related Templates — internal linking + cross-discovery ── */}
+      <section className="py-16 px-5 lg:px-8" style={{ background: '#0f0f0f', borderTop:'1px solid rgba(255,255,255,0.06)' }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-8 flex items-end justify-between gap-4 flex-wrap">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.22em] mb-2" style={{ color: c }}>More like this</p>
+              <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight">
+                Other industries we build for
+              </h2>
+            </div>
+            <Link href="/templates"
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-white/70 hover:text-white transition-colors">
+              View all 34 templates <ArrowRight className="w-4 h-4"/>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {related.map((r) => (
+              <Link key={r.slug} href={`/templates/${r.slug}`}
+                className="group block p-5 rounded-2xl transition-all hover:-translate-y-1"
+                style={{
+                  background: 'rgba(255,255,255,0.025)',
+                  border: `1px solid ${r.color}30`,
+                }}>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+                    style={{ background: `${r.color}18`, border: `1px solid ${r.color}40` }}>
+                    {r.emoji}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-white font-bold text-base truncate">{r.name}</p>
+                    <p className="text-xs uppercase tracking-wider font-bold truncate" style={{ color: r.color }}>
+                      {r.heroEyebrow}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-gray-400 text-sm leading-snug line-clamp-2 mb-4">
+                  {r.heroSubhead.split('.').slice(0, 1).join('.') + '.'}
+                </p>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold group-hover:gap-2 transition-all"
+                  style={{ color: r.color }}>
+                  View live demo <ArrowRight className="w-3.5 h-3.5"/>
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
