@@ -125,7 +125,9 @@ export const Footer = () => (
               }}>
               <img
                 src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FVCV%20Websolutions%20Logo.png?alt=media&token=aed21397-69ca-4846-a45d-267482b81acf"
-                alt="VCV Web Solutions" className="w-9 h-9 object-contain" referrerPolicy="no-referrer"
+                alt="VCV Web Solutions" width={36} height={36}
+                className="w-9 h-9 object-contain" loading="lazy" decoding="async"
+                referrerPolicy="no-referrer"
               />
             </div>
             <div>
