@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { findIndustry } from '@/data/industries';
-import GenericTemplate from '@/views/templates/GenericTemplate';
+
+const MedSpas = dynamic(() => import('@/views/templates/MedSpas'));
 
 const SITE_URL = 'https://vcv-web-solutions.vercel.app';
 const SLUG = 'med-spa';
@@ -52,7 +54,7 @@ export default function Page() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(service) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
-      <GenericTemplate industry={data} />
+      <MedSpas />
     </>
   );
 }
