@@ -2575,6 +2575,47 @@ const TrustBand = () => (
   </section>
 );
 
+/* ─── Tech-stack band — verifiable integrations ───────────── */
+const TECH_STACK = [
+  { name: 'Stripe',            label: 'Payments',       sub: 'PCI-compliant checkout' },
+  { name: 'Vercel',            label: 'Hosting',        sub: 'Global edge network' },
+  { name: 'Google Business',   label: 'Local SEO',      sub: 'Profile + Maps integration' },
+  { name: 'Google Ads',        label: 'Paid traffic',   sub: 'Conversion tracking' },
+  { name: 'Meta Ads',          label: 'Social ads',     sub: 'Pixel + CAPI' },
+  { name: 'Resend',            label: 'Email',          sub: 'Transactional + alerts' },
+  { name: 'Firebase',          label: 'CRM / leads',    sub: 'Realtime lead storage' },
+  { name: 'GA4',               label: 'Analytics',      sub: 'Full funnel tracking' },
+];
+
+const TechStackBand = () => (
+  <section className="relative py-16 md:py-20 bg-[#030712]"
+    style={{ borderTop:'1px solid rgba(255,255,255,0.06)', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity:0, y:14 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+        className="text-center mb-10">
+        <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-3">Built on the same stack the world&apos;s best companies use</p>
+        <h2 className="font-display text-2xl md:text-4xl text-white tracking-tight leading-tight">
+          Production-grade integrations. <span className="text-white/45">Not duct tape.</span>
+        </h2>
+      </motion.div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {TECH_STACK.map((t, i) => (
+          <motion.div key={i}
+            initial={{ opacity:0, y:14 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+            transition={{ delay: (i % 4) * 0.04 }}
+            className="text-center px-4 py-5 rounded-xl"
+            style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.08)' }}>
+            <p className="text-white font-bold text-base md:text-lg leading-tight mb-1">{t.name}</p>
+            <p className="text-blue-400 text-[10px] uppercase tracking-widest font-bold mb-1">{t.label}</p>
+            <p className="text-gray-500 text-xs leading-snug">{t.sub}</p>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
 /* ─── ROI / Value Stack — "what you'd pay elsewhere" ───────── */
 const VALUE_ROWS = [
   { label: 'Custom website design',          ours: 'Included', theirs: '$3,500',  badge: '✓' },
@@ -2809,6 +2850,7 @@ export default function Home() {
       <StatsSection />
       <SampleWebsites />
       <TrustBand />
+      <TechStackBand />
       <ValueStackBand />
       <ProcessBand />
       <WhatHappensNextSection />
