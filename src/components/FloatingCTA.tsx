@@ -1,29 +1,16 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Rocket, MessageCircle, X, ChevronUp } from 'lucide-react';
+import { Rocket, MessageCircle, X, ChevronUp } from 'lucide-react';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 
 export const FloatingCTA = () => {
   const [visible,  setVisible]  = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
-  const [showExit, setShowExit] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 2500);
     return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (e.clientY <= 0 && !sessionStorage.getItem('exit-shown')) {
-        setShowExit(true);
-        sessionStorage.setItem('exit-shown', '1');
-      }
-    };
-    document.addEventListener('mouseleave', handler);
-    return () => document.removeEventListener('mouseleave', handler);
   }, []);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -94,36 +81,6 @@ export const FloatingCTA = () => {
       </AnimatePresence>
 
 
-      {/* Exit intent popup */}
-      <AnimatePresence>
-        {showExit && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="glass-card p-8 max-w-md w-full relative">
-              <button onClick={() => setShowExit(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-              <div className="text-center">
-                <div className="w-14 h-14 btn-neon rounded-full flex items-center justify-center mx-auto mb-5">
-                  <Rocket className="text-white w-7 h-7" />
-                </div>
-                <h3 className="font-display text-4xl text-white mb-3">WAIT!</h3>
-                <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-                  Before you go — see what your business could look like with a{' '}
-                  <span className="text-blue-400 font-bold">professional high-converting website</span>. It's completely free.
-                </p>
-                <FreeDemoButton size="sm" label="Build My Free Demo" fullWidth rounded="xl" onClick={() => setShowExit(false)} className="mb-3" />
-                <button onClick={() => setShowExit(false)} className="text-gray-500 hover:text-gray-300 text-xs transition-colors">
-                  No thanks, I don't want more leads
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </>
   );
 };
