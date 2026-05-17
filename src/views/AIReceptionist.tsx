@@ -8,12 +8,15 @@ import {
 } from 'lucide-react';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { TryNovaButton } from '@/components/TryNovaButton';
-import { EqualizerCanvas } from '@/components/EqualizerCanvas';
+/* EqualizerCanvas / ParticleCanvas / StaticElectricity removed from this
+   page — 7 rAF canvas loops on a single sales surface was tanking
+   Lighthouse perf, especially on mobile. Static CSS orbs alone provide
+   the same depth. */
 import { CheckoutUpsellModal } from '@/components/CheckoutUpsellModal';
 import { ROICalculator } from '@/components/ROICalculator';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import {
-  ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay,
+  MarqueeBand, SectionOrbs, GridOverlay,
 } from '@/components/PageEffects';
 
 const NOVA_NUMBER      = '(580) 656-9429';
@@ -160,7 +163,6 @@ export default function AIReceptionist() {
 
       {/* ══════════ HERO ══════════ */}
       <section className="relative pt-28 pb-20 overflow-hidden">
-        <ParticleCanvas />
         <SectionOrbs variant="blue" />
         <GridOverlay gridOp={0.3} dotOp={0.12} />
 
@@ -350,7 +352,6 @@ export default function AIReceptionist() {
       <section id="try-it-live" className="py-24 bg-[#040a16] relative overflow-hidden">
         <SectionOrbs variant="purple"/>
         <GridOverlay gridOp={0.18} dotOp={0.08}/>
-        <EqualizerCanvas opacity={0.42}/>
         {/* dim scrim so cards stay readable over bars */}
         <div className="absolute inset-0 pointer-events-none" style={{ background:'rgba(4,10,22,0.55)', zIndex:1 }}/>
 
@@ -460,7 +461,6 @@ export default function AIReceptionist() {
 
       {/* ══════════ PROBLEM SECTION ══════════ */}
       <section className="py-24 bg-[#030712] relative overflow-hidden">
-        <StaticElectricity/>
         <SectionOrbs variant="mixed"/>
         <GridOverlay gridOp={0.25} dotOp={0.08}/>
 
@@ -627,7 +627,6 @@ export default function AIReceptionist() {
 
       {/* ══════════ FEATURES GRID ══════════ */}
       <section className="py-24 bg-[#030712] relative overflow-hidden">
-        <ParticleCanvas/>
         <SectionOrbs variant="blue"/>
         <GridOverlay gridOp={0.2} dotOp={0.08}/>
 
@@ -698,7 +697,6 @@ export default function AIReceptionist() {
 
       {/* ══════════ BUNDLE OFFER ══════════ */}
       <section id="bundle" className="py-24 bg-[#030712] relative overflow-hidden">
-        <ParticleCanvas/>
         <SectionOrbs variant="green"/>
         <GridOverlay gridOp={0.25} dotOp={0.1}/>
 
@@ -1354,7 +1352,6 @@ export default function AIReceptionist() {
 
       {/* ══════════ FINAL CTA ══════════ */}
       <section className="py-24 bg-[#030712] relative overflow-hidden">
-        <StaticElectricity/>
         <SectionOrbs variant="green"/>
         <GridOverlay gridOp={0.3} dotOp={0.1}/>
 

@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import {
-  ParticleCanvas, StaticElectricity, MarqueeBand,
+  MarqueeBand,
   SectionOrbs, GridOverlay,
 } from '@/components/PageEffects';
 
@@ -70,7 +70,6 @@ export default function Landing() {
 
       {/* ── Hero ── */}
       <section className="relative pt-28 pb-16 overflow-hidden">
-        <ParticleCanvas />
         <SectionOrbs variant="mixed" />
         <GridOverlay gridOp={0.35} dotOp={0.15} />
 
@@ -124,7 +123,6 @@ export default function Landing() {
 
       {/* ── Form + Benefits ── */}
       <section className="py-16 relative overflow-hidden bg-[#030712]">
-        <StaticElectricity />
         <SectionOrbs variant="blue" />
         <GridOverlay gridOp={0.22} dotOp={0.1} />
 
