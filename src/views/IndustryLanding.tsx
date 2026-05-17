@@ -98,8 +98,8 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
           {/* H1 */}
           <motion.h1
             initial={{opacity:0, y:24}} animate={{opacity:1, y:0}} transition={{delay:0.1}}
-            className="font-display text-center text-white leading-[1.05] mb-5"
-            style={{ fontSize:'clamp(2.6rem, 7vw, 6rem)', textShadow:`0 0 60px ${accent}55, 0 0 120px ${accent}30` }}>
+            className="font-display text-center text-white tracking-tight leading-[1.02] mb-5"
+            style={{ fontSize:'clamp(2.5rem, 7vw, 5.5rem)' }}>
             {industry.heroHeadline.split('\n').map((line, i) =>
               <span key={i} className={i === 1 ? 'gradient-text block' : 'block'}>
                 {line}
@@ -211,9 +211,10 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <motion.div {...fade()}>
-            <p className="neon-badge mb-4 mx-auto w-fit">📞 Try It Live</p>
-            <h2 className="font-display text-4xl md:text-6xl text-white mb-3 leading-tight">
-              Call Nova as a <span className="gradient-text">{industry.name.toLowerCase()} customer</span>
+            <p className="text-green-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Try it live</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-3"
+              style={{ fontSize: 'clamp(2rem, 5.5vw, 4rem)' }}>
+              Call Nova as a <span className="gradient-text">{industry.name.toLowerCase()} customer.</span>
             </h2>
             <p className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto mb-8">
               Pretend you&apos;re calling about: <strong className="text-white">{industry.scriptCaller}</strong>
@@ -259,10 +260,11 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
         <GridOverlay gridOp={0.18} dotOp={0.08}/>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-10">
-            <p className="neon-badge mb-4 mx-auto w-fit">What Nova handles</p>
-            <h2 className="font-display text-3xl md:text-5xl text-white mb-3 leading-tight">
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">What Nova handles</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(1.85rem, 5vw, 3.5rem)' }}>
               Every kind of call <br className="md:hidden"/>
-              <span className="gradient-text">{industry.pluralLabel}</span> get
+              <span className="gradient-text">{industry.pluralLabel}</span> get.
             </h2>
           </motion.div>
 
@@ -315,9 +317,10 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
         <GridOverlay gridOp={0.18} dotOp={0.08}/>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-10">
-            <p className="neon-badge mb-4 mx-auto w-fit">Before vs After</p>
-            <h2 className="font-display text-3xl md:text-5xl text-white leading-tight">
-              From <span className="text-red-400">losing leads</span> to <span className="gradient-text">booking jobs</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Before vs after</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(1.85rem, 5vw, 3.5rem)' }}>
+              From <span className="text-red-400">losing leads</span> to <span className="gradient-text">booking jobs.</span>
             </h2>
           </motion.div>
 
@@ -358,9 +361,10 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
         <GridOverlay gridOp={0.18} dotOp={0.08}/>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-8">
-            <p className="neon-badge mb-3 mx-auto w-fit">Run Your Numbers</p>
-            <h2 className="font-display text-3xl md:text-5xl text-white leading-tight">
-              See what Nova will <span className="gradient-text">make {industry.pluralLabel}</span>
+            <p className="text-green-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Run your numbers</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(1.85rem, 5vw, 3.5rem)' }}>
+              See what Nova will <span className="gradient-text">make {industry.pluralLabel}.</span>
             </h2>
           </motion.div>
           <ROICalculator/>
@@ -394,10 +398,11 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-10">
-            <p className="neon-badge mb-4 mx-auto w-fit">Pricing</p>
-            <h2 className="font-display text-4xl md:text-6xl text-white mb-4 leading-tight"
-              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4)' }}>
-              Stop losing jobs from<br/><span className="gradient-text">missed calls</span>
+            <p className="text-green-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Pricing</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-4"
+              style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)' }}>
+              Stop losing jobs from<br/>
+              <span className="gradient-text">missed calls.</span>
             </h2>
           </motion.div>
 
@@ -503,9 +508,10 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
         <GridOverlay gridOp={0.18} dotOp={0.08}/>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-8">
-            <p className="neon-badge mb-3 mx-auto w-fit">Common Questions</p>
-            <h2 className="font-display text-3xl md:text-5xl text-white leading-tight">
-              FAQ for <span className="gradient-text">{industry.pluralLabel}</span>
+            <p className="text-purple-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Common questions</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(1.85rem, 5vw, 3.5rem)' }}>
+              FAQ for <span className="gradient-text">{industry.pluralLabel}.</span>
             </h2>
           </motion.div>
 
@@ -544,10 +550,10 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
         <GridOverlay gridOp={0.22} dotOp={0.1}/>
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div {...fade()}>
-            <p className="neon-badge mb-4 mx-auto w-fit">Last Step</p>
-            <h2 className="font-display text-4xl md:text-7xl text-white mb-5 leading-tight"
-              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4)' }}>
-              {industry.ctaHeadline.toUpperCase()}
+            <p className="text-green-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Last step</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-5"
+              style={{ fontSize: 'clamp(2.25rem, 7vw, 5.5rem)' }}>
+              {industry.ctaHeadline}
             </h2>
             <p className="text-gray-200 text-lg mb-8 max-w-2xl mx-auto">
               Call Nova first. Hear her work. Then we&apos;ll have you live in 24-48 hours.
