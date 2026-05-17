@@ -695,90 +695,58 @@ const Hero = () => (
       <div className="grid lg:grid-cols-2 gap-12 items-center">
 
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
-          <motion.div
-            className="mb-6 w-fit"
-            animate={{
-              background: [
-                'rgba(239,68,68,0.15)',
-                'rgba(249,115,22,0.15)',
-                'rgba(234,179,8,0.15)',
-                'rgba(34,197,94,0.15)',
-                'rgba(6,182,212,0.15)',
-                'rgba(99,102,241,0.15)',
-                'rgba(168,85,247,0.15)',
-                'rgba(236,72,153,0.15)',
-                'rgba(239,68,68,0.15)',
-              ],
-              borderColor: [
-                'rgba(239,68,68,0.6)',
-                'rgba(249,115,22,0.6)',
-                'rgba(234,179,8,0.6)',
-                'rgba(34,197,94,0.6)',
-                'rgba(6,182,212,0.6)',
-                'rgba(99,102,241,0.6)',
-                'rgba(168,85,247,0.6)',
-                'rgba(236,72,153,0.6)',
-                'rgba(239,68,68,0.6)',
-              ],
-              color: [
-                '#f87171','#fb923c','#fbbf24','#4ade80',
-                '#22d3ee','#818cf8','#c084fc','#f472b6','#f87171',
-              ],
-              scale: [1, 1.05, 1],
-              boxShadow: [
-                '0 0 12px rgba(239,68,68,0.4)',
-                '0 0 18px rgba(249,115,22,0.5)',
-                '0 0 12px rgba(234,179,8,0.4)',
-                '0 0 18px rgba(34,197,94,0.5)',
-                '0 0 12px rgba(6,182,212,0.4)',
-                '0 0 18px rgba(99,102,241,0.5)',
-                '0 0 12px rgba(168,85,247,0.4)',
-                '0 0 18px rgba(236,72,153,0.5)',
-                '0 0 12px rgba(239,68,68,0.4)',
-              ],
-            }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              borderRadius: 999, border: '1px solid', padding: '5px 14px',
-              fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em',
-            }}>
-            <motion.span
-              className="w-1.5 h-1.5 rounded-full inline-block"
-              animate={{ backgroundColor: ['#f87171','#fb923c','#fbbf24','#4ade80','#22d3ee','#818cf8','#c084fc','#f472b6','#f87171'], scale:[1,1.6,1] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            />
-            Now taking new clients — Limited spots
-          </motion.div>
+          {/* Single-color availability badge — replaces the rainbow cycling banner
+              that was visually fighting the rest of the page. */}
+          <div className="inline-flex items-center gap-2 mb-7 px-3 py-1.5 rounded-full"
+            style={{ background: 'rgba(34,197,94,0.10)', border: '1px solid rgba(34,197,94,0.35)' }}>
+            <motion.span className="w-2 h-2 rounded-full bg-green-400 inline-block"
+              animate={{ opacity: [1, 0.35, 1], scale: [1, 1.25, 1] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}/>
+            <span className="text-green-300 text-[11px] font-bold uppercase tracking-[0.18em]">
+              Now taking new clients · Limited spots
+            </span>
+          </div>
 
-          <h1 className="font-display text-[5.5rem] md:text-[7.5rem] leading-none text-white mb-2 select-none">
-            WE BUILD
-          </h1>
-          <h1 className="font-display text-[5.5rem] md:text-[7.5rem] leading-none mb-2 select-none">
-            <span className="glitch gradient-text" data-text="WEBSITES">WEBSITES</span>
-          </h1>
-          <h1 className="font-display text-[4rem] md:text-[5.5rem] leading-none text-white mb-8 select-none overflow-visible">
-            THAT GENERATE{' '}
-            <PopOut3DWord word="LEADS" delay={0.85} />
+          {/* Headline — fluid sizing, single h1 for SEO, gradient on the key word
+              (no glitch / 3D effects competing with the right-side form). */}
+          <h1 className="font-display text-white leading-[1.02] mb-7 tracking-tight"
+            style={{ fontSize: 'clamp(3rem, 8.5vw, 6.5rem)' }}>
+            We build websites<br/>
+            that <span className="gradient-text">generate leads.</span>
           </h1>
 
-          <p className="text-gray-400 text-lg md:text-xl leading-relaxed mb-8 max-w-[520px]">
-            Stop paying for pretty websites that don't convert. We engineer high-performance lead machines for local service businesses — launching in 3–7 days.
+          <p className="text-gray-300 text-lg md:text-xl leading-relaxed mb-8 max-w-[540px]">
+            Stop paying for pretty sites that don&apos;t convert. We engineer
+            high-performance lead machines for local service businesses —
+            launching in 3–7 days.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-10">
+          <div className="flex flex-col sm:flex-row gap-3 mb-9">
             <FreeDemoButton size="md" label="Get My Free Demo" />
             <a href="tel:+15809191386"
-              className="glass-card text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 hover:border-green-500/40 hover:text-green-300 transition-all">
+              className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full font-semibold text-sm text-white border border-white/15 hover:border-white/40 hover:bg-white/[0.04] transition-colors">
               <Phone className="w-4 h-4 text-green-400" />
               (580) 919-1386
             </a>
           </div>
 
-          <div className="flex flex-wrap gap-6 text-sm text-gray-400">
-            {['From $97/mo', '3-7 day launch', '30-day results guarantee'].map((t, i) => (
-              <span key={i} className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" /> {t}
+          {/* Combined trust strip: 5-star social proof + the three quick facts.
+              Renders on one line on desktop, wraps cleanly on mobile. */}
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-0.5">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-4 h-4 fill-current text-yellow-400" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M10 1l2.6 5.9 6.4.6-4.8 4.4 1.4 6.3L10 15l-5.6 3.2L5.8 11.9 1 7.5l6.4-.6L10 1z"/>
+                  </svg>
+                ))}
+              </span>
+              <span className="text-gray-300 text-sm font-semibold">4.9 · 50+ small businesses</span>
+            </div>
+            <span className="hidden sm:inline text-gray-700">·</span>
+            {['From $97/mo', '3–7 day launch', '30-day guarantee'].map((t, i) => (
+              <span key={i} className="flex items-center gap-1.5 text-sm text-gray-400">
+                <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" /> {t}
               </span>
             ))}
           </div>

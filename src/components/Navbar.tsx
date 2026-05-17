@@ -17,11 +17,9 @@ const LINKS = [
 
 const LOGO_SRC = 'https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0881087059.firebasestorage.app/o/VCV%20Web%20Solutions%2FVCV%20Websolutions%20Logo.png?alt=media&token=aed21397-69ca-4846-a45d-267482b81acf';
 
-/* Cycling color sequences — border / VCV text / subtitle text — always different */
-const BORDER_CYCLE = ['#3b82f6','#8b5cf6','#06b6d4','#22c55e','#ec4899','#eab308','#ef4444','#3b82f6'];
-const VCV_CYCLE    = ['#f97316','#22c55e','#ec4899','#8b5cf6','#eab308','#ef4444','#06b6d4','#f97316'];
-const SUB_CYCLE    = ['#ec4899','#06b6d4','#eab308','#ef4444','#3b82f6','#8b5cf6','#22c55e','#ec4899'];
-const LOGO_DUR     = 3.5;
+/* Rainbow cycling palettes removed in favor of a quieter single-color brand
+   identity. The logo now reads as a single confident brand mark instead of
+   competing for attention with everything else on the page. */
 
 export const Navbar = () => {
   const [isOpen,   setIsOpen]   = useState(false);
@@ -44,61 +42,47 @@ export const Navbar = () => {
         : 'py-4 bg-transparent',
     )}>
 
-      {/* Animated bottom border line */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 h-[1px]"
-        animate={{
-          background: [
-            'linear-gradient(90deg,transparent,rgba(59,130,246,0.6),transparent)',
-            'linear-gradient(90deg,transparent,rgba(139,92,246,0.6),transparent)',
-            'linear-gradient(90deg,transparent,rgba(6,182,212,0.6),transparent)',
-            'linear-gradient(90deg,transparent,rgba(236,72,153,0.6),transparent)',
-            'linear-gradient(90deg,transparent,rgba(59,130,246,0.6),transparent)',
-          ],
+      {/* Static bottom border — quiet brand-blue accent, no rainbow cycling */}
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] pointer-events-none"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.50), transparent)',
+          opacity:    scrolled ? 1 : 0.30,
+          transition: 'opacity 0.5s',
         }}
-        transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
-        style={{ opacity: scrolled ? 1 : 0.35 }}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4">
 
-          {/* ── Logo (smaller on mobile per design) ── */}
+          {/* ── Logo — single brand color, subtle hover lift, no rainbow cycle.
+                 Quieter logo = the rest of the page reads better. ── */}
           <Link href="/" className="group flex-shrink-0">
             <motion.div
-              className="flex flex-col items-center px-2 md:px-3 py-1 md:py-1.5 rounded-xl border-2 cursor-pointer select-none"
-              animate={{ borderColor: BORDER_CYCLE, boxShadow: BORDER_CYCLE.map(c => `0 0 16px ${c}60`) }}
-              transition={{ duration: LOGO_DUR, repeat: Infinity, ease: 'linear' }}
-              whileHover={{ scale: 1.06 }}>
+              className="flex flex-col items-center px-2 md:px-3 py-1 md:py-1.5 rounded-xl border cursor-pointer select-none transition-all"
+              style={{
+                borderColor: 'rgba(59,130,246,0.45)',
+                boxShadow:   '0 0 18px rgba(59,130,246,0.20)',
+              }}
+              whileHover={{ scale: 1.04, boxShadow: '0 0 24px rgba(59,130,246,0.40)' }}>
               <img src={LOGO_SRC} alt="VCV Web Solutions"
                 width={36} height={36} fetchPriority="high" decoding="async"
                 className="w-7 h-7 md:w-9 md:h-9 object-contain mb-0.5" referrerPolicy="no-referrer" />
-              <motion.span
-                className="text-xs md:text-sm font-black leading-none tracking-widest"
-                animate={{ color: VCV_CYCLE }}
-                transition={{ duration: LOGO_DUR, repeat: Infinity, ease: 'linear' }}>
+              <span className="text-xs md:text-sm font-black leading-none tracking-widest text-white">
                 VCV
-              </motion.span>
-              <motion.span
-                className="text-[8px] md:text-[9px] font-bold leading-none tracking-widest uppercase mt-0.5"
-                animate={{ color: SUB_CYCLE }}
-                transition={{ duration: LOGO_DUR, repeat: Infinity, ease: 'linear' }}>
+              </span>
+              <span className="text-[8px] md:text-[9px] font-bold leading-none tracking-widest uppercase mt-0.5 text-blue-400">
                 Web Solutions
-              </motion.span>
+              </span>
             </motion.div>
           </Link>
 
           {/* ── Desktop nav ── */}
           <div className="hidden md:flex items-center gap-1 flex-1 justify-center">
 
-            {/* Phone */}
+            {/* Phone — quiet single-color icon, no cycling */}
             <a href="tel:+15809191386"
               className="flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/[0.05] group mr-2">
-              <motion.div
-                animate={{ color:['#3b82f6','#8b5cf6','#06b6d4','#3b82f6'] }}
-                transition={{ duration:3, repeat:Infinity, ease:'linear' }}>
-                <Phone className="w-3.5 h-3.5" />
-              </motion.div>
+              <Phone className="w-3.5 h-3.5 text-blue-400 group-hover:text-blue-300 transition-colors" />
               <span className="hidden lg:inline">(580) 919-1386</span>
             </a>
 
@@ -147,38 +131,18 @@ export const Navbar = () => {
             })}
           </div>
 
-          {/* ── CTA button ── */}
+          {/* ── CTA button — single blue→purple gradient, subtle lift on hover ── */}
           <div className="hidden md:flex items-center gap-3 flex-shrink-0">
-            <motion.div
-              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
-              <Link href="/free-demo"
-                className="relative overflow-hidden flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm text-white">
-                {/* Rainbow bg */}
-                <motion.span
-                  className="absolute inset-0 rounded-full"
-                  animate={{
-                    backgroundImage:[
-                      'linear-gradient(135deg,#3b82f6,#8b5cf6)',
-                      'linear-gradient(135deg,#8b5cf6,#06b6d4)',
-                      'linear-gradient(135deg,#06b6d4,#22c55e)',
-                      'linear-gradient(135deg,#22c55e,#ec4899)',
-                      'linear-gradient(135deg,#ec4899,#3b82f6)',
-                    ],
-                    boxShadow:[
-                      '0 0 18px rgba(59,130,246,0.65)',
-                      '0 0 18px rgba(139,92,246,0.65)',
-                      '0 0 18px rgba(6,182,212,0.65)',
-                      '0 0 18px rgba(34,197,94,0.65)',
-                      '0 0 18px rgba(236,72,153,0.65)',
-                    ],
-                  }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                />
-                <Zap className="w-3.5 h-3.5 relative z-10" />
-                <span className="relative z-10">Free Demo</span>
-                <ArrowRight className="w-3.5 h-3.5 relative z-10 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </motion.div>
+            <Link href="/free-demo"
+              className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm text-white transition-all hover:scale-[1.04] active:scale-[0.98]"
+              style={{
+                background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                boxShadow:  '0 8px 24px rgba(59,130,246,0.35), 0 0 0 1px rgba(255,255,255,0.06) inset',
+              }}>
+              <Zap className="w-3.5 h-3.5" />
+              <span>Free Demo</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
           </div>
 
           {/* ── Mobile hamburger ── */}
@@ -243,28 +207,17 @@ export const Navbar = () => {
 
               <div className="h-px bg-white/[0.05] my-2" />
 
-              {/* CTA */}
-              <motion.div
-                whileTap={{ scale: 0.97 }}>
-                <Link href="/free-demo" onClick={() => setIsOpen(false)}
-                  className="relative overflow-hidden flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-white text-base mt-1">
-                  <motion.span
-                    className="absolute inset-0"
-                    animate={{
-                      backgroundImage:[
-                        'linear-gradient(135deg,#3b82f6,#8b5cf6)',
-                        'linear-gradient(135deg,#8b5cf6,#06b6d4)',
-                        'linear-gradient(135deg,#06b6d4,#ec4899)',
-                        'linear-gradient(135deg,#ec4899,#3b82f6)',
-                      ],
-                    }}
-                    transition={{ duration:3, repeat:Infinity, ease:'linear' }}
-                  />
-                  <Zap className="w-4 h-4 relative z-10"/>
-                  <span className="relative z-10">Get My Design Preview</span>
-                  <ArrowRight className="w-4 h-4 relative z-10"/>
-                </Link>
-              </motion.div>
+              {/* Mobile CTA — same single-gradient style as desktop */}
+              <Link href="/free-demo" onClick={() => setIsOpen(false)}
+                className="flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-white text-base mt-1 transition-transform active:scale-[0.98]"
+                style={{
+                  background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                  boxShadow:  '0 8px 24px rgba(59,130,246,0.35), 0 0 0 1px rgba(255,255,255,0.06) inset',
+                }}>
+                <Zap className="w-4 h-4"/>
+                <span>Get My Design Preview</span>
+                <ArrowRight className="w-4 h-4"/>
+              </Link>
 
             </div>
           </motion.div>
