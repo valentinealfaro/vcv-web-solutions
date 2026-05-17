@@ -12,15 +12,16 @@ export function generateMetadata(): Metadata {
   const url = `${SITE_URL}/templates/${data.slug}`;
   const title = `${data.name} Website Template · Live Demo by VCV Web Solutions`;
   const description = `Conversion-ready website template for ${data.pluralLabel}. SEO-optimized, mobile-perfect, launched in 3–7 days. See the live demo and get yours customized free.`;
+  const ogImage = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent(data.heroEyebrow)}&title=${encodeURIComponent(data.name + ' Website Template')}&subtitle=${encodeURIComponent('Live demo · Free design preview · From $97/mo')}&accent=${encodeURIComponent(data.color)}&emoji=${encodeURIComponent(data.emoji)}`;
   return {
     title, description,
     alternates: { canonical: url },
     openGraph: {
       type: 'website', url, siteName: 'VCV Web Solutions',
       title, description,
-      images: [{ url: '/og-image.png', width: 1200, height: 630, alt: `${data.name} website template` }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${data.name} website template` }],
     },
-    twitter: { card: 'summary_large_image', title, description, images: ['/og-image.png'] },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImage] },
   };
 }
 

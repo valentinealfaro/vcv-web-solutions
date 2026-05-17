@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const g = findGuide(slug);
   if (!g) return { title: 'Guide Not Found' };
   const url = `${SITE_URL}/guides/${g.slug}`;
+  const ogImage = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent(`GUIDE · ${g.category.toUpperCase()}`)}&title=${encodeURIComponent(g.title)}&subtitle=${encodeURIComponent(g.readingTime + ' · Practical advice for small business owners')}&accent=%233b82f6`;
   return {
     title:       `${g.title} · VCV Web Solutions Guides`,
     description: g.description,
@@ -29,13 +30,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       publishedTime: g.publishedAt,
       modifiedTime:  g.updatedAt,
       authors: ['VCV Web Solutions'],
-      images: [{ url: '/og-image.png', width: 1200, height: 630, alt: g.title }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: g.title }],
     },
     twitter: {
       card: 'summary_large_image',
       title: g.title,
       description: g.description,
-      images: ['/og-image.png'],
+      images: [ogImage],
     },
   };
 }

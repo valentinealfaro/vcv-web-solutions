@@ -21,15 +21,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const url = `${SITE_URL}/serving/${data.slug}`;
   const title       = `${data.name} Website Design · Lead-Generating Sites for Local Businesses · VCV`;
   const description = `We build conversion-focused websites for ${data.name} (${data.abbr}) businesses — roofers, dentists, HVAC, plumbers, restaurants and more. Live in 3–7 days, from $97/mo. Free design preview, no upfront cost.`;
+  const ogImage = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent(`SERVING · ${data.region.toUpperCase()}`)}&title=${encodeURIComponent(`Websites for ${data.name} businesses`)}&subtitle=${encodeURIComponent('Free design preview · Live in 3–7 days · From $97/mo')}&accent=%233b82f6`;
   return {
     title, description,
     alternates: { canonical: url },
     openGraph: {
       type: 'website', url, siteName: 'VCV Web Solutions',
       title, description,
-      images: [{ url: '/og-image.png', width: 1200, height: 630, alt: `Website design for ${data.name} businesses` }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `Website design for ${data.name} businesses` }],
     },
-    twitter: { card: 'summary_large_image', title, description, images: ['/og-image.png'] },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImage] },
   };
 }
 
