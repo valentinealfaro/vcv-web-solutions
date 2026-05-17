@@ -356,13 +356,12 @@ export default function AIReceptionist() {
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <motion.div {...fade()}>
-            <p className="neon-badge mb-5 mx-auto w-fit">📞 Try It Live</p>
-            <h2 className="font-display text-5xl md:text-7xl text-white mb-5 leading-none"
-              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4), 0 0 80px rgba(6,182,212,0.25)' }}>
-              CALL NOVA<br/>
-              <span className="gradient-text">RIGHT NOW</span>
+            <p className="text-green-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Try it live</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-5"
+              style={{ fontSize: 'clamp(2.5rem, 7vw, 5.5rem)' }}>
+              Call Nova <span className="gradient-text">right now.</span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-10">
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
               Pretend you&apos;re a customer. Nova will answer, ask questions, and show
               you exactly how it works. <strong className="text-white">No signup. No forms. Just call and test it.</strong>
             </p>
@@ -467,12 +466,12 @@ export default function AIReceptionist() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-14">
-            <p className="neon-badge mb-5 mx-auto w-fit" style={{ borderColor:'rgba(239,68,68,0.5)', color:'#fca5a5' }}>The Problem</p>
-            <h2 className="font-display text-5xl md:text-7xl text-white mb-5 leading-none">
-              MISSED CALLS =<br/>
-              <span className="gradient-text-warm">LOST MONEY</span>
+            <p className="text-red-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">The problem</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-4"
+              style={{ fontSize: 'clamp(2.5rem, 7vw, 5.5rem)' }}>
+              Missed calls = <span className="gradient-text-warm">lost money.</span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
               Every unanswered call is a competitor closing the job instead.
             </p>
           </motion.div>
@@ -517,11 +516,12 @@ export default function AIReceptionist() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-10">
-            <p className="neon-badge mb-4 mx-auto w-fit">The Difference</p>
-            <h2 className="font-display text-5xl md:text-6xl text-white mb-3 leading-none">
-              BEFORE vs <span className="gradient-text">AFTER NOVA</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">The difference</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-3"
+              style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)' }}>
+              Before vs <span className="gradient-text">after Nova.</span>
             </h2>
-            <p className="text-gray-400 text-base max-w-2xl mx-auto">
+            <p className="text-gray-400 text-base max-w-2xl mx-auto leading-relaxed">
               Same business. Same calls. Different outcome.
             </p>
           </motion.div>
@@ -573,11 +573,12 @@ export default function AIReceptionist() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-14">
-            <p className="neon-badge mb-5 mx-auto w-fit">The Solution</p>
-            <h2 className="font-display text-5xl md:text-7xl text-white mb-5 leading-none">
-              MEET<br/><span className="gradient-text">NOVA</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">The solution</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-4"
+              style={{ fontSize: 'clamp(2.5rem, 7vw, 5.5rem)' }}>
+              Meet <span className="gradient-text">Nova.</span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
               Your 24/7 AI receptionist. Answers, qualifies, books, and texts you every lead.
             </p>
           </motion.div>
@@ -632,11 +633,12 @@ export default function AIReceptionist() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-14">
-            <p className="neon-badge mb-5 mx-auto w-fit">Features</p>
-            <h2 className="font-display text-5xl md:text-7xl text-white mb-5 leading-none">
-              EVERYTHING <span className="gradient-text">INCLUDED</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Features</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-4"
+              style={{ fontSize: 'clamp(2.5rem, 7vw, 5.5rem)' }}>
+              Everything <span className="gradient-text">included.</span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
               Not just an AI — a complete missed-call recovery system.
             </p>
           </motion.div>
@@ -669,9 +671,10 @@ export default function AIReceptionist() {
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-14">
-            <p className="neon-badge mb-5 mx-auto w-fit">Demo Flow</p>
-            <h2 className="font-display text-5xl md:text-6xl text-white mb-5 leading-none">
-              WHAT HAPPENS<br/><span className="gradient-text">WHEN YOU CALL</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Demo flow</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)' }}>
+              What happens <span className="gradient-text">when you call.</span>
             </h2>
           </motion.div>
 
@@ -701,11 +704,11 @@ export default function AIReceptionist() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-12">
-            <p className="neon-badge mb-5 mx-auto w-fit">Pricing</p>
-            <h2 className="font-display text-5xl md:text-7xl text-white mb-5 leading-[1.05]"
-              style={{ textShadow:'0 0 60px rgba(34,197,94,0.4)' }}>
-              STOP LOSING JOBS<br/>
-              <span className="gradient-text">FROM MISSED CALLS</span>
+            <p className="text-green-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Pricing</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-5"
+              style={{ fontSize: 'clamp(2.5rem, 7vw, 5.5rem)' }}>
+              Stop losing jobs<br/>
+              <span className="gradient-text">from missed calls.</span>
             </h2>
             <p className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
               Nova answers calls, captures leads, books appointments, and follows up automatically
