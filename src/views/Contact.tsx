@@ -342,11 +342,10 @@ export default function Contact() {
         {/* H1 */}
         <div className="max-w-5xl mx-auto px-4 text-center relative z-10">
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }}>
-            <p className="neon-badge mb-5 mx-auto w-fit">Let's Talk</p>
-            <h1 className="font-display leading-none text-white mb-5"
-              style={{ fontSize: 'clamp(3.5rem,9vw,7rem)', textShadow: '0 0 60px rgba(37,99,235,0.5), 0 0 120px rgba(124,58,237,0.25)' }}>
-              GET IN<br/>
-              <span className="gradient-text">TOUCH</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Let's talk</p>
+            <h1 className="font-display text-white tracking-tight leading-[1.02] mb-5"
+              style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)' }}>
+              Get in <span className="gradient-text">touch.</span>
             </h1>
           </motion.div>
 
@@ -413,10 +412,10 @@ export default function Contact() {
 
               {/* Section heading */}
               <motion.div {...slideL(0)} className="mb-6">
-                <p className="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2">Contact Info</p>
-                <h2 className="font-display text-4xl text-white leading-none" style={{ textShadow: '0 0 30px rgba(37,99,235,0.4)' }}>
-                  REACH US<br/>
-                  <span className="gradient-text">ANYTIME</span>
+                <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-3">Contact info</p>
+                <h2 className="font-display text-white tracking-tight leading-[1.05]"
+                  style={{ fontSize: 'clamp(2rem, 4.5vw, 3rem)' }}>
+                  Reach us <span className="gradient-text">anytime.</span>
                 </h2>
               </motion.div>
 
@@ -627,12 +626,13 @@ export default function Contact() {
 
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div {...fade()}>
-            <p className="neon-badge mb-5 mx-auto w-fit">Prefer a Call?</p>
-            <h2 className="font-display text-6xl md:text-7xl text-white mb-5 leading-none">
-              CALL OR TEXT<br/>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Prefer a call?</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.02] mb-5"
+              style={{ fontSize: 'clamp(2.5rem, 7vw, 5.5rem)' }}>
+              Call or text<br/>
               <span className="gradient-text">(580) 919-1386</span>
             </h2>
-            <p className="text-gray-400 text-lg mb-8">Available Mon–Sat. We respond to texts within minutes.</p>
+            <p className="text-gray-300 text-lg mb-8 leading-relaxed">Available Mon–Sat. We respond to texts within minutes.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.a href="tel:+15809191386"
                 whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
