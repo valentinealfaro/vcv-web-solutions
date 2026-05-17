@@ -919,16 +919,13 @@ export default function AIReceptionist() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-10">
-            <p className="neon-badge mb-4 mx-auto w-fit"
-              style={{ borderColor:'rgba(239,68,68,0.5)', color:'#fca5a5' }}>
-              The Math
-            </p>
-            <h2 className="font-display text-4xl md:text-6xl text-white mb-4 leading-tight"
-              style={{ textShadow:'0 0 40px rgba(239,68,68,0.3)' }}>
-              WHAT IS ONE MISSED CALL<br/>
-              <span className="gradient-text-warm">COSTING YOU?</span>
+            <p className="text-red-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">The math</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-4"
+              style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)' }}>
+              What is one missed call<br/>
+              <span className="gradient-text-warm">costing you?</span>
             </h2>
-            <p className="text-gray-200 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-200 text-lg max-w-2xl mx-auto leading-relaxed">
               Every unanswered phone call is money walking into a competitor&apos;s pocket.
               Here&apos;s what one lost lead is really worth:
             </p>
@@ -985,10 +982,11 @@ export default function AIReceptionist() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-10">
-            <p className="neon-badge mb-4 mx-auto w-fit">Run the Numbers</p>
-            <h2 className="font-display text-4xl md:text-6xl text-white mb-3 leading-tight">
-              SEE EXACTLY <span className="gradient-text">WHAT NOVA</span><br/>
-              WILL MAKE YOU
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Run the numbers</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)' }}>
+              See exactly <span className="gradient-text">what Nova</span><br/>
+              will make you.
             </h2>
           </motion.div>
 
