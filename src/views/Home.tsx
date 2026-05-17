@@ -967,6 +967,18 @@ const StatsSection = () => (
     style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
     <div className="absolute inset-0 bg-dot opacity-[0.10] pointer-events-none" />
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.55 }}
+        className="text-center mb-10 md:mb-12">
+        <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-3">By the numbers</p>
+        <h2 className="font-display text-white tracking-tight leading-[1.05]"
+          style={{ fontSize: 'clamp(2rem, 4.5vw, 3.25rem)' }}>
+          Real results, <span className="gradient-text">no fine print.</span>
+        </h2>
+      </motion.div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 items-start">
         {STAT_CARDS.map((card, i) => (
           <motion.div
@@ -2027,18 +2039,22 @@ const CTASection = () => (
     <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-blue-950/20 via-transparent to-purple-950/20" />
 
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-20">
-      <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-        <p className="neon-badge mb-6 mx-auto w-fit">Limited Time — Act Now</p>
-        <h2 className="font-display text-6xl md:text-8xl text-white mb-6 leading-none">
-          GET YOUR <br />
-          <span className="gradient-text glitch" data-text="FREE DEMO">FREE DEMO</span>
-          <br />TODAY
+      <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+        <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.22em] mb-7 mx-auto"
+          style={{ background:'rgba(59,130,246,0.10)', border:'1px solid rgba(59,130,246,0.30)', color:'#93c5fd' }}>
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+          Limited spots this month
+        </span>
+        <h2 className="font-display text-white leading-[1.02] tracking-tight mb-6"
+          style={{ fontSize: 'clamp(3rem, 8vw, 6rem)' }}>
+          See your new site<br/>
+          <span className="gradient-text">before you pay a cent.</span>
         </h2>
-        <p className="text-gray-400 text-xl mb-10 max-w-xl mx-auto">
-          No risk. No commitment. Just a professional preview of your business's future — built for free.
+        <p className="text-gray-300 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+          We build a real custom preview of your homepage in 48 hours. If you love it, we go live in 3–7 days. If not, you walk away — no charge, no pressure.
         </p>
-        <FreeDemoButton size="xl" label="Build My Free Demo" />
-        <p className="text-gray-500 text-sm mt-6">Starts at $147/mo · 30-day results guarantee · Cancel anytime</p>
+        <FreeDemoButton size="xl" label="Get My Free Design Preview" />
+        <p className="text-gray-500 text-sm mt-6">From $97/mo · 30-day money-back guarantee · No long-term contracts</p>
       </motion.div>
     </div>
   </section>
@@ -2515,9 +2531,13 @@ const FAQAccordion = () => {
           initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
           className="text-center mb-12">
           <span className="inline-block text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Frequently asked</span>
-          <h2 className="font-display text-4xl md:text-6xl text-white tracking-tight leading-tight">
-            Got questions?
+          <h2 className="font-display text-white tracking-tight leading-[1.05]"
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
+            Got questions? <span className="gradient-text">We've got answers.</span>
           </h2>
+          <p className="text-gray-400 mt-5 max-w-xl mx-auto leading-relaxed">
+            The honest answers we wish someone gave us when we were shopping for a website.
+          </p>
         </motion.div>
 
         <div className="space-y-3">
