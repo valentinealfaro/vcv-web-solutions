@@ -83,11 +83,13 @@ export default function Services() {
         <GridOverlay gridOp={0.35} dotOp={0.15} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...slideL()} className="max-w-3xl">
-            <p className="neon-badge mb-6 w-fit">Our Services</p>
-            <h1 className="font-display leading-none text-white mb-6" style={{fontSize:'clamp(3.5rem,8vw,7rem)',textShadow:'0 0 50px rgba(37,99,235,0.5)'}}>
-              WE BUILD<br/><span className="gradient-text">GROWTH ENGINES</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Our services</p>
+            <h1 className="font-display text-white tracking-tight leading-[1.02] mb-6"
+              style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)' }}>
+              We build<br/>
+              <span className="gradient-text">growth engines.</span>
             </h1>
-            <p className="text-xl text-gray-400 mb-10 leading-relaxed max-w-xl">
+            <p className="text-xl text-gray-300 mb-10 leading-relaxed max-w-xl">
               Not just websites. High-performance lead machines built for local businesses that want more calls, more leads, and more revenue.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -126,9 +128,12 @@ export default function Services() {
         <SectionOrbs variant="purple" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-16">
-            <p className="neon-badge mb-4 mx-auto w-fit">What We Build</p>
-            <h2 className="font-display text-6xl md:text-7xl text-white mb-4">CORE SERVICES</h2>
-            <p className="text-gray-400 max-w-xl mx-auto">Everything you need to dominate your local market — built and managed for you.</p>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">What we build</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-4"
+              style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)' }}>
+              Core <span className="gradient-text">services.</span>
+            </h2>
+            <p className="text-gray-300 max-w-xl mx-auto leading-relaxed">Everything you need to dominate your local market — built and managed for you.</p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {SERVICES.map((s,i) => {
@@ -195,8 +200,11 @@ export default function Services() {
         <GridOverlay gridOp={0.2} dotOp={0.08} />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-14">
-            <p className="neon-badge mb-4 mx-auto w-fit">The Difference</p>
-            <h2 className="font-display text-6xl md:text-7xl text-white">WHY VCV?</h2>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">The difference</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)' }}>
+              Why <span className="gradient-text">VCV?</span>
+            </h2>
           </motion.div>
           <div className="grid md:grid-cols-2 gap-6">
             <motion.div {...slideL()} className="glass-card p-8" style={{borderColor:'rgba(239,68,68,0.2)'}}>
@@ -254,8 +262,11 @@ export default function Services() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-16">
-            <p className="neon-badge mb-4 mx-auto w-fit">How It Works</p>
-            <h2 className="font-display text-6xl md:text-7xl text-white">THE PROCESS</h2>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">How it works</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)' }}>
+              The <span className="gradient-text">process.</span>
+            </h2>
           </motion.div>
 
           {/* Desktop staircase */}
@@ -451,9 +462,11 @@ export default function Services() {
         <GridOverlay gridOp={0.3} dotOp={0.12} />
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div {...fade()}>
-            <p className="neon-badge mb-6 mx-auto w-fit">Limited Spots Available</p>
-            <h2 className="font-display text-6xl md:text-8xl text-white mb-6 leading-none">
-              GET YOUR<br/><span className="gradient-text">FREE DEMO</span><br/>TODAY
+            <p className="text-green-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Limited spots available</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.02] mb-6"
+              style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)' }}>
+              Get your<br/>
+              <span className="gradient-text">free demo</span><br/>today.
             </h2>
             <p className="text-gray-400 text-xl mb-10 max-w-xl mx-auto">Professional websites starting at $97/mo — see your custom design first, then we launch it.</p>
             <FreeDemoButton size="xl" label="Build My Free Demo" />
