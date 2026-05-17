@@ -4,7 +4,14 @@ import { motion } from 'motion/react';
 import Link from 'next/link';
 import { CheckCircle2, ArrowRight, Zap, Loader2, Tag } from 'lucide-react';
 import { PricingBgCanvas } from '@/components/PageEffects';
-import { CheckoutUpsellModal, CheckoutPayload } from '@/components/CheckoutUpsellModal';
+import type { CheckoutPayload } from '@/components/CheckoutUpsellModal';
+import dynamic from 'next/dynamic';
+
+/* Lazy-loaded: 350-LOC modal only mounts after user clicks Buy Now. */
+const CheckoutUpsellModal = dynamic(
+  () => import('@/components/CheckoutUpsellModal').then(m => m.CheckoutUpsellModal),
+  { ssr: false },
+);
 
 const SETUP_FEE_CENTS = 24700; // $247 — waived on annual
 
@@ -280,20 +287,24 @@ const PlanCard = ({ plan, index }: { plan: typeof plans[0]; index: number }) => 
 
       <p className="text-center text-gray-600 text-xs mt-3">Secure checkout · Powered by Stripe</p>
 
-      {/* Upsell modal — appears between Buy Now click and Stripe redirect */}
-      <CheckoutUpsellModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        context="website"
-        planName={`${plan.name} Plan`}
-        planAmount={plan.amountCents}
-        planPriceLabel={`$${plan.price.toLocaleString()}${plan.period}`}
-        setupFeeCents={plan.setupFeeCents}
-        setupFeeName="One-Time Website Setup Fee ($247)"
-        productName={`VCV Web Solutions — ${plan.name} Plan`}
-        loading={loading === 'buy'}
-        onConfirm={submitToStripe}
-      />
+      {/* Upsell modal — appears between Buy Now click and Stripe redirect.
+          Only mounted while it's actually open so the modal JS stays out
+          of initial load for users who never reach checkout. */}
+      {modalOpen && (
+        <CheckoutUpsellModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          context="website"
+          planName={`${plan.name} Plan`}
+          planAmount={plan.amountCents}
+          planPriceLabel={`$${plan.price.toLocaleString()}${plan.period}`}
+          setupFeeCents={plan.setupFeeCents}
+          setupFeeName="One-Time Website Setup Fee ($247)"
+          productName={`VCV Web Solutions — ${plan.name} Plan`}
+          loading={loading === 'buy'}
+          onConfirm={submitToStripe}
+        />
+      )}
     </motion.div>
   );
 };

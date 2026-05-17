@@ -7,7 +7,14 @@ import { useState, useEffect, useRef } from 'react';
 import { MarqueeBand, SectionOrbs, GridOverlay, PricingBgCanvas, RainbowWavesCanvas } from '@/components/PageEffects';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { DottedSurface } from '@/components/ui/dotted-surface';
-import { CheckoutUpsellModal, CheckoutPayload } from '@/components/CheckoutUpsellModal';
+import type { CheckoutPayload } from '@/components/CheckoutUpsellModal';
+import dynamic from 'next/dynamic';
+
+/* Lazy-loaded: 350-LOC modal only mounts after user clicks Buy Now. */
+const CheckoutUpsellModal = dynamic(
+  () => import('@/components/CheckoutUpsellModal').then(m => m.CheckoutUpsellModal),
+  { ssr: false },
+);
 import { NOVA_TIERS, type NovaTier } from '@/data/novaTiers';
 import { BillingToggle, type Billing } from '@/components/BillingToggle';
 
