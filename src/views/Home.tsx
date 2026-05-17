@@ -10,8 +10,9 @@ import { MarkerHighlight } from '@/components/ui/marker-highlight';
 import { INDUSTRIES } from '@/data/industries';
 
 // Below-fold sections loaded lazily — each becomes its own JS chunk
-const WhatHappensNextSection = dynamic(() => import('../components/WhatHappensNextSection').then(m => ({ default: m.WhatHappensNextSection })), { ssr: false });
-const LeadMagnetSection   = dynamic(() => import('../components/LeadMagnetSection').then(m => ({ default: m.LeadMagnetSection })), { ssr: false });
+/* WhatHappensNextSection + LeadMagnetSection imports removed — those components
+   are no longer used on Home (replaced by the cleaner ProcessBand). They still
+   live in /components if you want to put them on another route. */
 const PricingSection      = dynamic(() => import('../components/PricingSection').then(m => ({ default: m.PricingSection })), { ssr: false });
 
 /* ─── Particle Canvas ─────────────────────────────────────── */
@@ -2736,8 +2737,10 @@ export default function Home() {
       <TechStackBand />
       <ValueStackBand />
       <ProcessBand />
-      <WhatHappensNextSection />
-      <LeadMagnetSection />
+      {/* WhatHappensNextSection + LeadMagnetSection removed from Home — the
+          pixel-font speller and rainbow lead-magnet block competed with the
+          cleaner sections. ProcessBand already covers "how it works." Both
+          views still exist for other routes if needed. */}
       <WhyChooseUs />
       <PricingSection />
       <FAQAccordion />
