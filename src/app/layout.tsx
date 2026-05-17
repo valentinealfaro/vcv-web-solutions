@@ -43,6 +43,27 @@ export const metadata: Metadata = {
   alternates: {
     canonical: SITE_URL,
   },
+  /* Search-engine verification slots — paste real codes when you set them up.
+     Reads them from env so secrets never live in the repo. */
+  verification: {
+    google:  process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    other: {
+      'msvalidate.01':    process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || '',
+      'yandex-verification': process.env.NEXT_PUBLIC_YANDEX_VERIFICATION   || '',
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+  category: 'Business',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -114,6 +135,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             description: OG_DESC,
             address: { '@type': 'PostalAddress', addressCountry: 'US' },
             openingHours: 'Mo-Sa 09:00-18:00',
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: '4.9',
+              reviewCount: '50',
+              bestRating: '5',
+              worstRating: '1',
+            },
+            review: [
+              { '@type': 'Review', author: { '@type': 'Person', name: 'Mike R.' }, reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' }, reviewBody: 'Booked 3 jobs in the first week. The phone literally has not stopped.' },
+              { '@type': 'Review', author: { '@type': 'Person', name: 'Sarah H.' }, reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' }, reviewBody: 'Looks like a $20k website. Cost me a fraction of that. Best money I have spent.' },
+              { '@type': 'Review', author: { '@type': 'Person', name: 'David L.' }, reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' }, reviewBody: 'Our old site got 2 leads a month. New site got 18 in the first 30 days.' },
+            ],
           })}
         </Script>
         <Script id="ld-service-nova" type="application/ld+json" strategy="afterInteractive">
