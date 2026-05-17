@@ -326,7 +326,8 @@ export default function AIReceptionist() {
                   style={{ background:'linear-gradient(135deg,rgba(37,99,235,0.4),rgba(124,58,237,0.3))',
                     filter:'blur(60px)', transform:'scale(1.1)' }}/>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={IMG.hero} alt="AI receptionist taking calls" loading="lazy"
+                <img src={IMG.hero} alt="AI receptionist taking calls"
+                  loading="eager" fetchPriority="high" decoding="async"
                   className="relative rounded-3xl w-full h-full object-cover"
                   style={{ border:'2px solid rgba(255,255,255,0.1)', boxShadow:'0 20px 60px rgba(0,0,0,0.5)' }}/>
                 {/* Floating badge */}
