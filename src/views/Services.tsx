@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Layout, Search, BarChart3, CheckCircle2, ArrowRight, X, Rocket, Zap, Shield, Star, Users, Phone, Bot, Mic, Calendar, BellRing, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
-import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay } from '@/components/PageEffects';
+import { MarqueeBand, SectionOrbs, GridOverlay } from '@/components/PageEffects';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 
 /* ── Rainbow checkerboard canvas ── */
@@ -78,7 +78,6 @@ export default function Services() {
 
       {/* ── Hero with particle canvas ── */}
       <section className="relative min-h-screen flex items-center pt-28 pb-16 overflow-hidden">
-        <ParticleCanvas />
         <SectionOrbs variant="mixed" />
         <GridOverlay gridOp={0.35} dotOp={0.15} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -107,7 +106,6 @@ export default function Services() {
 
       {/* ── Stats with static electricity ── */}
       <section className="py-20 relative overflow-hidden bg-[#030712]">
-        <StaticElectricity />
         <GridOverlay gridOp={0.2} dotOp={0.12} />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
@@ -196,7 +194,6 @@ export default function Services() {
 
       {/* ── Comparison with static electricity ── */}
       <section className="py-24 relative overflow-hidden" style={{background:'linear-gradient(180deg,#030712 0%,#040a16 50%,#030712 100%)'}}>
-        <StaticElectricity />
         <GridOverlay gridOp={0.2} dotOp={0.08} />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-14">
@@ -457,7 +454,6 @@ export default function Services() {
 
       {/* ── CTA ── */}
       <section className="py-24 bg-[#030712] relative overflow-hidden">
-        <ParticleCanvas />
         <SectionOrbs variant="mixed" />
         <GridOverlay gridOp={0.3} dotOp={0.12} />
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">

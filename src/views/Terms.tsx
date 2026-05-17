@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { Shield, FileText, ChevronDown, ArrowRight, Mail, Phone } from 'lucide-react';
-import { ParticleCanvas, SectionOrbs, GridOverlay } from '@/components/PageEffects';
+import { SectionOrbs, GridOverlay } from '@/components/PageEffects';
 
 const EFFECTIVE_DATE = 'April 28, 2025';
 const COMPANY        = 'VCV Web Solutions (a service of VCV Services)';
@@ -63,7 +63,6 @@ export default function Terms() {
 
       {/* ── Hero ── */}
       <section className="relative pt-28 pb-14 overflow-hidden" ref={topRef}>
-        <ParticleCanvas />
         <SectionOrbs variant="blue" />
         <GridOverlay gridOp={0.3} dotOp={0.12} />
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">

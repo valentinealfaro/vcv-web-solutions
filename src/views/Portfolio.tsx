@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { ExternalLink, Layout, CheckCircle2, Sparkles, Phone } from 'lucide-react';
 import { INDUSTRIES } from '@/data/industries';
 import {
-  ParticleCanvas, MarqueeBand, SectionOrbs, GridOverlay,
+  MarqueeBand, SectionOrbs, GridOverlay,
 } from '@/components/PageEffects';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 
@@ -97,7 +97,6 @@ export default function Portfolio() {
 
       {/* ══════════ HERO ══════════ */}
       <section className="relative pt-28 pb-16 overflow-hidden">
-        <ParticleCanvas/>
         <SectionOrbs variant="purple"/>
         <GridOverlay gridOp={0.22} dotOp={0.1}/>
 

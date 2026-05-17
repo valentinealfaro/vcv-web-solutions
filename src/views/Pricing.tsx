@@ -4,7 +4,7 @@ import { CheckCircle2, ArrowRight, HelpCircle, TrendingUp, ShieldCheck, Loader2,
 import Link from 'next/link';
 import { cn } from '../lib/utils';
 import { useState, useEffect, useRef } from 'react';
-import { ParticleCanvas, StaticElectricity, MarqueeBand, SectionOrbs, GridOverlay, PricingBgCanvas, RainbowWavesCanvas } from '@/components/PageEffects';
+import { MarqueeBand, SectionOrbs, GridOverlay, PricingBgCanvas, RainbowWavesCanvas } from '@/components/PageEffects';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
 import { DottedSurface } from '@/components/ui/dotted-surface';
 import { CheckoutUpsellModal, CheckoutPayload } from '@/components/CheckoutUpsellModal';
@@ -221,7 +221,6 @@ export default function Pricing() {
 
       {/* ── Animated hero ── */}
       <section className="relative pt-28 pb-16 overflow-hidden">
-        <ParticleCanvas />
         <SectionOrbs variant="mixed" />
         <GridOverlay gridOp={0.35} dotOp={0.15} />
 

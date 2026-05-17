@@ -11,7 +11,7 @@ import { cn } from '../lib/utils';
 import { useRouter } from 'next/navigation';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { ParticleCanvas, SectionOrbs, GridOverlay } from '@/components/PageEffects';
+import { SectionOrbs, GridOverlay } from '@/components/PageEffects';
 
 /* ── Styling helpers ── */
 const inputCls = 'w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.06] transition-all font-medium';
@@ -510,7 +510,6 @@ export default function WebsiteOnboarding() {
 
   if (success) return (
     <div className="min-h-screen bg-[#030712] flex items-center justify-center px-4 relative overflow-hidden">
-      <ParticleCanvas />
       <SectionOrbs variant="green" />
       <GridOverlay gridOp={0.2} dotOp={0.1} />
       <motion.div initial={{ opacity:0, scale:.9 }} animate={{ opacity:1, scale:1 }}
