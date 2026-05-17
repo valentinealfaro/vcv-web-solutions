@@ -7,10 +7,11 @@ import {
   TrendingUp, Clock, Bot, AlertTriangle, ChevronDown,
 } from 'lucide-react';
 import { TryNovaButton } from '@/components/TryNovaButton';
-import { EqualizerCanvas } from '@/components/EqualizerCanvas';
+/* EqualizerCanvas import removed — was a third rAF canvas per page on
+   34 industry routes. Static CSS orbs alone provide the same depth. */
 import { ROICalculator } from '@/components/ROICalculator';
 import { CheckoutUpsellModal } from '@/components/CheckoutUpsellModal';
-import { ParticleCanvas, MarqueeBand, SectionOrbs, GridOverlay } from '@/components/PageEffects';
+import { MarqueeBand, SectionOrbs, GridOverlay } from '@/components/PageEffects';
 import type { IndustryData } from '@/data/industries';
 import { NOVA_TIERS as TIERS, type NovaTier as Tier } from '@/data/novaTiers';
 import { BillingToggle, type Billing } from '@/components/BillingToggle';
@@ -57,7 +58,6 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
 
       {/* ══════════ HERO ══════════ */}
       <section className="relative pt-28 pb-16 overflow-hidden">
-        <ParticleCanvas/>
         <SectionOrbs variant="blue"/>
         <GridOverlay gridOp={0.2} dotOp={0.08}/>
 
@@ -206,7 +206,6 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
       <section id="try-it-live" className="py-20 bg-[#040a16] relative overflow-hidden">
         <SectionOrbs variant="purple"/>
         <GridOverlay gridOp={0.18} dotOp={0.08}/>
-        <EqualizerCanvas opacity={0.4}/>
         <div className="absolute inset-0 pointer-events-none" style={{ background:'rgba(4,10,22,0.6)', zIndex:1 }}/>
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
@@ -392,7 +391,6 @@ export default function IndustryLanding({ industry }: { industry: IndustryData }
 
       {/* ══════════ PRICING ══════════ */}
       <section id="pricing" className="py-20 bg-[#030712] relative overflow-hidden">
-        <ParticleCanvas/>
         <SectionOrbs variant="green"/>
         <GridOverlay gridOp={0.22} dotOp={0.1}/>
 
