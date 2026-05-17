@@ -2,13 +2,14 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* ─── Permanent redirects ────────────────────────────────────────
-     /portfolio → home (legacy URL), /blog → /guides (we moved content
-     to the static /guides routes for better SEO). */
+     Legacy URLs that need to keep working for old bookmarks / shares.
+     /portfolio → /our-work (renamed), /blog → /guides (moved content
+     to /guides for better SEO). */
   async redirects() {
     return [
-      { source: '/portfolio',  destination: '/',       permanent: false },
-      { source: '/blog',       destination: '/guides', permanent: true  },
-      { source: '/blog/:slug', destination: '/guides', permanent: true  },
+      { source: '/portfolio',  destination: '/our-work', permanent: true },
+      { source: '/blog',       destination: '/guides',   permanent: true },
+      { source: '/blog/:slug', destination: '/guides',   permanent: true },
     ];
   },
 
