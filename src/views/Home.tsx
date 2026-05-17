@@ -927,149 +927,60 @@ const STAT_CARDS: StatCardDef[] = [
 
 interface StatCardProps extends StatCardDef { isSquare: boolean }
 
-const StatCard = ({ id, icon, val, suf = '', pre = '', label, rotDelay, isSquare }: StatCardProps) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [dims, setDims] = useState({ w: 220, h: 148 });
+/* Stationary stat card. The previous version had constant 3D rotation, a
+   traveling glow dot, and shape morphing — three competing animations
+   that made the numbers hard to read. Now it's a clean premium card
+   with a single icon + count-up number + label. Hovering lifts and
+   subtly glows. That's it. */
+const StatCard = ({ icon, val, suf = '', pre = '', label }: StatCardProps) => (
+  <motion.div
+    whileHover={{ y: -3 }}
+    transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+    className="relative p-6 md:p-7 rounded-2xl text-center group"
+    style={{
+      background: 'rgba(255,255,255,0.025)',
+      border:     '1px solid rgba(255,255,255,0.08)',
+      transition: 'border-color 0.2s, background 0.2s',
+    }}>
+    {/* Soft glow on hover only */}
+    <div className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
+      style={{ boxShadow: '0 0 0 1px rgba(59,130,246,0.25), 0 20px 40px -20px rgba(59,130,246,0.30)' }}/>
 
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const measure = () => setDims({ w: el.offsetWidth, h: el.offsetHeight });
-    measure();
-    const obs = new ResizeObserver(measure);
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  const { w, h } = dims;
-  const r = 20;
-  const borderPath = `M ${r} 0 L ${w-r} 0 Q ${w} 0 ${w} ${r} L ${w} ${h-r} Q ${w} ${h} ${w-r} ${h} L ${r} ${h} Q 0 ${h} 0 ${h-r} L 0 ${r} Q 0 0 ${r} 0 Z`;
-  const dotDur = 2.6 + rotDelay * 0.42;
-  const uid = `sc-${id}`;
-
-  return (
-    <div style={{ perspective: '700px' }}>
-      <motion.div
-        ref={cardRef}
-        className="glass-card noise-texture text-center relative"
-        animate={{
-          rotateY:       [-5, 5, -5],
-          rotateX:       [2, -2, 2],
-          paddingTop:    isSquare ? '44px' : '28px',
-          paddingBottom: isSquare ? '44px' : '28px',
-          paddingLeft:   '28px',
-          paddingRight:  '28px',
-        }}
-        transition={{
-          rotateY:       { duration: 4.5 + rotDelay, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror', delay: rotDelay * 0.85 },
-          rotateX:       { duration: 4.5 + rotDelay, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror', delay: rotDelay * 0.85 },
-          paddingTop:    { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
-          paddingBottom: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
-        }}>
-
-        {/* Traveling glow dot */}
-        <svg className="absolute inset-0 pointer-events-none" width="100%" height="100%"
-          viewBox={`0 0 ${w} ${h}`} style={{ overflow: 'visible', zIndex: 5 }}>
-          <defs>
-            <filter id={`glow-${uid}`} x="-70%" y="-70%" width="240%" height="240%">
-              <feGaussianBlur stdDeviation="5" result="blur" />
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          <circle r="13" fill="rgba(37,99,235,0.16)"  filter={`url(#glow-${uid})`}><animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath}/></circle>
-          <circle r="5.5" fill="rgba(139,92,246,0.8)"  filter={`url(#glow-${uid})`}><animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath}/></circle>
-          <circle r="2.5" fill="white"                  filter={`url(#glow-${uid})`}><animateMotion dur={`${dotDur}s`} repeatCount="indefinite" path={borderPath}/></circle>
-        </svg>
-
-        <div className="relative z-10 text-blue-400 mb-3 flex justify-center">{icon}</div>
-        <div className="relative z-10 font-display text-5xl gradient-text mb-1">
-          <Counter target={val} prefix={pre} suffix={suf} />
-        </div>
-        <p className="relative z-10 text-gray-500 text-xs uppercase tracking-widest font-semibold">{label}</p>
-      </motion.div>
+    <div className="relative w-11 h-11 mx-auto mb-4 rounded-xl flex items-center justify-center"
+      style={{ background: 'rgba(59,130,246,0.10)', border: '1px solid rgba(59,130,246,0.30)' }}>
+      <div className="text-blue-400">{icon}</div>
     </div>
-  );
-};
 
-const StatsSection = () => {
-  const [order,  setOrder]  = useState([0, 1, 2, 3]);
-  const [shapes, setShapes] = useState<boolean[]>([false, false, false, false]);
-  const wrapperRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
-  const hitRectsRef = useRef<(DOMRect | null)[]>([null, null, null, null]);
+    <div className="relative font-display text-4xl md:text-5xl text-white tracking-tight leading-none mb-2">
+      <Counter target={val} prefix={pre} suffix={suf} />
+    </div>
+    <p className="relative text-gray-400 text-xs uppercase tracking-[0.18em] font-semibold">{label}</p>
+  </motion.div>
+);
 
-  useEffect(() => {
-    // Swap two random cards every 18 s
-    const shuffleId = setInterval(() => {
-      setOrder(prev => {
-        const next = [...prev];
-        const i = Math.floor(Math.random() * next.length);
-        let j = Math.floor(Math.random() * next.length);
-        while (j === i) j = Math.floor(Math.random() * next.length);
-        [next[i], next[j]] = [next[j], next[i]];
-        return next;
-      });
-    }, 18000);
-
-    // Randomly toggle some cards to square every 20 s
-    const shapeId = setInterval(() => {
-      setShapes(STAT_CARDS.map(() => Math.random() < 0.45));
-    }, 20000);
-
-    // Keep hitRectsRef updated every frame
-    let rafId: number;
-    const updateRects = () => {
-      wrapperRefs.current.forEach((el, i) => {
-        hitRectsRef.current[i] = el ? el.getBoundingClientRect() : null;
-      });
-      rafId = requestAnimationFrame(updateRects);
-    };
-    rafId = requestAnimationFrame(updateRects);
-
-    return () => { clearInterval(shuffleId); clearInterval(shapeId); cancelAnimationFrame(rafId); };
-  }, []);
-
-  const handleHit = useCallback((pos: number) => {
-    // Toggle shape on hit
-    setShapes(prev => { const n = [...prev]; n[pos] = !n[pos]; return n; });
-    // Shuffle card to new position after a brief pause
-    setTimeout(() => {
-      setOrder(prev => {
-        const next = [...prev];
-        let j = Math.floor(Math.random() * next.length);
-        while (j === pos) j = Math.floor(Math.random() * next.length);
-        [next[pos], next[j]] = [next[j], next[pos]];
-        return next;
-      });
-    }, 220);
-  }, []);
-
-  return (
-    <section className="py-20 relative overflow-hidden bg-[#030712]">
-      {/* StaticElectricity canvas removed for performance */}
-      <div className="absolute inset-0 bg-dot opacity-25 pointer-events-none" />
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <LayoutGroup id="stats-cards">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 items-start">
-            {order.map((cardIdx, pos) => {
-              const card = STAT_CARDS[cardIdx];
-              return (
-                <motion.div
-                  key={card.id}
-                  layout
-                  layoutId={`stat-${card.id}`}
-                  ref={(el: HTMLDivElement | null) => { wrapperRefs.current[pos] = el; }}
-                  transition={{ layout: { duration: 2.2, ease: [0.16, 1, 0.3, 1] } }}>
-                  <StatCard {...card} isSquare={shapes[pos]} />
-                </motion.div>
-              );
-            })}
-          </div>
-        </LayoutGroup>
+/* Static stats grid — no shuffling, no shape morphing, no traveling dots.
+   Premium read: clean 4-column grid, animated count-up on scroll-in,
+   stationary thereafter so the numbers can actually be read. */
+const StatsSection = () => (
+  <section className="py-20 md:py-24 relative bg-[#030712]"
+    style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <div className="absolute inset-0 bg-dot opacity-[0.10] pointer-events-none" />
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 items-start">
+        {STAT_CARDS.map((card, i) => (
+          <motion.div
+            key={card.id}
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.06, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}>
+            <StatCard {...card} isSquare={false} />
+          </motion.div>
+        ))}
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);
 
 /* ─── Aurora background for PerfectFor ───────────────────── */
 const AuroraCanvas = () => {
