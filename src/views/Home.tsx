@@ -1895,229 +1895,73 @@ const WHY_FEATURES = [
   { icon: <TrendingUp className="w-10 h-10" />, color:'#f97316', title:'Proven Track Record',  desc:'Real results for real businesses. 50+ sites launched, all generating leads.',      stat:'50+',      statLabel:'Sites Launched',      emoji:'⭐' },
 ];
 
-const WhyChooseUs = () => {
-  const [idx,   setIdx]   = useState(0);
-  const [phase, setPhase] = useState<'enter'|'hold'|'exit'>('enter');
+/* Static 5-card grid. Replaces the previous version that loaded an
+   external motionsites.ai robot GIF, auto-cycled features every 8.4
+   seconds, and had sliding shimmer beams + "Robot is pulling this"
+   captions. Now all 5 reasons are visible at once — visitors can
+   compare them without waiting for a carousel. */
+const WhyChooseUs = () => (
+  <section className="relative py-20 md:py-28 bg-[#040a16]"
+    style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <div className="absolute inset-0 pointer-events-none"
+      style={{ background: 'radial-gradient(ellipse at 30% 0%, rgba(59,130,246,0.08) 0%, transparent 55%), radial-gradient(ellipse at 70% 100%, rgba(124,58,237,0.06) 0%, transparent 55%)' }}/>
 
-  useEffect(() => {
-    let t1: ReturnType<typeof setTimeout>;
-    let t2: ReturnType<typeof setTimeout>;
-    let t3: ReturnType<typeof setTimeout>;
-    const run = () => {
-      setPhase('enter');
-      t1 = setTimeout(() => setPhase('hold'), 700);
-      t2 = setTimeout(() => setPhase('exit'), 7500);
-      t3 = setTimeout(() => { setIdx(i => (i + 1) % WHY_FEATURES.length); }, 8400);
-    };
-    run();
-    const id = setInterval(run, 8400);
-    return () => { clearInterval(id); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, []);
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <motion.div
+        initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        className="text-center mb-12 md:mb-16">
+        <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Why VCV</p>
+        <h2 className="font-display text-white tracking-tight leading-[1.05]"
+          style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
+          Five reasons businesses<br/>
+          <span className="gradient-text">choose us.</span>
+        </h2>
+        <p className="text-gray-400 text-base md:text-lg max-w-2xl mx-auto mt-5 leading-relaxed">
+          We don&apos;t just build websites — we build growth engines tuned to your market.
+          One metric matters: your return on investment.
+        </p>
+      </motion.div>
 
-  const f = WHY_FEATURES[idx];
-  const cardX = phase === 'enter' ? 320 : phase === 'exit' ? 320 : 0;
-  const cardO = phase === 'hold' ? 1 : 0;
+      {/* 5-card grid — 1 col on mobile, 2 on tablet, 5 across on desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {WHY_FEATURES.map((f, i) => (
+          <motion.div key={i}
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            whileHover={{ y: -4 }}
+            className="relative p-6 rounded-2xl"
+            style={{
+              background: 'rgba(255,255,255,0.025)',
+              border:     '1px solid rgba(255,255,255,0.08)',
+              boxShadow:  '0 8px 32px rgba(0,0,0,0.30)',
+            }}>
+            {/* Soft accent glow at top corner */}
+            <div className="absolute top-0 right-0 w-20 h-20 rounded-full pointer-events-none"
+              style={{ background: f.color, opacity: 0.12, filter: 'blur(40px)' }}/>
 
-  return (
-    <section className="py-0 bg-[#040a16] relative overflow-hidden" style={{ minHeight:600 }}>
+            <div className="relative w-12 h-12 rounded-xl flex items-center justify-center mb-5"
+              style={{ background: `${f.color}15`, border: `1px solid ${f.color}40` }}>
+              <div style={{ color: f.color }}>{f.icon}</div>
+            </div>
 
-      {/* ── Robot arm GIF — full background ── */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="https://motionsites.ai/assets/hero-automation-machines-preview-DlTveRIN.gif"
-          alt="" className="pointer-events-none"
-          style={{
-            opacity: 0.32,
-            position: 'absolute',
-            right: '-2%',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: '55%',
-            height: 'auto',
-            objectFit: 'contain',
-          }}
-        />
-        {/* Dark tint to match VCV palette */}
-        <div className="absolute inset-0"
-          style={{ background:'linear-gradient(135deg,rgba(4,10,22,0.82) 0%,rgba(4,10,22,0.45) 50%,rgba(4,10,22,0.75) 100%)' }}/>
-        {/* Left fade so text pops */}
-        <div className="absolute inset-y-0 left-0 w-1/2"
-          style={{ background:'linear-gradient(90deg,rgba(4,10,22,0.88),transparent)' }}/>
-        {/* Top/bottom edge lines */}
-        <div className="absolute top-0 left-0 right-0 h-px"
-          style={{ background:'linear-gradient(90deg,transparent,rgba(37,99,235,0.4),rgba(124,58,237,0.3),transparent)' }}/>
-        <div className="absolute bottom-0 left-0 right-0 h-px"
-          style={{ background:'linear-gradient(90deg,transparent,rgba(6,182,212,0.3),transparent)' }}/>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-
-          {/* ── Left: heading + dot indicators ── */}
-          <motion.div initial={{ opacity:0, x:-30 }} whileInView={{ opacity:1, x:0 }} viewport={{ once:true }}>
-            <p className="neon-badge mb-5">Why VCV?</p>
-            <h2 className="font-display text-5xl md:text-6xl text-white mb-6 leading-tight">
-              WHY BUSINESSES<br/>
-              <span className="gradient-text">CHOOSE US</span>
-            </h2>
-            <p className="text-gray-400 text-lg mb-10 leading-relaxed max-w-md">
-              We don't just build websites — we build{' '}
-              <MarkerHighlight highlight="growth engines" markerColor="rgba(124,58,237,0.88)" textColor="white" delay={0.15}/>{' '}
-              tuned to your market. One metric: your return on investment.
+            <div className="relative font-display text-4xl md:text-5xl leading-none mb-1 tracking-tight"
+              style={{ color: f.color }}>
+              {f.stat}
+            </div>
+            <p className="relative text-gray-500 text-[10px] uppercase tracking-[0.22em] font-bold mb-4">
+              {f.statLabel}
             </p>
 
-            {/* Feature dot nav */}
-            <div className="space-y-1">
-              {WHY_FEATURES.map((feat, i) => (
-                <motion.button key={i}
-                  onClick={() => { setIdx(i); setPhase('enter'); }}
-                  className="relative flex items-center gap-3 w-full text-left group px-2 py-2 rounded-lg overflow-hidden"
-                  animate={{ opacity: i === idx ? 1 : 0.42 }}
-                  transition={{ duration: 0.3 }}>
-
-                  {/* ── Sliding background highlight ── */}
-                  <AnimatePresence>
-                    {i === idx && (
-                      <motion.div
-                        key={`bg-${idx}`}
-                        className="absolute inset-0 rounded-lg pointer-events-none"
-                        style={{ background: `linear-gradient(90deg,${feat.color}22 0%,${feat.color}06 100%)`,
-                          border: `1px solid ${feat.color}25` }}
-                        initial={{ x: '-100%' }}
-                        animate={{ x: '0%' }}
-                        exit={{ x: '100%', opacity: 0 }}
-                        transition={{ type: 'spring', stiffness: 160, damping: 22 }}
-                      />
-                    )}
-                  </AnimatePresence>
-
-                  {/* ── Shimmer beam sweeps left → right ── */}
-                  <AnimatePresence>
-                    {i === idx && (
-                      <motion.div
-                        key={`shimmer-${idx}`}
-                        className="absolute inset-y-0 w-12 pointer-events-none"
-                        style={{ background: `linear-gradient(90deg,transparent,${feat.color}50,transparent)`,
-                          borderRadius: 4 }}
-                        initial={{ left: '-10%' }}
-                        animate={{ left: '110%' }}
-                        transition={{ duration: 0.75, ease: 'easeInOut', delay: 0.1 }}
-                      />
-                    )}
-                  </AnimatePresence>
-
-                  {/* ── Dot ── */}
-                  <motion.div
-                    className="w-2.5 h-2.5 rounded-full flex-shrink-0 relative z-10"
-                    animate={{ scale: i === idx ? 1.7 : 1, background: feat.color }}
-                    style={{ boxShadow: i === idx ? `0 0 10px ${feat.color}, 0 0 20px ${feat.color}60` : 'none' }}
-                    transition={{ duration: 0.3 }}
-                  />
-
-                  {/* ── Label slides in from left when it becomes active ── */}
-                  <motion.span
-                    key={`label-${i}-${i === idx}`}
-                    className="text-sm font-bold relative z-10 flex-shrink-0"
-                    style={{ color: i === idx ? feat.color : 'rgba(148,163,184,0.7)',
-                      textShadow: i === idx ? `0 0 12px ${feat.color}80` : 'none' }}
-                    initial={{ x: i === idx ? -50 : 0, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 220, damping: 22 }}
-                  >
-                    {feat.title}
-                  </motion.span>
-
-                  {/* ── Progress sweep line ── */}
-                  {i === idx && (
-                    <motion.div className="flex-1 h-px relative z-10"
-                      style={{ background: `linear-gradient(90deg,${feat.color}90,transparent)` }}
-                      initial={{ scaleX: 0, originX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: 4.0, ease: 'linear' }}
-                    />
-                  )}
-                </motion.button>
-              ))}
-            </div>
+            <h3 className="relative text-white font-bold text-base mb-2 leading-tight">{f.title}</h3>
+            <p className="relative text-gray-400 text-sm leading-relaxed">{f.desc}</p>
           </motion.div>
-
-          {/* ── Right: robot pulls feature card in ── */}
-          <div className="relative flex items-center justify-center" style={{ minHeight:320 }}>
-            <AnimatePresence mode="wait">
-              <motion.div key={`${idx}-${phase}`}
-                className="w-full max-w-sm"
-                initial={{ x:320, opacity:0 }}
-                animate={{ x: cardX, opacity: cardO }}
-                exit={{ x:320, opacity:0 }}
-                transition={{ type:'spring', stiffness:180, damping:22 }}>
-
-                {/* Feature card */}
-                <div className="rounded-2xl p-8 relative overflow-hidden"
-                  style={{
-                    background:`linear-gradient(145deg,${f.color}18,${f.color}08)`,
-                    border:`2px solid ${f.color}45`,
-                    boxShadow:`0 0 60px ${f.color}25, 0 0 0 1px ${f.color}15`,
-                  }}>
-
-                  {/* Glow behind icon */}
-                  <div className="absolute top-6 right-6 w-24 h-24 rounded-full blur-[40px] pointer-events-none"
-                    style={{ background:f.color, opacity:0.2 }}/>
-
-                  {/* Emoji + icon row */}
-                  <div className="flex items-center justify-between mb-6">
-                    <motion.div className="rounded-2xl p-4 flex-shrink-0"
-                      style={{ background:`${f.color}20`, border:`1px solid ${f.color}45`, color:f.color }}
-                      animate={{ boxShadow:[`0 0 0px ${f.color}00`,`0 0 30px ${f.color}60`,`0 0 0px ${f.color}00`] }}
-                      transition={{ duration:2.2, repeat:Infinity }}>
-                      {f.icon}
-                    </motion.div>
-                    <span style={{ fontSize:44 }}>{f.emoji}</span>
-                  </div>
-
-                  {/* Stat */}
-                  <div className="mb-4">
-                    <motion.p className="font-display leading-none mb-1"
-                      style={{ fontSize:'clamp(3rem,6vw,4.5rem)', color:f.color,
-                        textShadow:`0 0 30px ${f.color}80` }}
-                      animate={{ textShadow:[`0 0 20px ${f.color}60`,`0 0 50px ${f.color}cc`,`0 0 20px ${f.color}60`] }}
-                      transition={{ duration:2, repeat:Infinity }}>
-                      {f.stat}
-                    </motion.p>
-                    <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">{f.statLabel}</p>
-                  </div>
-
-                  {/* Title + desc */}
-                  <h3 className="text-white font-bold text-xl mb-2">{f.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{f.desc}</p>
-
-                  {/* Bottom progress bar */}
-                  {phase === 'hold' && (
-                    <motion.div className="absolute bottom-0 left-0 right-0 h-1 rounded-b-2xl overflow-hidden">
-                      <motion.div className="h-full rounded-b-2xl"
-                        style={{ background:f.color }}
-                        initial={{ width:'0%' }} animate={{ width:'100%' }}
-                        transition={{ duration:6.8, ease:'linear' }}/>
-                    </motion.div>
-                  )}
-                </div>
-
-                {/* "Robot pulling" arrow indicator */}
-                <motion.div className="flex items-center gap-2 mt-3 justify-end"
-                  animate={{ opacity:[0.4,0.9,0.4] }} transition={{ duration:1.5, repeat:Infinity }}>
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color:`${f.color}90` }}>
-                    Robot is pulling this
-                  </span>
-                  <ArrowRight className="w-3.5 h-3.5" style={{ color:f.color }}/>
-                </motion.div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-        </div>
+        ))}
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);
 
 /* ─── Process Section ─────────────────────────────────────── */
 const ProcessSection = () => {
