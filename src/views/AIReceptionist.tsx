@@ -1001,9 +1001,10 @@ export default function AIReceptionist() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-10">
-            <p className="neon-badge mb-4 mx-auto w-fit">The Comparison</p>
-            <h2 className="font-display text-4xl md:text-6xl text-white mb-3 leading-tight">
-              NOVA vs THE <span className="gradient-text">ALTERNATIVES</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">The comparison</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)' }}>
+              Nova vs the <span className="gradient-text">alternatives.</span>
             </h2>
           </motion.div>
 
@@ -1097,9 +1098,10 @@ export default function AIReceptionist() {
         <SectionOrbs variant="cyan"/>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-10">
-            <p className="neon-badge mb-3 mx-auto w-fit">Real Results</p>
-            <h2 className="font-display text-3xl md:text-5xl text-white leading-tight">
-              BUSINESSES <span className="gradient-text">USING NOVA</span>
+            <p className="text-cyan-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Real results</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05]"
+              style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
+              Businesses <span className="gradient-text">using Nova.</span>
             </h2>
           </motion.div>
 
@@ -1151,16 +1153,13 @@ export default function AIReceptionist() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
           <motion.div {...fade()} className="text-center mb-10">
-            <motion.div
-              animate={{ scale: [1, 1.04, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5"
+            <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5"
               style={{ background:'rgba(255,193,7,0.12)', border:'1px solid rgba(255,193,7,0.5)' }}>
-              <span className="text-yellow-300 font-bold text-xs tracking-widest">🎁 BEST VALUE BUNDLE</span>
-            </motion.div>
-            <h2 className="font-display text-5xl md:text-7xl text-white mb-4 leading-none"
-              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4), 0 0 80px rgba(6,182,212,0.25)' }}>
-              NOVA + <span className="gradient-text">LEAD WEBSITE</span>
+              <span className="text-yellow-300 font-bold text-xs tracking-[0.18em] uppercase">🎁 Best value bundle</span>
+            </div>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-4"
+              style={{ fontSize: 'clamp(2.5rem, 7vw, 5.5rem)' }}>
+              Nova + <span className="gradient-text">lead website.</span>
             </h2>
             <p className="text-gray-300 text-lg max-w-2xl mx-auto">
               Pair Nova with a high-converting website that captures leads even when she&apos;s not on a call.
@@ -1290,11 +1289,12 @@ export default function AIReceptionist() {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div {...fade()} className="text-center mb-12">
-            <p className="neon-badge mb-5 mx-auto w-fit">Add-Ons</p>
-            <h2 className="font-display text-5xl md:text-6xl text-white mb-5 leading-none">
-              SCALE UP <span className="gradient-text">ANYTIME</span>
+            <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-4">Add-ons</p>
+            <h2 className="font-display text-white tracking-tight leading-[1.05] mb-4"
+              style={{ fontSize: 'clamp(2.25rem, 6vw, 4.5rem)' }}>
+              Scale up <span className="gradient-text">anytime.</span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
               Start with the bundle. Add modules as you grow.
             </p>
           </motion.div>
@@ -1368,12 +1368,12 @@ export default function AIReceptionist() {
               <span className="text-red-400 font-bold text-xs tracking-wide">ONLY 10 BUSINESSES THIS MONTH</span>
             </motion.div>
 
-            <h2 className="font-display text-6xl md:text-8xl text-white mb-6 leading-none"
-              style={{ textShadow:'0 0 40px rgba(34,197,94,0.4), 0 0 80px rgba(6,182,212,0.25)' }}>
-              STOP MISSING<br/>
-              <span className="gradient-text">JOBS TODAY</span>
+            <h2 className="font-display text-white tracking-tight leading-[1.02] mb-6"
+              style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)' }}>
+              Stop missing<br/>
+              <span className="gradient-text">jobs today.</span>
             </h2>
-            <p className="text-gray-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto">
+            <p className="text-gray-300 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
               Call Nova. Hear it work. Then we&apos;ll have you live in 24-48 hours.
             </p>
 
