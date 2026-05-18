@@ -30,14 +30,13 @@ const SERVICES = [
 ];
 
 const COMPANY = [
-  { label:'About',          path:'/about' },
-  { label:'How It Works',   path:'/how-it-works' },
-  { label:'Client Reviews', path:'/reviews' },
-  { label:'Our Work',       path:'/our-work' },
-  { label:'Pricing',        path:'/pricing' },
-  { label:'Contact',        path:'/contact' },
-  { label:'Design Preview', path:'/free-demo' },
-  { label:'Terms & Privacy',path:'/terms' },
+  { label:'About',           path:'/about' },
+  { label:'How It Works',    path:'/how-it-works' },
+  { label:'Client Reviews',  path:'/reviews' },
+  { label:'Pricing',         path:'/pricing' },
+  { label:'Contact',         path:'/contact' },
+  { label:'Design Preview',  path:'/free-demo' },
+  { label:'Terms & Privacy', path:'/terms' },
 ];
 
 const STATS = [

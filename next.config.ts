@@ -3,13 +3,15 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   /* ─── Permanent redirects ────────────────────────────────────────
      Legacy URLs that need to keep working for old bookmarks / shares.
-     /portfolio → /our-work (renamed), /blog → /guides (moved content
+     /our-work + /portfolio → /templates (merged into one page — same
+     content, better URL for SEO), /blog → /guides (moved content
      to /guides for better SEO). */
   async redirects() {
     return [
-      { source: '/portfolio',  destination: '/our-work', permanent: true },
-      { source: '/blog',       destination: '/guides',   permanent: true },
-      { source: '/blog/:slug', destination: '/guides',   permanent: true },
+      { source: '/portfolio',  destination: '/templates', permanent: true },
+      { source: '/our-work',   destination: '/templates', permanent: true },
+      { source: '/blog',       destination: '/guides',    permanent: true },
+      { source: '/blog/:slug', destination: '/guides',    permanent: true },
     ];
   },
 

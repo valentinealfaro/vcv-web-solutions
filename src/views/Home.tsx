@@ -2191,9 +2191,9 @@ const SampleWebsites = () => (
       <motion.div
         initial={{ opacity:0 }} whileInView={{ opacity:1 }} viewport={{ once:true }}
         className="text-center mt-12">
-        <Link href="/our-work"
+        <Link href="/templates"
           className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
-          See all our work <ArrowRight className="w-4 h-4"/>
+          Browse all templates <ArrowRight className="w-4 h-4"/>
         </Link>
       </motion.div>
     </div>
