@@ -92,7 +92,7 @@ export const Footer = () => (
           <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
             <FreeDemoButton size="sm" label="Request Preview" />
             <a href="tel:+15809191386"
-              className="glass-card text-white px-8 py-3.5 rounded-full font-semibold text-sm flex items-center justify-center gap-2 hover:border-blue-500/40 transition-all">
+              className="glass-card text-white px-8 py-3.5 rounded-full font-semibold text-sm flex items-center justify-center gap-2 hover:border-blue-500/40 transition-[border-color,transform] duration-200 ease-out active:scale-[0.97]">
               <Phone className="w-4 h-4 text-blue-400"/> (580) 919-1386
             </a>
           </div>
@@ -116,7 +116,7 @@ export const Footer = () => (
         {/* Brand — 2 cols */}
         <div className="lg:col-span-2">
           <Link href="/" className="flex items-center gap-3 mb-5 group">
-            <div className="relative rounded-xl p-1.5 flex-shrink-0 transition-all group-hover:scale-105"
+            <div className="relative rounded-xl p-1.5 flex-shrink-0 transition-transform duration-200 ease-out group-hover:scale-105"
               style={{
                 background:'rgba(255,255,255,0.05)',
                 border:'1px solid rgba(59,130,246,0.40)',

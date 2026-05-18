@@ -695,7 +695,8 @@ const Hero = () => (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
       <div className="grid lg:grid-cols-2 gap-12 items-center">
 
-        <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
+        <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}>
           {/* Single-color availability badge — replaces the rainbow cycling banner
               that was visually fighting the rest of the page. */}
           <div className="inline-flex items-center gap-2 mb-7 px-3 py-1.5 rounded-full"
@@ -755,8 +756,8 @@ const Hero = () => (
 
         {/* ── Contact form (replaces the demo robot mockup) ── */}
         <motion.div
-          initial={{ opacity:0, x:40 }} animate={{ opacity:1, x:0 }}
-          transition={{ duration:0.9, delay:0.2 }}
+          initial={{ opacity:0, x:24 }} animate={{ opacity:1, x:0 }}
+          transition={{ duration:0.5, delay:0.1, ease:[0.23, 1, 0.32, 1] }}
           className="hidden lg:block">
           <HeroContactForm />
         </motion.div>
@@ -2565,7 +2566,7 @@ const FAQAccordion = () => {
                 <button onClick={() => setOpen(isOpen ? null : i)}
                   className="w-full px-6 py-5 flex items-center justify-between text-left gap-4">
                   <span className="text-white font-bold text-base md:text-lg pr-4">{item.q}</span>
-                  <span className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${isOpen ? 'rotate-45 bg-blue-500/25' : 'bg-white/[0.06]'}`}>
+                  <span className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-[transform,background-color] duration-200 ease-out ${isOpen ? 'rotate-45 bg-blue-500/25' : 'bg-white/[0.06]'}`}>
                     <span className="text-white text-xl leading-none -mt-px">+</span>
                   </span>
                 </button>

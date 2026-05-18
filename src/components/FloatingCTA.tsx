@@ -25,7 +25,7 @@ export const FloatingCTA = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={scrollToTop}
-            className="fixed bottom-24 right-6 z-40 hidden sm:flex w-10 h-10 glass-card items-center justify-center text-gray-400 hover:text-white hover:border-blue-500/30 transition-all">
+            className="fixed bottom-24 right-6 z-40 hidden sm:flex w-10 h-10 glass-card items-center justify-center text-gray-400 hover:text-white hover:border-blue-500/30 transition-[color,border-color,transform] duration-200 ease-out active:scale-[0.93]">
             <ChevronUp className="w-4 h-4" />
           </motion.button>
         )}
