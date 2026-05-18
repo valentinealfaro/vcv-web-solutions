@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useForm } from 'react-hook-form';
-import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+/* Firebase imports moved inside onSubmit() — Firestore SDK is ~80kB gz
+   and was previously in the critical path for /free-demo. Now it only
+   loads when the user actually submits the form. */
 import {
   CheckCircle2, Rocket, ShieldCheck, Zap, ArrowRight, Loader2,
   Star, Clock, TrendingUp, Phone, Eye, Award,
@@ -44,6 +45,12 @@ export default function Landing() {
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
+      // Lazy-import Firestore only at submit time so the SDK doesn't bloat
+      // the initial page bundle for users who never fill out the form.
+      const [{ db }, { collection, addDoc, serverTimestamp }] = await Promise.all([
+        import('../firebase'),
+        import('firebase/firestore'),
+      ]);
       // Save to Firestore so it shows in the admin dashboard
       await addDoc(collection(db, 'leads'), {
         ...data, createdAt: serverTimestamp(), status: 'new', source: 'Free Demo',

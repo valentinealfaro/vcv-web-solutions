@@ -9,8 +9,9 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useRouter } from 'next/navigation';
-import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+/* Firebase imports moved inside handleSubmit() — Firestore SDK (~80kB gz)
+   only needs to load when the user submits this onboarding form, not on
+   every page mount. */
 import { SectionOrbs, GridOverlay } from '@/components/PageEffects';
 
 /* ── Styling helpers ── */
@@ -93,7 +94,11 @@ export default function WebsiteOnboarding() {
   const handleSubmit = async () => {
     setSaving(true);
     try {
-      /* ── 1. Save to Firestore ── */
+      /* ── 1. Save to Firestore (lazy-loaded SDK) ── */
+      const [{ db }, { collection, addDoc, serverTimestamp }] = await Promise.all([
+        import('../firebase'),
+        import('firebase/firestore'),
+      ]);
       await addDoc(collection(db, 'onboarding'), {
         ...data,
         fileNames: files.map(f => f.name),
