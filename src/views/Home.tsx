@@ -2183,7 +2183,12 @@ const SampleWebsites = () => (
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {INDUSTRIES.slice(0, 8).map((ind, i) => (
+        {/* Curated 8 — diverse mix of home services, professional, food + beauty
+            so the grid showcases the breadth of industries we serve. */}
+        {(['roofers','hvac','dentists','restaurants','real-estate','lawyers','med-spa','landscapers']
+          .map(slug => INDUSTRIES.find(i => i.slug === slug))
+          .filter((i): i is typeof INDUSTRIES[number] => Boolean(i))
+        ).map((ind, i) => (
           <SampleWebsiteCard key={ind.slug} ind={ind} i={i} />
         ))}
       </div>
