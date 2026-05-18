@@ -2188,9 +2188,9 @@ const SampleWebsites = () => (
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {/* Curated 8 — diverse mix of home services, professional, food + beauty
-            so the grid showcases the breadth of industries we serve. */}
-        {(['roofers','hvac','dentists','restaurants','real-estate','lawyers','med-spa','landscapers']
+        {/* Curated 8 — all link to hand-crafted demos (vs the generic
+            template) so visitors see VCV's best work on the home grid. */}
+        {(['roofers','hvac','dentists','restaurants','real-estate','med-spa','landscapers','auto-repair']
           .map(slug => INDUSTRIES.find(i => i.slug === slug))
           .filter((i): i is typeof INDUSTRIES[number] => Boolean(i))
         ).map((ind, i) => (
