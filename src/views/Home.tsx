@@ -634,30 +634,30 @@ const HeroContactForm = () => {
             <form onSubmit={handleSubmit} className="space-y-3">
               <input
                 type="text" required value={form.name} onChange={set('name')}
-                placeholder="Your name"
+                placeholder="Your name" aria-label="Your name" autoComplete="name"
                 className={baseInput}
               />
               <input
                 type="email" required value={form.email} onChange={set('email')}
-                placeholder="you@example.com"
+                placeholder="you@example.com" aria-label="Email address" autoComplete="email"
                 className={baseInput}
               />
               <div className="grid grid-cols-2 gap-3">
                 <input
                   type="tel" value={form.phone} onChange={set('phone')}
-                  placeholder="Phone (optional)"
+                  placeholder="Phone (optional)" aria-label="Phone number" autoComplete="tel"
                   className={baseInput}
                 />
                 <input
                   type="text" value={form.business} onChange={set('business')}
-                  placeholder="Business name"
+                  placeholder="Business name" aria-label="Business name" autoComplete="organization"
                   className={baseInput}
                 />
               </div>
               <textarea
                 required value={form.message} onChange={set('message')}
                 placeholder="Tell us about your business and what you need"
-                rows={3}
+                aria-label="Tell us about your business" rows={3}
                 className={baseInput + ' resize-none'}
               />
 
