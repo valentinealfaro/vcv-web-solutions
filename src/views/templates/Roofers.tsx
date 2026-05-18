@@ -225,6 +225,8 @@ export default function RoofersTemplate() {
       <div className="sticky top-0 z-[100] w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white text-xs sm:text-sm">
         <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
           <span className="flex items-center gap-2">
+            <Link href="/templates" className="opacity-80 hover:opacity-100 underline-offset-2 hover:underline">← All templates</Link>
+            <span className="opacity-40">·</span>
             <Sparkles className="w-4 h-4 flex-shrink-0"/>
             <span className="font-semibold">Template Preview</span>
             <span className="hidden sm:inline opacity-90">— We customize colors, logo &amp; content to match your brand · $1,497 once</span>
