@@ -30,8 +30,26 @@ export default function GenericTemplate({ industry }: { industry: IndustryData }
   return (
     <div className="min-h-screen" style={{ background: '#0a0a0a', color: '#fff' }}>
 
-      {/* ── Local nav (template chrome) ── */}
-      <nav className="sticky top-0 z-50 backdrop-blur-xl"
+      {/* ── Template preview banner — gives visitors a way back to the
+             gallery and a CTA to commit ── */}
+      <div className="sticky top-0 z-[100] w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white text-xs sm:text-sm">
+        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
+          <span className="flex items-center gap-2">
+            <Link href="/templates" className="opacity-80 hover:opacity-100 underline-offset-2 hover:underline">← All templates</Link>
+            <span className="opacity-40">·</span>
+            <Sparkles className="w-4 h-4 flex-shrink-0"/>
+            <span className="font-semibold">Template Preview</span>
+            <span className="hidden md:inline opacity-90">— We customize colors, logo &amp; content to match your brand · From $97/mo</span>
+          </span>
+          <Link href="/free-demo"
+            className="bg-white text-blue-700 font-bold px-3 py-1 rounded-full text-xs hover:scale-105 transition-transform flex items-center gap-1">
+            Make This Mine <ArrowRight className="w-3 h-3"/>
+          </Link>
+        </div>
+      </div>
+
+      {/* ── Local nav (template chrome) — sticks below the preview banner ── */}
+      <nav className="relative z-50 backdrop-blur-xl"
         style={{ background:'rgba(10,10,10,0.85)', borderBottom:`1px solid ${c}25` }}>
         <div className="max-w-7xl mx-auto px-5 lg:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
