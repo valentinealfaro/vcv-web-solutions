@@ -6,7 +6,12 @@ import { cn } from '../lib/utils';
 import { useState, useEffect, useRef } from 'react';
 import { MarqueeBand, SectionOrbs, GridOverlay, PricingBgCanvas, RainbowWavesCanvas } from '@/components/PageEffects';
 import { FreeDemoButton } from '@/components/FreeDemoButton';
-import { DottedSurface } from '@/components/ui/dotted-surface';
+/* DottedSurface lazy-loaded — pulls in ~150kB of three.js for a decorative
+   FAQ background. Don't ship that on initial /pricing load. */
+const DottedSurface = dynamic(
+  () => import('@/components/ui/dotted-surface').then(m => m.DottedSurface),
+  { ssr: false },
+);
 import type { CheckoutPayload } from '@/components/CheckoutUpsellModal';
 import dynamic from 'next/dynamic';
 
