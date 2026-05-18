@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { INDUSTRIES } from '@/data/industries';
 import { STATES } from '@/data/states';
 import { GUIDES } from '@/data/guides';
+import { CITIES } from '@/data/cities';
 
 const SITE_URL = 'https://www.vcvwebsolutions.com';
 
@@ -21,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/how-it-works`,          lastModified: now, changeFrequency: 'monthly', priority: 0.75 },
     { url: `${SITE_URL}/about`,                 lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${SITE_URL}/serving`,               lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${SITE_URL}/cities`,                lastModified: now, changeFrequency: 'monthly', priority: 0.75 },
     { url: `${SITE_URL}/guides`,                lastModified: now, changeFrequency: 'weekly',  priority: 0.7 },
     { url: `${SITE_URL}/terms`,                 lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
   ];
@@ -49,6 +51,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
+  /* Metro-level city landing pages — long-tail local search */
+  const cityPages: MetadataRoute.Sitemap = CITIES.map(c => ({
+    url: `${SITE_URL}/cities/${c.slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
+
   /* Evergreen guides — Article schema, individually indexable */
   const guidePages: MetadataRoute.Sitemap = GUIDES.map(g => ({
     url: `${SITE_URL}/guides/${g.slug}`,
@@ -57,5 +67,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.65,
   }));
 
-  return [...staticPages, ...industryPages, ...templatePages, ...statePages, ...guidePages];
+  return [...staticPages, ...industryPages, ...templatePages, ...statePages, ...cityPages, ...guidePages];
 }
