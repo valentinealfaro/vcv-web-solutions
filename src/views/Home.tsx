@@ -2229,10 +2229,30 @@ const SampleWebsites = () => (
 
 /* ─── Trust band — testimonials + counters + 5-star review row ──── */
 const TESTIMONIALS = [
-  { quote: 'Booked 3 jobs in the first week. The phone literally has not stopped.',           name: 'Mike R.',     role: 'Owner, Tulsa Roofing Co.',  initial: 'M', accent: '#ef4444' },
-  { quote: 'Looks like a $20k website. Cost me a fraction of that. Best money I have spent.', name: 'Sarah H.',    role: 'Owner, Sparkle Cleaning',   initial: 'S', accent: '#22c55e' },
-  { quote: 'Our old site got 2 leads a month. New site got 18 in the first 30 days.',          name: 'David L.',    role: 'GM, Cool Air HVAC',          initial: 'D', accent: '#06b6d4' },
-  { quote: 'Launched in 5 days. We are #1 on Google for "plumber near me" within a month.',     name: 'James T.',    role: 'Anchor Plumbing',           initial: 'J', accent: '#3b82f6' },
+  {
+    metric: '3 jobs', metricLabel: 'booked in first week',
+    industry: 'Roofing',
+    quote: 'Booked 3 jobs in the first week. The phone literally has not stopped.',
+    name: 'Mike R.', role: 'Owner, Tulsa Roofing Co.', initial: 'M', accent: '#ef4444',
+  },
+  {
+    metric: '$20k', metricLabel: 'website-grade build · paid less',
+    industry: 'Cleaning',
+    quote: 'Looks like a $20k website. Cost me a fraction of that. Best money I have spent.',
+    name: 'Sarah H.', role: 'Owner, Sparkle Cleaning', initial: 'S', accent: '#22c55e',
+  },
+  {
+    metric: '18 leads', metricLabel: 'first 30 days · up from 2',
+    industry: 'HVAC',
+    quote: 'Our old site got 2 leads a month. New site got 18 in the first 30 days.',
+    name: 'David L.', role: 'GM, Cool Air HVAC', initial: 'D', accent: '#06b6d4',
+  },
+  {
+    metric: '#1', metricLabel: 'Google · plumber near me · 1 mo',
+    industry: 'Plumbing',
+    quote: 'Launched in 5 days. We are #1 on Google for "plumber near me" within a month.',
+    name: 'James T.', role: 'Anchor Plumbing', initial: 'J', accent: '#3b82f6',
+  },
 ];
 
 const CounterStat = ({ value, suffix='', label }: { value: number; suffix?: string; label: string }) => {
@@ -2257,13 +2277,27 @@ const CounterStat = ({ value, suffix='', label }: { value: number; suffix?: stri
     io.observe(el);
     return () => io.disconnect();
   }, [value]);
+  /* Card-style stat to match the upper StatsSection — same font-display
+     gradient treatment, subtle diagonal background, hover lift via spring. */
   return (
-    <div ref={ref} className="text-center">
-      <div className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-2">
+    <motion.div
+      ref={ref}
+      whileHover={{ y: -3 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+      className="relative p-5 md:p-6 rounded-2xl text-center group overflow-hidden"
+      style={{
+        background: 'linear-gradient(155deg, rgba(59,130,246,0.06) 0%, rgba(255,255,255,0.025) 35%, rgba(255,255,255,0.02) 100%)',
+        border: '1px solid rgba(255,255,255,0.08)',
+      }}>
+      {/* Thin top accent — fades in on hover */}
+      <div className="absolute top-0 inset-x-5 h-px pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.6), transparent)' }}/>
+      <div className="relative font-display gradient-text tracking-tight leading-none mb-2"
+        style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}>
         {n.toLocaleString()}{suffix}
       </div>
-      <p className="text-gray-400 text-xs md:text-sm uppercase tracking-wider font-semibold">{label}</p>
-    </div>
+      <p className="relative text-gray-400 text-[11px] md:text-xs uppercase tracking-[0.18em] font-semibold">{label}</p>
+    </motion.div>
   );
 };
 
@@ -2277,20 +2311,27 @@ const TrustBand = () => (
       {/* Header */}
       <motion.div
         initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
-        className="text-center mb-12">
-        <div className="inline-flex items-center gap-1.5 mb-4">
-          {[...Array(5)].map((_,i)=> (
-            <svg key={i} className="w-5 h-5 fill-current text-yellow-400" viewBox="0 0 20 20" aria-hidden="true">
-              <path d="M10 1l2.6 5.9 6.4.6-4.8 4.4 1.4 6.3L10 15l-5.6 3.2L5.8 11.9 1 7.5l6.4-.6L10 1z"/>
-            </svg>
-          ))}
-          <span className="ml-2 text-white font-bold text-sm">4.9 · 197+ reviews</span>
+        transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+        className="text-center mb-14 md:mb-16">
+        {/* Eyebrow rating pill — replaces the bare stars+text row */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full"
+          style={{ background: 'rgba(234,179,8,0.10)', border: '1px solid rgba(234,179,8,0.30)' }}>
+          <span className="flex items-center gap-0.5">
+            {[...Array(5)].map((_,i)=> (
+              <svg key={i} className="w-3.5 h-3.5 fill-current text-yellow-400" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M10 1l2.6 5.9 6.4.6-4.8 4.4 1.4 6.3L10 15l-5.6 3.2L5.8 11.9 1 7.5l6.4-.6L10 1z"/>
+              </svg>
+            ))}
+          </span>
+          <span className="text-yellow-200 font-bold text-xs tracking-[0.12em] uppercase">4.9 · 197+ reviews</span>
         </div>
-        <h2 className="font-display text-4xl md:text-6xl text-white tracking-tight mb-3">
-          Trusted by local <span className="gradient-text">business owners</span>
+        <h2 className="font-display text-white tracking-tight leading-[0.95]"
+          style={{ fontSize: 'clamp(2.5rem, 6vw, 4.75rem)' }}>
+          Trusted by local<br/>
+          <span className="gradient-text">business owners.</span>
         </h2>
-        <p className="text-gray-400 max-w-2xl mx-auto">
-          Real results from real businesses we&apos;ve launched.
+        <p className="text-gray-300 text-base md:text-lg max-w-xl mx-auto leading-relaxed mt-5">
+          Specific numbers from owners who actually answer their phones — not generic 5-star fluff.
         </p>
       </motion.div>
 
@@ -2302,35 +2343,87 @@ const TrustBand = () => (
         <CounterStat value={30}   suffix="-Day"     label="Results Guarantee" />
       </div>
 
-      {/* Testimonials grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-5xl mx-auto">
+      {/* Testimonials grid — each card pulls the killer metric out of the
+          quote and shows it as a big number above the testimonial. The
+          industry-coloured accent line on top, gradient avatar, and
+          oversized opening-quote glyph all push these from "basic card"
+          to "highest-trust element on the page". */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-5xl mx-auto">
         {TESTIMONIALS.map((t, i) => (
-          <motion.div key={i}
-            initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
-            transition={{ delay: i * 0.06 }}
-            className="p-6 md:p-7 rounded-2xl"
-            style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.08)' }}>
-            <div className="flex items-center gap-1 mb-3">
-              {[...Array(5)].map((_,k)=> (
-                <svg key={k} className="w-3.5 h-3.5 fill-current" style={{ color: t.accent }} viewBox="0 0 20 20" aria-hidden="true">
-                  <path d="M10 1l2.6 5.9 6.4.6-4.8 4.4 1.4 6.3L10 15l-5.6 3.2L5.8 11.9 1 7.5l6.4-.6L10 1z"/>
-                </svg>
-              ))}
-            </div>
-            <p className="text-gray-100 text-base md:text-lg leading-relaxed mb-5">
-              &ldquo;{t.quote}&rdquo;
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm"
-                style={{ background: t.accent }}>
-                {t.initial}
+          <motion.article key={i}
+            initial={{ opacity:0, y:24 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+            transition={{ delay: i * 0.07, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+            whileHover={{ y: -3 }}
+            className="relative rounded-2xl overflow-hidden group"
+            style={{
+              background: `linear-gradient(155deg, ${t.accent}10 0%, rgba(255,255,255,0.025) 30%, rgba(255,255,255,0.015) 100%)`,
+              border: '1px solid rgba(255,255,255,0.08)',
+              transition: 'transform 200ms cubic-bezier(0.23, 1, 0.32, 1)',
+            }}>
+
+            {/* Industry-coloured top accent bar */}
+            <div className="absolute top-0 inset-x-0 h-[2px] pointer-events-none"
+              style={{ background: `linear-gradient(90deg, transparent, ${t.accent}, transparent)` }}/>
+
+            {/* Soft glow halo on hover */}
+            <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              style={{ boxShadow: `0 24px 60px -24px ${t.accent}40, inset 0 0 0 1px ${t.accent}20` }}/>
+
+            <div className="relative p-7 md:p-8">
+              {/* Top row — industry badge + stars */}
+              <div className="flex items-center justify-between gap-3 mb-5">
+                <span className="inline-block text-[10px] font-bold uppercase tracking-[0.22em] px-2 py-1 rounded-full"
+                  style={{ background: `${t.accent}18`, color: t.accent, border: `1px solid ${t.accent}40` }}>
+                  {t.industry}
+                </span>
+                <div className="flex items-center gap-0.5">
+                  {[...Array(5)].map((_,k)=> (
+                    <svg key={k} className="w-3.5 h-3.5 fill-current" style={{ color: t.accent }} viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M10 1l2.6 5.9 6.4.6-4.8 4.4 1.4 6.3L10 15l-5.6 3.2L5.8 11.9 1 7.5l6.4-.6L10 1z"/>
+                    </svg>
+                  ))}
+                </div>
               </div>
-              <div>
-                <p className="text-white font-bold text-sm leading-tight">{t.name}</p>
-                <p className="text-gray-400 text-xs">{t.role}</p>
+
+              {/* The killer metric — pulled out of the quote, made the hero */}
+              <div className="mb-5">
+                <div className="font-display tracking-tight leading-[0.92] mb-1"
+                  style={{ fontSize: 'clamp(2.5rem, 4.5vw, 3.75rem)', color: t.accent,
+                           textShadow: `0 0 32px ${t.accent}40` }}>
+                  {t.metric}
+                </div>
+                <p className="text-gray-400 text-xs uppercase tracking-[0.18em] font-semibold">
+                  {t.metricLabel}
+                </p>
+              </div>
+
+              {/* The quote — proper opening quote glyph, larger leading */}
+              <blockquote className="relative pl-5 mb-6">
+                <span aria-hidden="true" className="absolute -left-1 -top-2 select-none font-display leading-none"
+                  style={{ fontSize: '3rem', color: `${t.accent}50` }}>
+                  &ldquo;
+                </span>
+                <p className="text-gray-100 text-base md:text-lg leading-[1.55] italic">
+                  {t.quote}
+                </p>
+              </blockquote>
+
+              {/* Attribution — gradient avatar + name + role */}
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-white text-sm relative"
+                  style={{
+                    background: `linear-gradient(135deg, ${t.accent}, ${t.accent}aa)`,
+                    boxShadow: `0 0 0 2px rgba(255,255,255,0.06), 0 4px 14px ${t.accent}40`,
+                  }}>
+                  {t.initial}
+                </div>
+                <div>
+                  <p className="text-white font-bold text-sm leading-tight">{t.name}</p>
+                  <p className="text-gray-400 text-xs mt-0.5">{t.role}</p>
+                </div>
               </div>
             </div>
-          </motion.div>
+          </motion.article>
         ))}
       </div>
 
