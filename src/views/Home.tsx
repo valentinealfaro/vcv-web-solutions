@@ -2178,12 +2178,12 @@ const SampleWebsites = () => (
           Built for <span className="gradient-text">your industry.</span>
         </h2>
         <p className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-          {INDUSTRIES.length} fully-built industry templates — click any to see it live and request it customized for your business.
+          A taste of the {INDUSTRIES.length} fully-built industry templates we have — click any to see it live, or browse all on the templates page.
         </p>
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {INDUSTRIES.map((ind, i) => (
+        {INDUSTRIES.slice(0, 8).map((ind, i) => (
           <SampleWebsiteCard key={ind.slug} ind={ind} i={i} />
         ))}
       </div>
