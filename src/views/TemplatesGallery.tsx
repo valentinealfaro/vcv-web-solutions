@@ -158,7 +158,7 @@ export default function TemplatesGallery({ industries }: { industries: IndustryD
           <div className="flex items-center gap-1.5 overflow-x-auto -mx-1 px-1">
             {CATEGORIES.map(cat => (
               <button key={cat} onClick={() => setCategory(cat)}
-                className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
+                className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition-[background-color,color,box-shadow,transform] duration-200 ease-out active:scale-[0.96] ${
                   category === cat
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
                     : 'bg-white/[0.04] text-gray-400 hover:text-white border border-white/10'
@@ -204,7 +204,7 @@ export default function TemplatesGallery({ industries }: { industries: IndustryD
               <h3 className="text-white text-xl font-bold mb-2">No templates match that search</h3>
               <p className="text-gray-400 mb-5">We build custom for any industry — request a quote.</p>
               <Link href="/contact"
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-bold text-sm transition-all">
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-bold text-sm transition-[background-color,transform] duration-200 ease-out active:scale-[0.97]">
                 Request a custom template <ArrowRight className="w-4 h-4"/>
               </Link>
             </div>
@@ -214,15 +214,15 @@ export default function TemplatesGallery({ industries }: { industries: IndustryD
                 key={`${view}-${category}-${filtered.length}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {filtered.map((ind, i) => (
                   <motion.div key={ind.slug}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(i, 12) * 0.03 }}>
+                    transition={{ delay: Math.min(i, 12) * 0.03, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}>
                     <Link href={`/templates/${ind.slug}`}
-                      className="group block rounded-2xl overflow-hidden p-3 transition-all hover:-translate-y-1"
+                      className="group block rounded-2xl overflow-hidden p-3 transition-transform duration-200 ease-out hover:-translate-y-1 active:scale-[0.98] active:translate-y-0"
                       style={{
                         background:'rgba(5,12,22,0.97)',
                         border:`1px solid ${ind.color}30`,
@@ -248,7 +248,7 @@ export default function TemplatesGallery({ industries }: { industries: IndustryD
                           {ind.heroSubhead.split('.').slice(0, 1).join('.') + '.'}
                         </p>
                         <div className="flex items-center justify-between">
-                          <span className="inline-flex items-center gap-1.5 text-xs font-bold group-hover:gap-2 transition-all"
+                          <span className="inline-flex items-center gap-1.5 text-xs font-bold group-hover:gap-2 transition-[gap] duration-200 ease-out"
                             style={{ color: ind.color }}>
                             View live demo <ExternalLink className="w-3 h-3"/>
                           </span>
