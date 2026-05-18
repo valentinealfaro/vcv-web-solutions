@@ -2205,7 +2205,7 @@ const TESTIMONIALS = [
   { quote: 'Booked 3 jobs in the first week. The phone literally has not stopped.',           name: 'Mike R.',     role: 'Owner, Tulsa Roofing Co.',  initial: 'M', accent: '#ef4444' },
   { quote: 'Looks like a $20k website. Cost me a fraction of that. Best money I have spent.', name: 'Sarah H.',    role: 'Owner, Sparkle Cleaning',   initial: 'S', accent: '#22c55e' },
   { quote: 'Our old site got 2 leads a month. New site got 18 in the first 30 days.',          name: 'David L.',    role: 'GM, Cool Air HVAC',          initial: 'D', accent: '#06b6d4' },
-  { quote: 'Launched in 5 days. We are #1 on Google for "plumber {city}" within a month.',     name: 'James T.',    role: 'Anchor Plumbing',           initial: 'J', accent: '#3b82f6' },
+  { quote: 'Launched in 5 days. We are #1 on Google for "plumber near me" within a month.',     name: 'James T.',    role: 'Anchor Plumbing',           initial: 'J', accent: '#3b82f6' },
 ];
 
 const CounterStat = ({ value, suffix='', label }: { value: number; suffix?: string; label: string }) => {
