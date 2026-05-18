@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       /* Default: full crawl access except admin + API + Vercel internals. */
       {
         userAgent: '*',
-        allow: ['/', '/templates/', '/ai-receptionist/', '/our-work', '/services', '/pricing', '/contact'],
+        allow: ['/', '/templates/', '/ai-receptionist/', '/services', '/pricing', '/contact'],
         disallow: ['/admin/', '/api/', '/_next/', '/success'],
       },
       /* AI / LLM crawlers — explicit allow so AI Overviews / training can index content.
