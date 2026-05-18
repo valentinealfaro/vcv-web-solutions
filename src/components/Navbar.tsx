@@ -35,7 +35,12 @@ export const Navbar = () => {
 
   return (
     <nav className={cn(
-      'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
+      'fixed top-0 left-0 right-0 z-50',
+      /* Specify exact properties + ease-out + sub-300ms per Emil's framework.
+         All 3 properties change on scroll: padding (py-4 → py-2), background,
+         and box-shadow. Was: transition-all duration-500 (sluggish, paints
+         all properties even when unchanged). */
+      'transition-[padding,background-color,box-shadow,backdrop-filter] duration-300 ease-out',
       scrolled
         ? 'py-2 bg-[#030712]/92 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.6)]'
         : 'py-4 bg-transparent',

@@ -108,7 +108,7 @@ export default function Success() {
             Fill out the onboarding form right now — even before our call — and we&apos;ll have your design preview ready 24 hours sooner.
           </p>
           <Link href="/website-onboarding"
-            className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-base transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
+            className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-base transition-[background-color,box-shadow,transform] duration-200 ease-out active:scale-[0.97] shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
             Start onboarding (5 min) <ArrowRight className="w-5 h-5"/>
           </Link>
         </div>

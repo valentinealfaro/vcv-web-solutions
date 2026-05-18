@@ -666,7 +666,7 @@ const HeroContactForm = () => {
               )}
 
               <button type="submit" disabled={status === 'loading'}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white px-6 py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 flex items-center justify-center gap-2">
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white px-6 py-3.5 rounded-xl font-bold text-sm transition-[background-color,box-shadow,transform] duration-200 ease-out active:scale-[0.97] shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 flex items-center justify-center gap-2">
                 {status === 'loading' ? 'Sending…' : <>Get My Free Demo <ArrowRight className="w-4 h-4"/></>}
               </button>
 
@@ -2202,7 +2202,7 @@ const SampleWebsites = () => (
         initial={{ opacity:0 }} whileInView={{ opacity:1 }} viewport={{ once:true }}
         className="text-center mt-12">
         <Link href="/templates"
-          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
+          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-[background-color,box-shadow,transform] duration-200 ease-out active:scale-[0.97] shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
           Browse all templates <ArrowRight className="w-4 h-4"/>
         </Link>
       </motion.div>
@@ -2320,7 +2320,7 @@ const TrustBand = () => (
       {/* CTA */}
       <div className="text-center mt-12">
         <Link href="/free-demo"
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-7 py-3.5 rounded-full font-bold text-sm transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
+          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-7 py-3.5 rounded-full font-bold text-sm transition-[background-color,box-shadow,transform] duration-200 ease-out active:scale-[0.97] shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
           Join them — get your free demo <ArrowRight className="w-4 h-4"/>
         </Link>
       </div>
@@ -2457,7 +2457,7 @@ const ValueStackBand = () => (
 
       <div className="text-center mt-10">
         <Link href="/free-demo"
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-base transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
+          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-base transition-[background-color,box-shadow,transform] duration-200 ease-out active:scale-[0.97] shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40">
           Lock in $97/month while it lasts <ArrowRight className="w-5 h-5"/>
         </Link>
         <p className="text-gray-500 text-xs mt-3">No setup fee on annual · Cancel anytime · You own everything</p>
