@@ -530,19 +530,23 @@ export default function Contact() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <GlowInput label="Name *" icon={<span className="text-[10px]">✦</span>}>
                               <input type="text" placeholder="Your full name" value={form.name}
-                                onChange={set('name')} required className={inputCls} />
+                                onChange={set('name')} required autoComplete="name"
+                                aria-label="Your full name" className={inputCls} />
                             </GlowInput>
                             <GlowInput label="Business Name">
                               <input type="text" placeholder="Company (optional)" value={form.business}
-                                onChange={set('business')} className={inputCls} />
+                                onChange={set('business')} autoComplete="organization"
+                                aria-label="Business name" className={inputCls} />
                             </GlowInput>
                             <GlowInput label="Email *" icon={<Mail className="w-3 h-3" />}>
                               <input type="email" placeholder="your@email.com" value={form.email}
-                                onChange={set('email')} required className={inputCls} />
+                                onChange={set('email')} required autoComplete="email"
+                                aria-label="Email address" className={inputCls} />
                             </GlowInput>
                             <GlowInput label="Phone Number">
                               <input type="tel" placeholder="(555) 000-0000" value={form.phone}
-                                onChange={set('phone')} className={inputCls} />
+                                onChange={set('phone')} autoComplete="tel"
+                                aria-label="Phone number" className={inputCls} />
                             </GlowInput>
                           </div>
 

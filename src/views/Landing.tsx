@@ -251,23 +251,23 @@ export default function Landing() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Full Name *</label>
-                            <input {...register('name',{required:true})} placeholder="John Smith" className={inputCls(!!errors.name)}/>
+                            <input {...register('name',{required:true})} placeholder="John Smith" autoComplete="name" className={inputCls(!!errors.name)}/>
                           </div>
                           <div>
                             <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Business Name *</label>
-                            <input {...register('businessName',{required:true})} placeholder="Acme Roofing" className={inputCls(!!errors.businessName)}/>
+                            <input {...register('businessName',{required:true})} placeholder="Acme Roofing" autoComplete="organization" className={inputCls(!!errors.businessName)}/>
                           </div>
                         </div>
 
                         <div>
                           <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Email Address *</label>
-                          <input {...register('email',{required:true,pattern:/^\S+@\S+$/i})} type="email" placeholder="john@example.com" className={inputCls(!!errors.email)}/>
+                          <input {...register('email',{required:true,pattern:/^\S+@\S+$/i})} type="email" placeholder="john@example.com" autoComplete="email" className={inputCls(!!errors.email)}/>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Phone Number *</label>
-                            <input {...register('phone',{required:true})} type="tel" placeholder="(555) 000-0000" className={inputCls(!!errors.phone)}/>
+                            <input {...register('phone',{required:true})} type="tel" placeholder="(555) 000-0000" autoComplete="tel" className={inputCls(!!errors.phone)}/>
                           </div>
                           <div>
                             <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Business Type *</label>
@@ -286,7 +286,7 @@ export default function Landing() {
 
                         <div>
                           <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Current Website (if any)</label>
-                          <input {...register('currentSite')} placeholder="https://yoursite.com or none" className={inputCls(false)}/>
+                          <input {...register('currentSite')} placeholder="https://yoursite.com or none" autoComplete="url" inputMode="url" className={inputCls(false)}/>
                         </div>
 
                         <div>
