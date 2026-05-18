@@ -625,10 +625,11 @@ const HeroContactForm = () => {
           <>
             <div className="mb-5">
               <p className="text-blue-400 text-[10px] font-bold uppercase tracking-[0.22em] mb-2">Free Design Preview</p>
-              <h3 className="font-display text-white text-2xl md:text-3xl leading-tight">
+              <h3 className="font-display text-white leading-[0.95] tracking-tight"
+                style={{ fontSize: 'clamp(1.75rem, 2.4vw, 2.25rem)' }}>
                 Get your custom demo<br/>built for free.
               </h3>
-              <p className="text-gray-400 text-xs mt-2">No credit card · We reply within 24 hrs</p>
+              <p className="text-gray-400 text-xs mt-3">No credit card · We reply within 24 hrs</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-3">
@@ -709,10 +710,13 @@ const Hero = () => (
             </span>
           </div>
 
-          {/* Headline — fluid sizing, single h1 for SEO, gradient on the key word
-              (no glitch / 3D effects competing with the right-side form). */}
-          <h1 className="font-display text-white leading-[1.02] mb-7 tracking-tight"
-            style={{ fontSize: 'clamp(3rem, 8.5vw, 6.5rem)' }}>
+          {/* Headline — Bebas display font, kept tight per Emil's playbook:
+              dense leading (0.92), constrained width so each intended line
+              actually fits on one line and the gradient on the key phrase
+              reads as one unit. Was wrapping to 4 lines + splitting the
+              gradient across two of them. */}
+          <h1 className="font-display text-white leading-[0.92] tracking-tight mb-7 max-w-[16ch]"
+            style={{ fontSize: 'clamp(2.75rem, 6.5vw, 5rem)' }}>
             We build websites<br/>
             that <span className="gradient-text">generate leads.</span>
           </h1>
