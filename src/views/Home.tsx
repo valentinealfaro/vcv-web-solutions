@@ -2085,15 +2085,20 @@ const SEOContent = () => (
 /* ─── Sample Websites — replaces the old bubble physics section ── */
 const SampleWebsiteCard = ({ ind, i }: { ind: typeof INDUSTRIES[number]; i: number }) => {
   const tagline =
-    ind.name.includes('Roofers')    ? 'Storm Calls' :
-    ind.name.includes('Plumbers')   ? '3am Calls' :
-    ind.name.includes('Dentists')   ? 'New Patients' :
-    ind.name.includes('Lawyers')    ? 'Consults' :
-    ind.name.includes('Real')       ? 'Showings' :
-    ind.name.includes('Restaurant') ? 'Reservations' :
-    ind.name.includes('Med')        ? 'Bookings' :
-    ind.name.includes('Salon')      ? 'Appointments' :
-    ind.name.includes('Wedding')    ? 'Tour Requests' :
+    ind.name.includes('Roofers')     ? 'Storm Calls' :
+    ind.name.includes('Plumbers')    ? '3am Calls' :
+    ind.name.includes('HVAC')        ? 'Service Calls' :
+    ind.name.includes('Electric')    ? 'Service Calls' :
+    ind.name.includes('Dentists')    ? 'New Patients' :
+    ind.name.includes('Lawyers')     ? 'Consults' :
+    ind.name.includes('Real')        ? 'Showings' :
+    ind.name.includes('Restaurant')  ? 'Reservations' :
+    ind.name.includes('Med')         ? 'Bookings' :
+    ind.name.includes('Salon')       ? 'Appointments' :
+    ind.name.includes('Wedding')     ? 'Tour Requests' :
+    ind.name.includes('Landscap')    ? 'Quote Requests' :
+    ind.name.includes('Pest')        ? 'Treatment Calls' :
+    ind.name.includes('Contract')    ? 'Project Leads' :
     'Jobs';
 
   return (
