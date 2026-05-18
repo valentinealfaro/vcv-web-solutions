@@ -74,11 +74,18 @@ export async function POST(req: NextRequest) {
     const subjectBiz = fields.businessName || fields.business;
     const subject = `${source}: ${subjectName}${subjectBiz ? ` — ${subjectBiz}` : ''}`;
 
+    /* From address: prefer RESEND_FROM (e.g. "VCV <leads@vcvservices.com>")
+       once the vcvservices.com domain is verified in Resend. Falls back to
+       the resend.dev sandbox address otherwise — works for dev, but real
+       traffic should use the verified domain to avoid spam folder issues. */
+    const fromAddress = process.env.RESEND_FROM
+      || 'VCV Web Solutions <onboarding@resend.dev>';
+
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'VCV Web Solutions <onboarding@resend.dev>',
+        from: fromAddress,
         to: ['info@vcvservices.com'],
         reply_to: fields.email,
         subject,
