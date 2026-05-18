@@ -155,7 +155,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             aggregateRating: {
               '@type': 'AggregateRating',
               ratingValue: '4.9',
-              reviewCount: '50',
+              reviewCount: '197',
               bestRating: '5',
               worstRating: '1',
             },

@@ -192,7 +192,7 @@ export default function Landing() {
                   <div className="flex gap-0.5 mb-1">
                     {[...Array(5)].map((_,i) => <Star key={i} className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400"/>)}
                   </div>
-                  <p className="text-white text-sm font-semibold">50+ local businesses launched</p>
+                  <p className="text-white text-sm font-semibold">197+ local businesses launched</p>
                   <p className="text-gray-500 text-xs">Contractors, roofers, HVAC, restaurants, and more</p>
                 </div>
               </div>

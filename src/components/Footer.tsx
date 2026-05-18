@@ -40,7 +40,7 @@ const COMPANY = [
 ];
 
 const STATS = [
-  { val:'50+',    label:'Businesses Launched' },
+  { val:'197+',   label:'Businesses Launched' },
   { val:'3-7',    label:'Days to Launch' },
   { val:'$97',    label:'Starting Per Month' },
   { val:'30-Day', label:'Results Guarantee' },
@@ -164,7 +164,7 @@ export const Footer = () => (
             <div className="flex gap-0.5">
               {[...Array(5)].map((_,i)=><Star key={i} className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400"/>)}
             </div>
-            <span className="text-gray-500 text-xs">50+ businesses launched</span>
+            <span className="text-gray-500 text-xs">197+ businesses launched</span>
           </div>
         </div>
 

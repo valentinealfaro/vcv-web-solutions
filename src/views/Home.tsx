@@ -747,7 +747,7 @@ const Hero = () => (
                   </svg>
                 ))}
               </span>
-              <span className="text-gray-300 text-sm font-semibold">4.9 · 50+ small businesses</span>
+              <span className="text-gray-300 text-sm font-semibold">4.9 · 197+ small businesses</span>
             </div>
             <span className="hidden sm:inline text-gray-700">·</span>
             {['From $97/mo', '3–7 day launch', '30-day guarantee'].map((t, i) => (
@@ -925,7 +925,7 @@ interface StatCardDef {
 }
 
 const STAT_CARDS: StatCardDef[] = [
-  { id: 0, icon: <Award       className="w-6 h-6" />, val: 50, suf: '+',         label: 'Websites Launched',   rotDelay: 0   },
+  { id: 0, icon: <Award       className="w-6 h-6" />, val: 197, suf: '+',        label: 'Websites Launched',   rotDelay: 0   },
   { id: 1, icon: <Users       className="w-6 h-6" />, val: 98, suf: '%',         label: 'Client Satisfaction', rotDelay: 1.2 },
   { id: 2, icon: <Clock       className="w-6 h-6" />, val: 5,  suf: ' Days Avg', label: 'Launch Time',         rotDelay: 2.4 },
   { id: 3, icon: <ShieldCheck className="w-6 h-6" />, val: 0,  pre: '$', suf: ' Upfront', label: 'Risk-Free Start', rotDelay: 3.6 },
@@ -940,24 +940,36 @@ interface StatCardProps extends StatCardDef { isSquare: boolean }
    subtly glows. That's it. */
 const StatCard = ({ icon, val, suf = '', pre = '', label }: StatCardProps) => (
   <motion.div
-    whileHover={{ y: -3 }}
-    transition={{ type: 'spring', stiffness: 280, damping: 22 }}
-    className="relative p-6 md:p-7 rounded-2xl text-center group"
+    whileHover={{ y: -4 }}
+    transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+    className="relative p-6 md:p-8 rounded-2xl text-center group overflow-hidden"
     style={{
-      background: 'rgba(255,255,255,0.025)',
+      /* Subtle diagonal gradient adds depth without competing with the
+         numbers — flat dark cards read as cheaper. */
+      background: 'linear-gradient(155deg, rgba(59,130,246,0.06) 0%, rgba(255,255,255,0.025) 35%, rgba(255,255,255,0.02) 100%)',
       border:     '1px solid rgba(255,255,255,0.08)',
-      transition: 'border-color 0.2s, background 0.2s',
     }}>
-    {/* Soft glow on hover only */}
-    <div className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
-      style={{ boxShadow: '0 0 0 1px rgba(59,130,246,0.25), 0 20px 40px -20px rgba(59,130,246,0.30)' }}/>
+    {/* Thin top accent line, fades in on hover. Constrained to transform/
+        opacity per Emil's hardware-acceleration rule. */}
+    <div className="absolute top-0 inset-x-6 h-px pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+      style={{ background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.6), transparent)' }}/>
 
-    <div className="relative w-11 h-11 mx-auto mb-4 rounded-xl flex items-center justify-center"
-      style={{ background: 'rgba(59,130,246,0.10)', border: '1px solid rgba(59,130,246,0.30)' }}>
+    {/* Soft glow on hover only */}
+    <div className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      style={{ boxShadow: '0 0 0 1px rgba(59,130,246,0.25), 0 24px 48px -24px rgba(59,130,246,0.35)' }}/>
+
+    <div className="relative w-12 h-12 mx-auto mb-5 rounded-xl flex items-center justify-center"
+      style={{
+        background: 'rgba(59,130,246,0.10)',
+        border: '1px solid rgba(59,130,246,0.30)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+      }}>
       <div className="text-blue-400">{icon}</div>
     </div>
 
-    <div className="relative font-display text-4xl md:text-5xl text-white tracking-tight leading-none mb-2">
+    {/* The number is the hero — bigger + gradient ties it to the brand */}
+    <div className="relative font-display gradient-text tracking-tight leading-none mb-2"
+      style={{ fontSize: 'clamp(2.5rem, 4vw, 3.75rem)' }}>
       <Counter target={val} prefix={pre} suffix={suf} />
     </div>
     <p className="relative text-gray-400 text-xs uppercase tracking-[0.18em] font-semibold">{label}</p>
@@ -1909,7 +1921,7 @@ const WHY_FEATURES = [
   { icon: <Clock   className="w-10 h-10" />, color:'#8b5cf6', title:'3–7 Day Launch',          desc:'We move fast without sacrificing quality. See results in days, not months.',      stat:'3–7',      statLabel:'Days to Live',        emoji:'🚀' },
   { icon: <Search  className="w-10 h-10" />, color:'#06b6d4', title:'SEO + Ads Built In',      desc:'Traffic strategies baked in from the start — no expensive upsells ever.',         stat:'#1',       statLabel:'On Google',           emoji:'📈' },
   { icon: <ShieldCheck className="w-10 h-10" />, color:'#22c55e', title:'You Own Everything',  desc:'No vendor lock-in. Your domain, your content, your site — always.',               stat:'100%',     statLabel:'Your Property',       emoji:'🔒' },
-  { icon: <TrendingUp className="w-10 h-10" />, color:'#f97316', title:'Proven Track Record',  desc:'Real results for real businesses. 50+ sites launched, all generating leads.',      stat:'50+',      statLabel:'Sites Launched',      emoji:'⭐' },
+  { icon: <TrendingUp className="w-10 h-10" />, color:'#f97316', title:'Proven Track Record',  desc:'Real results for real businesses. 197+ sites launched, all generating leads.',     stat:'197+',     statLabel:'Sites Launched',      emoji:'⭐' },
 ];
 
 /* Static 5-card grid. Replaces the previous version that loaded an
@@ -2272,7 +2284,7 @@ const TrustBand = () => (
               <path d="M10 1l2.6 5.9 6.4.6-4.8 4.4 1.4 6.3L10 15l-5.6 3.2L5.8 11.9 1 7.5l6.4-.6L10 1z"/>
             </svg>
           ))}
-          <span className="ml-2 text-white font-bold text-sm">4.9 · 50+ reviews</span>
+          <span className="ml-2 text-white font-bold text-sm">4.9 · 197+ reviews</span>
         </div>
         <h2 className="font-display text-4xl md:text-6xl text-white tracking-tight mb-3">
           Trusted by local <span className="gradient-text">business owners</span>
@@ -2284,7 +2296,7 @@ const TrustBand = () => (
 
       {/* Counter row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-14 max-w-4xl mx-auto">
-        <CounterStat value={50}   suffix="+"        label="Websites Launched" />
+        <CounterStat value={197}  suffix="+"        label="Websites Launched" />
         <CounterStat value={5}    suffix=" days"    label="Avg Launch Time" />
         <CounterStat value={98}   suffix="%"        label="Client Satisfaction" />
         <CounterStat value={30}   suffix="-Day"     label="Results Guarantee" />
