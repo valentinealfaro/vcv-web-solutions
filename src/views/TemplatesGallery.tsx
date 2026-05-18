@@ -121,13 +121,14 @@ export default function TemplatesGallery({ industries }: { industries: IndustryD
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] pointer-events-none"
           style={{ background:'radial-gradient(ellipse at center, rgba(59,130,246,0.18) 0%, transparent 70%)' }}/>
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <span className="inline-block text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-5">Template Gallery</span>
-          <h1 className="font-display text-5xl md:text-7xl text-white tracking-tight leading-[1.02] mb-5">
-            <span className="text-white">34 live </span>
-            <span className="gradient-text">website templates.</span>
+          <span className="inline-block text-blue-400 text-xs font-bold uppercase tracking-[0.22em] mb-5">Our work · Template gallery</span>
+          <h1 className="font-display text-white tracking-tight leading-[1.02] mb-5"
+            style={{ fontSize: 'clamp(2.75rem, 7.5vw, 5.5rem)' }}>
+            34 live websites,<br/>
+            <span className="gradient-text">one for every industry.</span>
           </h1>
-          <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-8">
-            Each one is a fully working demo. Pick yours, we customize it, launch in 3–7 days. Conversion-ready, SEO-built, mobile-perfect.
+          <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-8">
+            Real working demos we&apos;ve built for local businesses. Pick yours, we customize it, launch in 3–7 days. Conversion-ready, SEO-built, mobile-perfect.
           </p>
           <div className="inline-flex items-center gap-2 text-sm text-gray-400">
             <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Live demos</span>
