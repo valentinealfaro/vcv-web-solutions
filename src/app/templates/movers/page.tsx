@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { findIndustry } from '@/data/industries';
 import GenericTemplate from '@/views/templates/GenericTemplate';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const SLUG = 'movers';
 
 export function generateMetadata(): Metadata {

@@ -5,7 +5,7 @@ import { INDUSTRIES, findIndustry } from '@/data/industries';
 
 const View = dynamic(() => import('@/views/IndustryLanding'));
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 
 interface PageProps {
   params: Promise<{ industry: string }>;

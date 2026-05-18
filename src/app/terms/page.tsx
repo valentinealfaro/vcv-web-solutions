@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 
 const Terms = dynamic(() => import('@/views/Terms'));
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 
 export const metadata: Metadata = {
   title:       'Terms & Privacy · VCV Web Solutions',

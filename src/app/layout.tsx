@@ -36,7 +36,7 @@ const bebas = Bebas_Neue({
   preload:  false, // display font — fine to load after the LCP
 });
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const OG_DESC  = 'High-converting websites built in 3-7 days for local service businesses. SEO-optimized, mobile-ready, and engineered to generate leads — not just look pretty.';
 
 export const metadata: Metadata = {

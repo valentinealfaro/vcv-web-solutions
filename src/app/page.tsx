@@ -1,7 +1,7 @@
 import Script from 'next/script';
 import HomeClient from './HomeClient';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 
 const HOME_FAQ = [
   { q: 'How much does a website cost?',

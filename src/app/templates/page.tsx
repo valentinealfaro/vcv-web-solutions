@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { INDUSTRIES } from '@/data/industries';
 import TemplatesGallery from '@/views/TemplatesGallery';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const OG_IMAGE = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('TEMPLATE GALLERY')}&title=${encodeURIComponent('34 live website templates')}&subtitle=${encodeURIComponent('Filter by industry · Live demos · From $97/mo')}&accent=%238b5cf6`;
 
 export const metadata: Metadata = {

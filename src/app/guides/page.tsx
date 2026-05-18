@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { GUIDES } from '@/data/guides';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const TITLE       = 'Guides — Practical Web & Local-SEO Advice for Small Businesses · VCV';
 const DESCRIPTION = 'Plain-language guides for service-business owners on local SEO, website ROI, and what actually moves the needle. No fluff, no upsells.';
 const OG_IMAGE    = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('GUIDES')}&title=${encodeURIComponent('Plain advice for small business owners')}&subtitle=${encodeURIComponent('Local SEO · Website ROI · What actually moves the needle')}&accent=%233b82f6`;

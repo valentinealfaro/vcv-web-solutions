@@ -5,7 +5,7 @@ import { findIndustry } from '@/data/industries';
 
 const MedSpas = dynamic(() => import('@/views/templates/MedSpas'));
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const SLUG = 'med-spa';
 
 export function generateMetadata(): Metadata {

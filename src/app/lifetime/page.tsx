@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 
 const Lifetime = dynamic(() => import('@/views/Lifetime'));
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const TITLE = 'Lifetime Website — Pay $1,497 Once, Own It Forever · VCV Web Solutions';
 const DESC  = 'Stop renting your website at $30–$200/month forever. Pay $1,497 once, own the site for life. Same conversion-focused build, no recurring fees.';
 const OG    = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('LIFETIME WEBSITE')}&title=${encodeURIComponent('One price. Yours forever.')}&subtitle=${encodeURIComponent('$1,497 once · No monthly fees ever · Save $9,000+ over 10 yrs')}&accent=%233b82f6`;

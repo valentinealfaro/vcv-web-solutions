@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import AIReceptionistClient from './ai-receptionistClient';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const OG_IMAGE = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('AI RECEPTIONIST · NOVA')}&title=${encodeURIComponent('Never miss another phone call')}&subtitle=${encodeURIComponent('24/7 AI answering · Books jobs · Texts you the lead instantly')}&accent=%2322c55e`;
 
 export const metadata: Metadata = {

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import ServicesClient from './servicesClient';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const OG_IMAGE = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('SERVICES')}&title=${encodeURIComponent('Website Design · SEO · Paid Ads · Social')}&subtitle=${encodeURIComponent('Everything local businesses need online to generate leads')}&accent=%238b5cf6`;
 
 export const metadata: Metadata = {

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const TITLE       = 'Client Reviews — 4.9 / 5 from 50+ Local Businesses · VCV Web Solutions';
 const DESCRIPTION = 'Real reviews from real businesses we have launched. Roofers, dentists, HVAC, plumbers — see what they say about our 3–7 day launches and lead-generating sites.';
 const OG_IMAGE    = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('★★★★★ · 4.9 / 5')}&title=${encodeURIComponent('Trusted by 50+ local businesses')}&subtitle=${encodeURIComponent('Roofers · Dentists · HVAC · Plumbers · Real reviews from real owners')}&accent=%23eab308`;

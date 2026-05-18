@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const { productName, amount, setupFee, setupFeeName, addons } = await req.json();
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://vcv-web-solutions.vercel.app';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.vcvwebsolutions.com';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lineItems: any[] = [

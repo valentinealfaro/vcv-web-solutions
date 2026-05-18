@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { STATES, findState } from '@/data/states';
 import { INDUSTRIES } from '@/data/industries';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 
 interface PageProps { params: Promise<{ state: string }> }
 

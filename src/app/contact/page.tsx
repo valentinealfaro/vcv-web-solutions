@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import ContactClient from './contactClient';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const OG_IMAGE = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('CONTACT')}&title=${encodeURIComponent('Free design preview in 48 hours')}&subtitle=${encodeURIComponent('Call (580) 919-1386 · We reply within 24 hrs · No credit card')}&accent=%2306b6d4`;
 
 export const metadata: Metadata = {

@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 
 const WebsiteOnboarding = dynamic(() => import('@/views/WebsiteOnboarding'));
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 
 export const metadata: Metadata = {
   title:       'Website Onboarding · VCV Web Solutions',

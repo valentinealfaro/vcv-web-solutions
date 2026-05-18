@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { STATES } from '@/data/states';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const TITLE       = 'Service Areas — Website Design Across All 50 US States · VCV Web Solutions';
 const DESCRIPTION = 'We build conversion-focused websites for small businesses in every US state. Pick yours to see industry templates and local-SEO setup tailored to your market.';
 const OG_IMAGE    = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('SERVICE AREAS')}&title=${encodeURIComponent('All 50 US states')}&subtitle=${encodeURIComponent('Local SEO and conversion-focused sites · Built in 3–7 days')}&accent=%233b82f6`;

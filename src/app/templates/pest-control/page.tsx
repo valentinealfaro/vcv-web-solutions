@@ -5,7 +5,7 @@ import { findIndustry } from '@/data/industries';
 
 const PestControl = dynamic(() => import('@/views/templates/PestControl'));
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const SLUG = 'pest-control';
 
 export function generateMetadata(): Metadata {

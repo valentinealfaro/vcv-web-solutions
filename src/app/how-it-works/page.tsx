@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const TITLE       = 'How It Works — From Inquiry to Live Site in 3–7 Days · VCV Web Solutions';
 const DESCRIPTION = 'See the exact 7-step process: free design preview, approval, build, launch, SEO setup, lead-tracking install, and 30-day results review. No upfront cost.';
 const OG_IMAGE    = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('HOW IT WORKS')}&title=${encodeURIComponent('Inquiry to live site in 7 days')}&subtitle=${encodeURIComponent('Seven steps · No upfront cost · You approve before payment')}&accent=%2306b6d4`;

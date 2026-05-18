@@ -5,7 +5,7 @@ import { findIndustry } from '@/data/industries';
 
 const RealEstate = dynamic(() => import('@/views/templates/RealEstate'));
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const SLUG = 'real-estate';
 
 export function generateMetadata(): Metadata {

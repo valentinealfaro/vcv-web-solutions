@@ -3,7 +3,7 @@ import { INDUSTRIES } from '@/data/industries';
 import { STATES } from '@/data/states';
 import { GUIDES } from '@/data/guides';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

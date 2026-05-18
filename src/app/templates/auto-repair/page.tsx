@@ -5,7 +5,7 @@ import { findIndustry } from '@/data/industries';
 
 const AutoRepair = dynamic(() => import('@/views/templates/AutoRepair'));
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const SLUG = 'auto-repair';
 
 export function generateMetadata(): Metadata {

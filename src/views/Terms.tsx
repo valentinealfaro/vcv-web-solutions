@@ -9,7 +9,7 @@ const EFFECTIVE_DATE = 'April 28, 2025';
 const COMPANY        = 'VCV Web Solutions (a service of VCV Services)';
 const EMAIL          = 'info@vcvservices.com';
 const PHONE          = '(580) 919-1386';
-const SITE           = 'vcv-web-solutions.vercel.app';
+const SITE           = 'www.vcvwebsolutions.com';
 
 /* ── Collapsible section ── */
 const Section = ({ title, children, accent = '#3b82f6' }: { title: string; children: React.ReactNode; accent?: string }) => {

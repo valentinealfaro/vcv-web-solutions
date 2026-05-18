@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-const SITE_URL = 'https://vcv-web-solutions.vercel.app';
+const SITE_URL = 'https://www.vcvwebsolutions.com';
 const TITLE       = 'About VCV Web Solutions — Lead-Generating Websites for Local Businesses';
 const DESCRIPTION = 'We build conversion-focused websites in 3–7 days for local service businesses. No bloated CMS, no upfront cost, no platform lock-in. Designed by people who actually run small businesses.';
 const OG_IMAGE    = `${SITE_URL}/api/og?eyebrow=${encodeURIComponent('ABOUT VCV')}&title=${encodeURIComponent('Websites that earn their keep')}&subtitle=${encodeURIComponent('Speed beats perfection · You own everything · See it before you pay')}&accent=%233b82f6`;
